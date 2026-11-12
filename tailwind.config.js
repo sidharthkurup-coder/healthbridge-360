@@ -41,16 +41,20 @@ module.exports = {
       },
       keyframes: {
         fadeUp: {
-          '0%': { opacity: '0', transform: 'translate3d(0, 18px, 0) scale(0.985)' },
-          '100%': { opacity: '1', transform: 'none' },
+          '0%': { opacity: '0', transform: 'translate3d(0, 22px, 0) scale(0.98)', filter: 'blur(3px)' },
+          '100%': { opacity: '1', transform: 'none', filter: 'none' },
+        },
+        clipReveal: {
+          '0%': { opacity: '0', transform: 'translate3d(0, 100%, 0)', clipPath: 'inset(0 0 100% 0)' },
+          '100%': { opacity: '1', transform: 'none', clipPath: 'inset(0 0 0% 0)' },
         },
         pageEnter: {
           '0%': {
             opacity: '0',
-            transform: 'translate3d(0, 20px, 0) scale(0.99)',
-            filter: 'blur(4px)',
+            transform: 'translate3d(0, 26px, 0) scale(0.986)',
+            filter: 'blur(6px)',
           },
-          '65%': {
+          '60%': {
             opacity: '1',
             filter: 'blur(0px)',
           },
@@ -63,8 +67,8 @@ module.exports = {
         tabSwitch: {
           '0%': {
             opacity: '0',
-            transform: 'translate3d(0, 12px, 0) scale(0.992)',
-            filter: 'blur(2px)',
+            transform: 'translate3d(0, 14px, 0) scale(0.988)',
+            filter: 'blur(4px)',
           },
           '100%': {
             opacity: '1',
@@ -74,16 +78,16 @@ module.exports = {
         },
         veilSweep: {
           '0%': {
-            opacity: '0.85',
-            transform: 'translate3d(0, -100%, 0) scaleY(1.1)',
+            opacity: '0.95',
+            transform: 'translate3d(0, -105%, 0) scaleY(1.15)',
           },
-          '45%': {
-            opacity: '0.45',
-            transform: 'translate3d(0, 0%, 0) scaleY(1)',
+          '42%': {
+            opacity: '0.55',
+            transform: 'translate3d(0, 5%, 0) scaleY(1)',
           },
           '100%': {
             opacity: '0',
-            transform: 'translate3d(0, 100%, 0) scaleY(0.9)',
+            transform: 'translate3d(0, 115%, 0) scaleY(0.85)',
           },
         },
         fadeIn: {
@@ -91,27 +95,27 @@ module.exports = {
           '100%': { opacity: '1' },
         },
         scaleIn: {
-          '0%': { opacity: '0', transform: 'translate3d(0, 10px, 0) scale(0.93)' },
-          '70%': { opacity: '1', transform: 'translate3d(0, -1px, 0) scale(1.008)' },
-          '100%': { opacity: '1', transform: 'none' },
+          '0%': { opacity: '0', transform: 'translate3d(0, 12px, 0) scale(0.92)', filter: 'blur(3px)' },
+          '68%': { opacity: '1', transform: 'translate3d(0, -1.5px, 0) scale(1.012)', filter: 'blur(0px)' },
+          '100%': { opacity: '1', transform: 'none', filter: 'none' },
         },
         modalSpring: {
-          '0%': { opacity: '0', transform: 'translate3d(0, 24px, 0) scale(0.92)' },
-          '65%': { opacity: '1', transform: 'translate3d(0, -2px, 0) scale(1.012)' },
-          '100%': { opacity: '1', transform: 'none' },
+          '0%': { opacity: '0', transform: 'translate3d(0, 28px, 0) scale(0.91)', filter: 'blur(4px)' },
+          '65%': { opacity: '1', transform: 'translate3d(0, -3px, 0) scale(1.015)', filter: 'blur(0px)' },
+          '100%': { opacity: '1', transform: 'none', filter: 'none' },
         },
         slideRight: {
-          '0%': { opacity: '0', transform: 'translate3d(-14px, 0, 0)' },
+          '0%': { opacity: '0', transform: 'translate3d(-16px, 0, 0)' },
           '100%': { opacity: '1', transform: 'none' },
         },
         floatSlow: {
           '0%, 100%': { transform: 'translate3d(0, 0px, 0)' },
-          '50%': { transform: 'translate3d(0, -7px, 0)' },
+          '50%': { transform: 'translate3d(0, -9px, 0)' },
         },
         pulseRing: {
-          '0%': { transform: 'scale(0.85)', opacity: '0.8' },
-          '70%': { transform: 'scale(1.9)', opacity: '0' },
-          '100%': { transform: 'scale(1.9)', opacity: '0' },
+          '0%': { transform: 'scale(0.85)', opacity: '0.85' },
+          '70%': { transform: 'scale(2.1)', opacity: '0' },
+          '100%': { transform: 'scale(2.1)', opacity: '0' },
         },
         shimmer: {
           '0%': { backgroundPosition: '-200% 0' },
@@ -122,11 +126,11 @@ module.exports = {
         },
         orbDrift: {
           '0%, 100%': { transform: 'translate3d(0px, 0px, 0) scale(1)' },
-          '33%': { transform: 'translate3d(22px, -16px, 0) scale(1.07)' },
-          '66%': { transform: 'translate3d(-14px, 12px, 0) scale(0.96)' },
+          '33%': { transform: 'translate3d(26px, -18px, 0) scale(1.08)' },
+          '66%': { transform: 'translate3d(-18px, 14px, 0) scale(0.95)' },
         },
         langSwap: {
-          '0%': { opacity: '0.35', transform: 'translate3d(0, 6px, 0) scale(0.994)', filter: 'blur(2px)' },
+          '0%': { opacity: '0.3', transform: 'translate3d(0, 8px, 0) scale(0.992)', filter: 'blur(3px)' },
           '100%': { opacity: '1', transform: 'none', filter: 'none' },
         },
         gradientX: {
@@ -140,22 +144,23 @@ module.exports = {
         },
       },
       animation: {
-        'fade-up': 'fadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'fade-up-fast': 'fadeUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'page-enter': 'pageEnter 0.58s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'tab-switch': 'tabSwitch 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'veil-sweep': 'veilSweep 0.52s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+        'fade-up': 'fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'fade-up-fast': 'fadeUp 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'clip-reveal': 'clipReveal 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'page-enter': 'pageEnter 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'tab-switch': 'tabSwitch 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'veil-sweep': 'veilSweep 0.62s cubic-bezier(0.22, 1, 0.36, 1) forwards',
         'fade-in': 'fadeIn 0.3s ease-out forwards',
-        'scale-in': 'scaleIn 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'modal-spring': 'modalSpring 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'slide-right': 'slideRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'float-slow': 'floatSlow 4.5s ease-in-out infinite',
-        'orb-drift': 'orbDrift 10s ease-in-out infinite',
-        'lang-swap': 'langSwap 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'scale-in': 'scaleIn 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'modal-spring': 'modalSpring 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'slide-right': 'slideRight 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'float-slow': 'floatSlow 5s ease-in-out infinite',
+        'orb-drift': 'orbDrift 11s ease-in-out infinite',
+        'lang-swap': 'langSwap 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'pulse-ring': 'pulseRing 2s cubic-bezier(0.24, 0, 0.38, 1) infinite',
-        'shimmer': 'shimmer 2.5s linear infinite',
-        'grow-width': 'growWidth 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'gradient-x': 'gradientX 6s ease infinite',
+        'shimmer': 'shimmer 2.4s linear infinite',
+        'grow-width': 'growWidth 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'gradient-x': 'gradientX 5.5s ease infinite',
         'shake': 'shake 0.3s ease-in-out',
       },
       boxShadow: {

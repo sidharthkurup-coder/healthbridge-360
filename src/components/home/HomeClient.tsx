@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
-import { ScrollReveal, AnimatedCounter, LiveEcgWave, Magnetic } from '@/components/ui/Motion';
+import { ScrollReveal, AnimatedCounter, LiveEcgWave, Magnetic, HeroAuroraField } from '@/components/ui/Motion';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export interface HomeTelemetryProps {
@@ -68,18 +68,19 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
 
   return (
     <div key={lang} className="space-y-14 pb-20 animate-lang-swap">
-      {/* 1. HERO SECTION */}
-      <section className="relative overflow-hidden bg-navy-mesh text-white pt-12 pb-24 px-4 sm:px-6 lg:px-8 border-b border-navy-800">
-        <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#14b8a6_1px,transparent_1px)] [background-size:24px_24px]" />
+      {/* 1. HERO SECTION — Cursor-Reactive Aurora & Kinetic Editorial Stage */}
+      <HeroAuroraField className="bg-navy-mesh text-white pt-12 pb-24 px-4 sm:px-6 lg:px-8 border-b border-navy-800">
+        <div className="pointer-events-none absolute inset-0 opacity-15 bg-[radial-gradient(#14b8a6_1px,transparent_1px)] [background-size:24px_24px]" />
         {/* GPU-composited drifting ambient orbs */}
-        <div className="pointer-events-none absolute -top-24 right-1/4 w-96 h-96 rounded-full bg-teal-500/15 blur-3xl animate-orb-drift" />
-        <div className="pointer-events-none absolute -bottom-24 left-10 w-80 h-80 rounded-full bg-sky-500/15 blur-3xl animate-float-slow" />
+        <div className="pointer-events-none absolute -top-24 right-1/4 w-96 h-96 rounded-full bg-teal-500/20 blur-3xl animate-orb-drift" />
+        <div className="pointer-events-none absolute -bottom-24 left-10 w-80 h-80 rounded-full bg-sky-500/20 blur-3xl animate-float-slow" />
+        <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[540px] h-[540px] rounded-full border border-teal-400/10 animate-float-slow" />
 
         <div className="relative max-w-7xl mx-auto">
           {/* Competition & Location tag */}
           <div className="flex flex-wrap items-center gap-2.5 mb-7 animate-fade-up">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-teal-500/15 border border-teal-400/30 text-teal-300 text-xs font-bold uppercase tracking-wider shadow-xs">
-              <Sparkles className="w-3.5 h-3.5 text-teal-400" /> {t('hero.badge')}
+              <Sparkles className="w-3.5 h-3.5 text-teal-400 animate-pulse" /> {t('hero.badge')}
             </span>
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/5 border border-white/10 text-slate-200 text-xs font-medium backdrop-blur-xs">
               <MapPin className="w-3.5 h-3.5 text-teal-400" /> {t('hero.district')}
@@ -91,13 +92,15 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             <div className="lg:col-span-7 space-y-6 animate-fade-up delay-75">
-              <h1 className="text-3xl sm:text-5xl lg:text-[50px] font-extrabold tracking-tight text-white font-display leading-[1.15]">
-                {t('hero.title1')}{' '}
-                <span className="bg-gradient-to-r from-teal-300 via-sky-200 to-emerald-300 bg-[length:200%_auto] animate-gradient-x bg-clip-text text-transparent">
-                  {t('hero.titleHighlight')}
-                </span>{' '}
-                {t('hero.title2')}
-              </h1>
+              <div className="overflow-hidden">
+                <h1 className="text-3xl sm:text-5xl lg:text-[50px] font-extrabold tracking-tight text-white font-display leading-[1.15] animate-clip-reveal">
+                  {t('hero.title1')}{' '}
+                  <span className="bg-gradient-to-r from-teal-300 via-sky-200 to-emerald-300 bg-[length:200%_auto] animate-gradient-x bg-clip-text text-transparent">
+                    {t('hero.titleHighlight')}
+                  </span>{' '}
+                  {t('hero.title2')}
+                </h1>
+              </div>
               <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl font-normal">
                 {t('hero.desc')}
               </p>
@@ -257,7 +260,7 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
             </div>
           </div>
         </div>
-      </section>
+      </HeroAuroraField>
 
       {/* 2. PROMINENT DIRECT EMERGENCY BANNER */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-10 animate-fade-up delay-200">
@@ -734,7 +737,7 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
 
           {/* Verified Standards Guarantee */}
           <div className="lg:col-span-5 bg-navy-mesh text-white rounded-2xl p-6 shadow-elevated border border-navy-800 flex flex-col justify-between space-y-5 relative overflow-hidden">
-            <div className="absolute -right-12 -bottom-12 w-44 h-44 rounded-full bg-teal-500/10 blur-2xl pointer-events-none" />
+            <div className="absolute -right-12 -bottom-12 w-44 h-44 rounded-full bg-teal-500/15 blur-2xl pointer-events-none animate-orb-drift" />
             <div>
               <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-teal-500/15 border border-teal-400/30 text-teal-300 text-[11px] font-bold uppercase tracking-wider mb-3">
                 <Shield className="w-3.5 h-3.5" /> {t('integrity.badge')}

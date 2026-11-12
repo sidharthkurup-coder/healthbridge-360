@@ -381,7 +381,7 @@ RouteProgressBar.displayName = 'RouteProgressBar';
 
 
 // ============================================================================
-// 6. AWARD-WINNING PAGE TRANSITION STAGE (3D Spring + Light Veil Sweep)
+// 6. AWARD-WINNING PAGE TRANSITION STAGE (3D Perspective Spring + Aurora Veil)
 // ============================================================================
 export const PageTransitionStage: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const pathname = usePathname();
@@ -391,17 +391,23 @@ export const PageTransitionStage: React.FC<{ children: React.ReactNode }> = ({ c
         setAnimating(true);
         const timer = window.setTimeout(() => {
             setAnimating(false);
-        }, 620);
+        }, 680);
         return () => window.clearTimeout(timer);
     }, [pathname]);
 
     return (
         <div className="relative">
             {animating && (
-                <div
-                    aria-hidden="true"
-                    className="pointer-events-none fixed inset-x-0 top-16 z-40 h-24 bg-gradient-to-b from-sky-400/10 via-teal-400/5 to-transparent animate-veil-sweep"
-                />
+                <>
+                    <div
+                        aria-hidden="true"
+                        className="pointer-events-none fixed inset-x-0 top-0 z-50 h-[2px] bg-gradient-to-r from-transparent via-teal-400 to-transparent shadow-[0_0_20px_rgba(45,212,191,0.9)] animate-veil-sweep"
+                    />
+                    <div
+                        aria-hidden="true"
+                        className="pointer-events-none fixed inset-x-0 top-14 z-40 h-36 bg-gradient-to-b from-teal-400/12 via-sky-400/6 to-transparent blur-sm animate-veil-sweep"
+                    />
+                </>
             )}
             <div
                 key={pathname}
@@ -417,3 +423,55 @@ export const PageTransitionStage: React.FC<{ children: React.ReactNode }> = ({ c
         </div>
     );
 };
+
+// ============================================================================
+// 7. HERO CURSOR AURORA FIELD (Zero-Rerender RAF Spotlight Layer)
+// ============================================================================
+export const HeroAuroraField: React.FC<{ children: React.ReactNode; className?: string }> = React.memo(
+    ({ children, className }) => {
+        const ref = useRef<HTMLElement>(null);
+        const rafRef = useRef<number>(0);
+        const rectRef = useRef<DOMRect | null>(null);
+
+        const handleMouseEnter = useCallback(() => {
+            if (ref.current) {
+                rectRef.current = ref.current.getBoundingClientRect();
+            }
+        }, []);
+
+        const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
+            const node = ref.current;
+            if (!node) return;
+            const cx = e.clientX;
+            const cy = e.clientY;
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            rafRef.current = requestAnimationFrame(() => {
+                const rect = rectRef.current || node.getBoundingClientRect();
+                node.style.setProperty('--hero-x', `${(cx - rect.left).toFixed(1)}px`);
+                node.style.setProperty('--hero-y', `${(cy - rect.top).toFixed(1)}px`);
+            });
+        }, []);
+
+        const handleMouseLeave = useCallback(() => {
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            rectRef.current = null;
+        }, []);
+
+        return (
+            <section
+                ref={ref}
+                onMouseEnter={handleMouseEnter}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                className={clsx('relative overflow-hidden', className)}
+            >
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 hero-aurora-spotlight"
+                />
+                {children}
+            </section>
+        );
+    }
+);
+HeroAuroraField.displayName = 'HeroAuroraField';

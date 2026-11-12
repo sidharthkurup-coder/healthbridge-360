@@ -130,7 +130,7 @@ export const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-xl shadow-xs transition-all">
+    <header className="vt-navbar sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/85 backdrop-blur-xl shadow-xs transition-all">
       {/* Top emergency announcement ticker / helpline */}
       <div className="bg-gradient-to-r from-navy-950 via-navy-900 to-navy-950 text-slate-300 text-xs py-1.5 px-4 sm:px-6 border-b border-white/10">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -157,9 +157,9 @@ export const Navbar = () => {
                 type="button"
                 onClick={() => setLang('en')}
                 className={clsx(
-                  'px-2 py-0.5 rounded-full text-[10px] font-bold transition-all duration-200',
+                  'px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] active:scale-90',
                   lang === 'en'
-                    ? 'bg-teal-500 text-navy-950 shadow-xs'
+                    ? 'bg-gradient-to-r from-teal-400 to-teal-500 text-navy-950 shadow-[0_0_12px_rgba(45,212,191,0.45)] scale-105'
                     : 'text-slate-300 hover:text-white'
                 )}
               >
@@ -169,9 +169,9 @@ export const Navbar = () => {
                 type="button"
                 onClick={() => setLang('te')}
                 className={clsx(
-                  'px-2 py-0.5 rounded-full text-[10px] font-bold transition-all duration-200',
+                  'px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] active:scale-90',
                   lang === 'te'
-                    ? 'bg-teal-500 text-navy-950 shadow-xs'
+                    ? 'bg-gradient-to-r from-teal-400 to-teal-500 text-navy-950 shadow-[0_0_12px_rgba(45,212,191,0.45)] scale-105'
                     : 'text-slate-300 hover:text-white'
                 )}
               >
