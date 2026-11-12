@@ -119,7 +119,8 @@ interface AnimatedCounterProps {
 
 export const AnimatedCounter: React.FC<AnimatedCounterProps> = React.memo(
   ({ value, duration = 1150, prefix = '', suffix = '', decimals = 0, className }) => {
-    const [displayValue, setDisplayValue] = useState(0);
+    const targetNum = Number(value) || 0;
+    const [displayValue, setDisplayValue] = useState(targetNum);
     const [popped, setPopped] = useState(false);
     const ref = useRef<HTMLSpanElement>(null);
     const hasAnimated = useRef(false);
@@ -145,6 +146,7 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = React.memo(
           setDisplayValue(target);
           return;
         }
+        setDisplayValue(0);
         const startTime = performance.now();
 
         const tick = (now: number) => {

@@ -10,6 +10,28 @@ const updateStatusSchema = z.object({
   assignedAmbulanceId: z.string().optional().nullable(),
 });
 
+export async function GET() {
+  try {
+    const ambulances = await prisma.ambulanceService.findMany({
+      orderBy: { vehicleNumber: 'asc' },
+    });
+    const recentRequests = await prisma.emergencyRequest.findMany({
+      take: 10,
+      orderBy: { submittedAt: 'desc' },
+      include: { assignedAmbulance: true },
+    });
+    return NextResponse.json({
+      success: true,
+      availableAmbulances: ambulances.filter((a) => a.status === 'AVAILABLE').length,
+      totalAmbulances: ambulances.length,
+      ambulances,
+      recentRequests,
+    });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || 'Failed to fetch status' }, { status: 500 });
+  }
+}
+
 export async function PATCH(req: NextRequest) {
   const user = await getCurrentUser();
   if (!user || (user.role !== 'EMERGENCY_COORDINATOR' && user.role !== 'ADMIN')) {

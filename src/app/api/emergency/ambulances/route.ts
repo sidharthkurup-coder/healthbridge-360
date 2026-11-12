@@ -10,6 +10,17 @@ const ambulanceStatusSchema = z.object({
   status: z.enum(['AVAILABLE', 'ON_DUTY', 'MAINTENANCE', 'OFFLINE']),
 });
 
+export async function GET() {
+  try {
+    const ambulances = await prisma.ambulanceService.findMany({
+      orderBy: { vehicleNumber: 'asc' },
+    });
+    return NextResponse.json({ success: true, ambulances });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || 'Failed to fetch ambulances' }, { status: 500 });
+  }
+}
+
 export async function PATCH(req: NextRequest) {
   const user = await getCurrentUser();
   if (!user || (user.role !== 'EMERGENCY_COORDINATOR' && user.role !== 'ADMIN')) {
