@@ -1,0 +1,434 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  name           String
+  phone          String
+  role           String    @default("RESIDENT") // Role enum representation
+  passwordHash   String
+  sectionId      Int?      // 1 to 5 for Kantheru sections
+  address        String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relationships
+  appointments          Appointment[]
+  campRegistrations     HealthCampRegistration[]
+  stockTransactions     StockTransaction[]
+  emergencyRequests     EmergencyRequest[]
+  waterSupplyRecords    WaterSupplyRecord[]
+  waterQualityReports   WaterQualityReport[]
+  waterComplaints       WaterComplaint[]
+  sanitationComplaints  SanitationComplaint[]    @relation("ReportedComplaints")
+  assignedComplaints    SanitationComplaint[]    @relation("AssignedComplaints")
+  auditLogs             AuditLog[]
+  notifications         Notification[]
+}
+
+// ==========================================
+// MODULE 1: HEALTHCARE ACCESS
+// ==========================================
+
+model HealthCenter {
+  id               String          @id @default(cuid())
+  name             String
+  type             String          // PHC, CHC, SUB_CENTRE, WELLNESS_CLINIC
+  location         String          // e.g. Kantheru Main Road
+  address          String
+  phone            String
+  emergencyPhone   String
+  operatingHours   String          // e.g. "8:00 AM - 4:00 PM"
+  services         String          // JSON array of available services
+  isActive         Boolean         @default(true)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  doctors          Doctor[]
+  appointments     Appointment[]
+}
+
+model Doctor {
+  id               String          @id @default(cuid())
+  healthCenterId   String
+  healthCenter     HealthCenter    @relation(fields: [healthCenterId], references: [id], onDelete: Cascade)
+  name             String
+  specialization   String          // General Medicine, Pediatrics, Obstetrics, AYUSH, etc.
+  qualification    String          // MBBS, MD, DGO, BAMS
+  regNumber        String          // Medical Council Reg No
+  isAvailable      Boolean         @default(true)
+  experienceYears  Int             @default(5)
+  consultationFee  Int             @default(0) // 0 for government PHC
+  bio              String?
+  createdAt        DateTime        @default(now())
+
+  schedules        DoctorSchedule[]
+  appointments     Appointment[]
+}
+
+model DoctorSchedule {
+  id             String    @id @default(cuid())
+  doctorId       String
+  doctor         Doctor    @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  dayOfWeek      Int       // 0=Sunday, 1=Monday ... 6=Saturday
+  startTime      String    // "09:00"
+  endTime        String    // "13:00"
+  maxPatients    Int       @default(20)
+  isAvailable    Boolean   @default(true)
+}
+
+model Appointment {
+  id               String        @id @default(cuid())
+  residentId       String
+  resident         User          @relation(fields: [residentId], references: [id], onDelete: Cascade)
+  doctorId         String
+  doctor           Doctor        @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  healthCenterId   String
+  healthCenter     HealthCenter  @relation(fields: [healthCenterId], references: [id], onDelete: Cascade)
+  appointmentDate  String        // YYYY-MM-DD
+  timeSlot         String        // "09:00 - 10:00"
+  reason           String
+  priority         String        @default("NORMAL") // NORMAL, URGENT, SENIOR_CITIZEN, MATERNAL
+  status           String        @default("PENDING") // PENDING, APPROVED, REJECTED, RESCHEDULED, COMPLETED, CANCELLED
+  staffNotes       String?
+  rescheduledDate  String?
+  rescheduledSlot  String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+}
+
+model HealthCamp {
+  id               String       @id @default(cuid())
+  title            String
+  description      String
+  location         String       // e.g. Kantheru ZP High School Grounds
+  sectionId        Int          // 1-5
+  campDate         String       // YYYY-MM-DD
+  startTime        String       // "09:00"
+  endTime          String       // "15:00"
+  servicesOffered  String       // JSON string array: Eye checkup, BP/Diabetes, Dental, etc.
+  doctorsAttending String       // Comma separated names
+  maxCapacity      Int          @default(150)
+  status           String       @default("UPCOMING") // UPCOMING, ACTIVE, COMPLETED, CANCELLED
+  createdAt        DateTime     @default(now())
+
+  registrations    HealthCampRegistration[]
+}
+
+model HealthCampRegistration {
+  id           String      @id @default(cuid())
+  campId       String
+  camp         HealthCamp  @relation(fields: [campId], references: [id], onDelete: Cascade)
+  residentId   String
+  resident     User        @relation(fields: [residentId], references: [id], onDelete: Cascade)
+  attendeeName String
+  phone        String
+  age          Int
+  gender       String
+  registeredAt DateTime    @default(now())
+}
+
+// ==========================================
+// MODULE 2: MEDICINE MANAGEMENT
+// ==========================================
+
+model Medicine {
+  id               String             @id @default(cuid())
+  name             String
+  genericName      String
+  category         String             // Antibiotic, Analgesic, Antipyretic, Cardiovascular, Antidiabetic, Gastrointestinal, Respiratory, Dermatology, Vitamins
+  form             String             // Tablet, Syrup, Injection, Ointment, Capsule, Drops
+  strength         String             // 500mg, 10mg/5ml, 100IU, etc.
+  unit             String             // Strips, Bottles, Vials, Tubes
+  minThreshold     Int                @default(50) // Minimum total units before triggering Low-Stock warning
+  isEssential      Boolean            @default(true) // EDL (Essential Drug List)
+  storageConditions String            @default("Store in a cool and dry place")
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  batches          MedicineBatch[]
+  transactions     StockTransaction[]
+}
+
+model MedicineBatch {
+  id               String             @id @default(cuid())
+  medicineId       String
+  medicine         Medicine           @relation(fields: [medicineId], references: [id], onDelete: Cascade)
+  batchNumber      String
+  initialQuantity  Int
+  currentQuantity  Int                // Available units in this batch
+  manufacturingDate String            // YYYY-MM-DD
+  expiryDate       String             // YYYY-MM-DD
+  supplier         String             // e.g. APMSIDC / Central Medical Stores
+  receivedDate     String             // YYYY-MM-DD
+  isQuarantined    Boolean            @default(false)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  transactions     StockTransaction[]
+
+  @@unique([medicineId, batchNumber])
+}
+
+model StockTransaction {
+  id               String         @id @default(cuid())
+  medicineId       String
+  medicine         Medicine       @relation(fields: [medicineId], references: [id], onDelete: Cascade)
+  batchId          String
+  batch            MedicineBatch  @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  type             String         // PURCHASE_RECEIPT, DISPENSED, ADJUSTMENT_ADD, ADJUSTMENT_DEDUCT, DISCARD_EXPIRED
+  quantity         Int            // Positive integer
+  previousQuantity Int
+  newQuantity      Int
+  reason           String         // "Routine Dispensing to Resident", "New stock consignment received", etc.
+  referenceNote    String?
+  performedByUserId String?
+  performedByUser  User?          @relation(fields: [performedByUserId], references: [id], onDelete: SetNull)
+  timestamp        DateTime       @default(now())
+}
+
+// ==========================================
+// MODULE 3: EMERGENCY ASSISTANCE
+// ==========================================
+
+model EmergencyContact {
+  id             String    @id @default(cuid())
+  name           String
+  serviceType    String    // AMBULANCE, HEALTH_HELPLINE, PHC_EMERGENCY, POLICE, FIRE, DISASTER_MANAGEMENT
+  phone          String
+  altPhone       String?
+  operational24x7 Boolean  @default(true)
+  location       String
+  verifiedAt     DateTime  @default(now())
+}
+
+model HospitalFacility {
+  id                   String   @id @default(cuid())
+  name                 String
+  type                 String   // GOVT_GENERAL_HOSPITAL, AREA_HOSPITAL, COMMUNITY_HEALTH_CENTRE, PRIMARY_HEALTH_CENTRE
+  address              String
+  phone                String
+  emergencyDeskPhone   String
+  distanceKm           Float
+  icuBedsAvailable     Int      @default(0)
+  totalIcuBeds         Int      @default(10)
+  oxygenAvailable      Boolean  @default(true)
+  bloodBankAvailable   Boolean  @default(true)
+  ambulanceStationed   Int      @default(1)
+  lastUpdated          DateTime @default(now())
+}
+
+model AmbulanceService {
+  id              String   @id @default(cuid())
+  vehicleNumber   String   @unique
+  driverName      String
+  contactNumber   String
+  serviceType     String   // ADVANCED_LIFE_SUPPORT, BASIC_LIFE_SUPPORT, PATIENT_TRANSPORT
+  baseLocation    String   // Kantheru PHC, Tadikonda CHC, Mangalagiri GH
+  status          String   @default("AVAILABLE") // AVAILABLE, ON_DUTY, MAINTENANCE, OFFLINE
+  lastStatusUpdate DateTime @default(now())
+
+  assignedRequests EmergencyRequest[]
+}
+
+model EmergencyRequest {
+  id                   String            @id @default(cuid())
+  residentId           String?
+  resident             User?             @relation(fields: [residentId], references: [id], onDelete: SetNull)
+  callerName           String
+  callerPhone          String
+  patientCondition     String            // Cardiac arrest, Acute trauma, Severe breathing distress, Maternal emergency, etc.
+  locationDescription  String            // Landmark, street in Kantheru
+  latitude             Float?
+  longitude            Float?
+  locationConsentGiven Boolean           @default(false)
+  status               String            @default("SUBMITTED") // SUBMITTED, ACKNOWLEDGED, CONTACTED, DISPATCHED, RESOLVED, UNAVAILABLE, CANCELLED
+  assignedAmbulanceId  String?
+  assignedAmbulance    AmbulanceService? @relation(fields: [assignedAmbulanceId], references: [id], onDelete: SetNull)
+  responderNotes       String?
+  responseLog          String            // JSON array of { status, timestamp, note }
+  submittedAt          DateTime          @default(now())
+  acknowledgedAt       DateTime?
+  dispatchedAt         DateTime?
+  resolvedAt           DateTime?
+}
+
+// ==========================================
+// MODULE 4: WATER MANAGEMENT
+// ==========================================
+
+model WaterSection {
+  id                      Int      @id // 1, 2, 3, 4, 5
+  name                    String   // "Section 1 - North Kantheru / Old Village", etc.
+  description             String
+  householdsCount         Int
+  tankCapacityLiters      Int
+  pipelineLengthKm        Float
+  pumpOperatorName        String
+  pumpOperatorPhone       String
+
+  schedules               WaterSupplySchedule[]
+  supplyRecords           WaterSupplyRecord[]
+  qualityReports          WaterQualityReport[]
+  complaints              WaterComplaint[]
+}
+
+model WaterSupplySchedule {
+  id               String       @id @default(cuid())
+  sectionId        Int
+  section          WaterSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  dayOfWeek        Int          // 0=Sun .. 6=Sat
+  scheduledStartTime String     // "06:00"
+  scheduledEndTime   String     // "08:30"
+  durationMinutes  Int          // 150
+  targetQuantityKL Float        // Target in KiloLiters (e.g. 80.0 KL)
+  isActive         Boolean      @default(true)
+}
+
+model WaterSupplyRecord {
+  id                    String       @id @default(cuid())
+  sectionId             Int
+  section               WaterSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  supplyDate            String       // YYYY-MM-DD
+  actualStartTime       String       // "06:05"
+  actualEndTime         String       // "08:35"
+  actualDurationMinutes Int
+  quantitySuppliedKL    Float        // Supplied in KiloLiters
+  flowRateLpm           Float?       // Liters per minute
+  pressureBar           Float?       // Bar
+  interruptionOccurred  Boolean      @default(false)
+  interruptionReason    String?      // Power outage, motor trip, line breach
+  status                String       @default("COMPLETED") // COMPLETED, PARTIAL, CANCELLED
+  notes                 String?
+  recordedByUserId      String?
+  recordedByUser        User?        @relation(fields: [recordedByUserId], references: [id], onDelete: SetNull)
+  createdAt             DateTime     @default(now())
+}
+
+model WaterQualityReport {
+  id                      String       @id @default(cuid())
+  sectionId               Int
+  section                 WaterSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  testDate                String       // YYYY-MM-DD
+  sampleLocation          String       // e.g. "Anganwadi Point, Section 2"
+  testedBy                String       // Water Testing Laboratory, Guntur
+  labName                 String
+  labReportFileUrl        String?      // Reference to laboratory certification file
+  verificationStatus      String       @default("PENDING_VERIFICATION") // PENDING_VERIFICATION, VERIFIED, REJECTED
+  
+  // Specific required chemical & biological parameters
+  sodiumMgL               Float?       // Sodium in mg/L (acceptable limit ~200 mg/L)
+  fluorideMgL             Float?       // Fluoride in mg/L (acceptable limit 1.0 - 1.5 mg/L)
+  phValue                 Float?       // pH (acceptable limit 6.5 - 8.5)
+  tdsPpm                  Float?       // Total Dissolved Solids in ppm/mg/L (acceptable limit < 500 ppm)
+  microbialColiformColonies Int?       // Total Coliform per 100ml (0 CFU/100ml required for potable)
+  
+  notes                   String?
+  verifiedByUserId        String?
+  verifiedByUser          User?        @relation(fields: [verifiedByUserId], references: [id], onDelete: SetNull)
+  verifiedAt              DateTime?
+  createdAt               DateTime     @default(now())
+}
+
+model WaterComplaint {
+  id                 String       @id @default(cuid())
+  residentId         String
+  resident           User         @relation(fields: [residentId], references: [id], onDelete: Cascade)
+  sectionId          Int
+  section            WaterSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  issueType          String       // SUPPLY_INTERRUPTION, LOW_PRESSURE, CONTAMINATED_WATER, ODOR_TASTE, PIPELINE_LEAKAGE
+  description        String
+  affectedHouseholds Int          @default(1)
+  status             String       @default("SUBMITTED") // SUBMITTED, IN_REVIEW, IN_PROGRESS, RESOLVED
+  adminNotes         String?
+  createdAt          DateTime     @default(now())
+  resolvedAt         DateTime?
+}
+
+// ==========================================
+// MODULE 5: SANITATION MANAGEMENT
+// ==========================================
+
+model SanitationComplaint {
+  id                    String        @id @default(cuid())
+  residentId            String
+  resident              User          @relation("ReportedComplaints", fields: [residentId], references: [id], onDelete: Cascade)
+  sectionId             Int           // Section 1-5
+  category              String        // SEWAGE_OVERFLOW, BLOCKED_DRAINAGE, STAGNANT_WASTEWATER, IMPROPER_WASTE_DISPOSAL, UNHYGIENIC_PUBLIC_AREA, SUSPECTED_WATER_CONTAMINATION
+  description           String
+  location              String        // Specific street or landmark in Kantheru
+  photoUrl              String?       // Supporting photograph evidence
+  affectedHouseholds    Int           @default(1)
+  
+  // Deterministic, Explainable Priority Algorithm outputs
+  priorityScore         Float         @default(50.0) // 0 - 100 calculated score
+  calculatedPriority    String        @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  priorityReason        String        // Detailed human-readable justification of score
+  
+  status                String        @default("SUBMITTED") // SUBMITTED, UNDER_REVIEW, ASSIGNED, IN_PROGRESS, RESOLVED
+  assignedToUserId      String?
+  assignedToUser        User?         @relation("AssignedComplaints", fields: [assignedToUserId], references: [id], onDelete: SetNull)
+  assignedDepartment    String?       // "Panchayat Sanitation Wing", "Drainage Cleansing Team", etc.
+  
+  resolutionEvidenceUrl String?       // Post-cleansing inspection photo
+  resolutionNotes       String?       // Details of work done
+  reopenCount           Int           @default(0)
+  reopenReason          String?
+  
+  submittedAt           DateTime      @default(now())
+  acknowledgedAt        DateTime?
+  assignedAt            DateTime?
+  resolvedAt            DateTime?
+  reopenedAt            DateTime?
+
+  statusLogs            StatusHistory[]
+}
+
+model StatusHistory {
+  id                    String               @id @default(cuid())
+  complaintId           String
+  complaint             SanitationComplaint  @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  fromStatus            String
+  toStatus              String
+  changedByUserId       String?
+  changedByName         String?
+  comment               String?
+  timestamp             DateTime             @default(now())
+}
+
+// ==========================================
+// SHARED AUDIT & NOTIFICATIONS
+// ==========================================
+
+model Notification {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title          String
+  message        String
+  category       String    // HEALTHCARE, MEDICINE, EMERGENCY, WATER, SANITATION, SYSTEM
+  link           String?
+  isRead         Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+}
+
+model AuditLog {
+  id             String    @id @default(cuid())
+  userId         String?
+  user           User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action         String    // e.g. "MEDICINE_STOCK_DEDUCTED", "WATER_QUALITY_VERIFIED"
+  entityType     String
+  entityId       String
+  details        String    // JSON snapshot or notes
+  ipAddress      String?
+  timestamp      DateTime  @default(now())
+}
