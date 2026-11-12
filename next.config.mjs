@@ -9,6 +9,10 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ['lucide-react'],
+    outputFileTracingIncludes: {
+      '/api/**': ['./prisma/dev.db'],
+      '/**': ['./prisma/dev.db'],
+    },
   },
 };
 

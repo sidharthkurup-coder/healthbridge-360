@@ -12,6 +12,8 @@ async function main() {
   console.log('Seeding HEALTHBRIDGE 360 database for Kantheru, Andhra Pradesh...');
 
   // 1. Clean previous data
+  await prisma.airPollutionIncident.deleteMany();
+  await prisma.airQualityReading.deleteMany();
   await prisma.auditLog.deleteMany();
   await prisma.notification.deleteMany();
   await prisma.statusHistory.deleteMany();
