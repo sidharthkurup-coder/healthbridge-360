@@ -18,6 +18,7 @@ import {
   ChevronRight,
   Activity,
   Sparkles,
+  Wind,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
@@ -560,6 +561,37 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
             </Card>
           </ScrollReveal>
         </div>
+
+        {/* Clean Air & CPCB AQI Action Hub Feature Extension Strip */}
+        <ScrollReveal direction="up" delayMs={140} className="mt-6">
+          <div className="rounded-2xl bg-gradient-to-r from-[#0F2744] via-[#13355E] to-[#0D5257] text-white p-5 sm:p-6 shadow-md border border-teal-500/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-teal-400/15 border border-teal-300/25 flex items-center justify-center text-teal-300 shrink-0">
+                <Wind className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-2 mb-1">
+                  <Badge variant="teal" size="sm">CPCB NAQI LIVE</Badge>
+                  <span className="text-xs font-bold uppercase tracking-wider text-teal-200">
+                    Kantheru Air Pollution Mitigation Extension
+                  </span>
+                </div>
+                <h3 className="text-lg font-extrabold text-white font-display">
+                  {t('page.airQuality.title')}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-200 mt-0.5 max-w-2xl">
+                  {t('page.airQuality.sub')}
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/air-quality"
+              className="btn-sheen shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-teal-400 hover:bg-teal-300 text-slate-950 text-xs font-extrabold transition-colors"
+            >
+              {t('nav.airQuality')} Hub <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </ScrollReveal>
       </section>
 
       {/* 4. TODAY'S 5-SECTION WATER STATUS SNAPSHOT */}

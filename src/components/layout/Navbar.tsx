@@ -20,6 +20,7 @@ import {
   Bell,
   CheckCheck,
   Languages,
+  Wind,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { Badge } from '../ui/Badge';
@@ -107,6 +108,7 @@ export const Navbar = () => {
     { name: t('nav.emergency'), href: '/emergency', icon: PhoneCall, highlight: true },
     { name: t('nav.water'), href: '/water', icon: Droplets },
     { name: t('nav.sanitation'), href: '/sanitation', icon: Recycle },
+    { name: t('nav.airQuality'), href: '/air-quality', icon: Wind },
     { name: t('nav.intelligence'), href: '/intelligence', icon: BarChart3 },
   ];
 

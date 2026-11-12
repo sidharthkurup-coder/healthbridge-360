@@ -85,6 +85,11 @@ export const Footer = () => {
                   6. {t('mod6.title')}
                 </Link>
               </li>
+              <li>
+                <Link href="/air-quality" className="hover:text-teal-300 transition-colors">
+                  7. {t('nav.airQuality')}
+                </Link>
+              </li>
             </ul>
           </div>
 

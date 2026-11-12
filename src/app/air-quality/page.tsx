@@ -1,0 +1,1144 @@
+'use client';
+
+import React, { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
+import {
+  Wind,
+  Flame,
+  Droplets,
+  ShieldAlert,
+  Calculator,
+  CheckCircle,
+  Plus,
+  Activity,
+  MapPin,
+  AlertTriangle,
+  Truck,
+  Sparkles,
+  RefreshCw,
+} from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { Card, CardHeader, CardContent } from '@/components/ui/Card';
+import { Input, Select } from '@/components/ui/Input';
+import { AnimatedCounter, ScrollReveal } from '@/components/ui/Motion';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import {
+  calculateCpcbAqi,
+  prioritizeAirIncident,
+  type AqiCategory,
+} from '@/lib/algorithms/air-quality';
+
+interface ReadingItem {
+  id: string;
+  sectionId: number;
+  monitoringPoint: string;
+  recordedDate: string;
+  pm25UgM3: number | null;
+  pm10UgM3: number | null;
+  no2UgM3: number | null;
+  so2UgM3: number | null;
+  coMgM3: number | null;
+  calculatedAqi: number | null;
+  aqiCategory: AqiCategory;
+  dominantPollutant: string | null;
+  notes: string | null;
+  recordedByUser?: { name: string; role: string };
+}
+
+interface IncidentItem {
+  id: string;
+  sectionId: number;
+  category: string;
+  location: string;
+  description: string;
+  affectedHouseholds: number;
+  isNearSensitiveFacility: boolean;
+  severityScore: number;
+  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  recommendedUnit: string;
+  status: 'REPORTED' | 'WATER_SPRINKLER_DISPATCHED' | 'ENFORCEMENT_ACTION' | 'RESOLVED';
+  actionNotes: string | null;
+  createdAt: string;
+  reporter?: { name: string; phone: string | null };
+}
+
+interface SectionSummary {
+  sectionId: number;
+  sectionName: string;
+  latestReading: ReadingItem | null;
+  assessment: ReturnType<typeof calculateCpcbAqi>;
+  activeIncidentsCount: number;
+}
+
+const AQI_BADGE_MAP: Record<AqiCategory, 'emerald' | 'teal' | 'amber' | 'rose' | 'purple' | 'slate'> = {
+  GOOD: 'emerald',
+  SATISFACTORY: 'teal',
+  MODERATE: 'amber',
+  POOR: 'rose',
+  VERY_POOR: 'purple',
+  SEVERE: 'rose',
+  INCOMPLETE: 'slate',
+};
+
+const AQI_BAR_COLOR: Record<AqiCategory, string> = {
+  GOOD: 'bg-emerald-500',
+  SATISFACTORY: 'bg-teal-500',
+  MODERATE: 'bg-amber-500',
+  POOR: 'bg-orange-500',
+  VERY_POOR: 'bg-rose-600',
+  SEVERE: 'bg-purple-700',
+  INCOMPLETE: 'bg-slate-400',
+};
+
+const PRIORITY_BADGE_MAP: Record<string, 'slate' | 'sky' | 'amber' | 'rose'> = {
+  LOW: 'slate',
+  MEDIUM: 'sky',
+  HIGH: 'amber',
+  CRITICAL: 'rose',
+};
+
+const STATUS_BADGE_MAP: Record<string, 'amber' | 'sky' | 'purple' | 'emerald'> = {
+  REPORTED: 'amber',
+  WATER_SPRINKLER_DISPATCHED: 'sky',
+  ENFORCEMENT_ACTION: 'purple',
+  RESOLVED: 'emerald',
+};
+
+const CATEGORY_OPTIONS = [
+  { value: 'GARBAGE_PLASTIC_BURNING', label: 'Garbage / Plastic Burning' },
+  { value: 'STUBBLE_CROP_BURNING', label: 'Agricultural Stubble Burning' },
+  { value: 'INDUSTRIAL_BRICK_KILN_SMOKE', label: 'Brick Kiln / Industrial Smoke' },
+  { value: 'CONSTRUCTION_ROAD_DUST', label: 'Construction & Unpaved Road Dust' },
+  { value: 'VEHICULAR_CONGESTION', label: 'Heavy Lorry / NH-16 Exhaust' },
+];
+
+const SECTION_OPTIONS = [
+  { value: 1, label: 'Section 1 — Old Village & Market' },
+  { value: 2, label: 'Section 2 — Ramalayam Temple Ward' },
+  { value: 3, label: 'Section 3 — ZP High School & SC Colony' },
+  { value: 4, label: 'Section 4 — NH-16 Bypass & Kiln Corridor' },
+  { value: 5, label: 'Section 5 — Kantheru PHC & GP Campus' },
+];
+
+export default function AirQualityPage() {
+  const { t } = useLanguage();
+  const [activeTab, setActiveTab] = useState<'overview' | 'calculator' | 'incidents'>('overview');
+  const [sectionSummaries, setSectionSummaries] = useState<SectionSummary[]>([]);
+  const [readings, setReadings] = useState<ReadingItem[]>([]);
+  const [incidents, setIncidents] = useState<IncidentItem[]>([]);
+  const [villageAverageAqi, setVillageAverageAqi] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<{ id: string; name: string; role: string } | null>(null);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Interactive CPCB Calculator & Officer Reading Logger state
+  const [calcPm25, setCalcPm25] = useState('56');
+  const [calcPm10, setCalcPm10] = useState('138');
+  const [calcNo2, setCalcNo2] = useState('32');
+  const [calcSo2, setCalcSo2] = useState('14');
+  const [calcCo, setCalcCo] = useState('1.2');
+  const [logSectionId, setLogSectionId] = useState('3');
+  const [logPoint, setLogPoint] = useState('ZP High School & SC Colony Gate');
+  const [logDate, setLogDate] = useState('2026-11-13');
+  const [logNotes, setLogNotes] = useState('');
+  const [submittingReading, setSubmittingReading] = useState(false);
+
+  // Incident report form state
+  const [incSectionId, setIncSectionId] = useState('4');
+  const [incCategory, setIncCategory] = useState('CONSTRUCTION_ROAD_DUST');
+  const [incLocation, setIncLocation] = useState('');
+  const [incDescription, setIncDescription] = useState('');
+  const [incHouseholds, setIncHouseholds] = useState('12');
+  const [incNearSensitive, setIncNearSensitive] = useState(false);
+  const [submittingIncident, setSubmittingIncident] = useState(false);
+  const [actionNotesMap, setActionNotesMap] = useState<Record<string, string>>({});
+  const [updatingIncidentId, setUpdatingIncidentId] = useState<string | null>(null);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/air-quality');
+      if (res.ok) {
+        const data = await res.json();
+        setSectionSummaries(data.sectionSummaries || []);
+        setReadings(data.readings || []);
+        setIncidents(data.incidents || []);
+        setVillageAverageAqi(data.villageAverageAqi ?? null);
+      }
+    } catch {
+      // handled silently in UI empty state
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+    fetch('/api/auth/me')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.user) setCurrentUser(d.user);
+      })
+      .catch(() => {});
+  }, []);
+
+  const parseOptNum = (val: string): number | null => {
+    const trimmed = val.trim();
+    if (!trimmed) return null;
+    const n = Number(trimmed);
+    return Number.isFinite(n) && n >= 0 ? n : null;
+  };
+
+  const liveCalc = useMemo(
+    () =>
+      calculateCpcbAqi({
+        pm25UgM3: parseOptNum(calcPm25),
+        pm10UgM3: parseOptNum(calcPm10),
+        no2UgM3: parseOptNum(calcNo2),
+        so2UgM3: parseOptNum(calcSo2),
+        coMgM3: parseOptNum(calcCo),
+      }),
+    [calcPm25, calcPm10, calcNo2, calcSo2, calcCo]
+  );
+
+  const livePriorityPreview = useMemo(
+    () =>
+      prioritizeAirIncident({
+        category: incCategory,
+        affectedHouseholds: Math.max(1, Number(incHouseholds) || 1),
+        isNearSensitiveFacility: incNearSensitive,
+      }),
+    [incCategory, incHouseholds, incNearSensitive]
+  );
+
+  const isOfficer = currentUser?.role === 'WATER_SANITATION_OFFICER' || currentUser?.role === 'ADMIN';
+  const activeIncidentsCount = incidents.filter((i) => i.status !== 'RESOLVED').length;
+  const highestAqiSection = sectionSummaries.reduce<SectionSummary | null>((best, curr) => {
+    if (curr.assessment.aqi === null) return best;
+    if (!best || (best.assessment.aqi ?? -1) < curr.assessment.aqi) return curr;
+    return best;
+  }, null);
+
+  const applyPreset = (preset: 'clean' | 'dust' | 'kiln') => {
+    if (preset === 'clean') {
+      setCalcPm25('22');
+      setCalcPm10('44');
+      setCalcNo2('15');
+      setCalcSo2('7');
+      setCalcCo('0.4');
+    } else if (preset === 'dust') {
+      setCalcPm25('82');
+      setCalcPm10('245');
+      setCalcNo2('52');
+      setCalcSo2('18');
+      setCalcCo('1.8');
+    } else {
+      setCalcPm25('138');
+      setCalcPm10('320');
+      setCalcNo2('96');
+      setCalcSo2('44');
+      setCalcCo('3.1');
+    }
+  };
+
+  const handleSaveReading = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFeedback(null);
+    setSubmittingReading(true);
+    try {
+      const res = await fetch('/api/air-quality', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'READING',
+          sectionId: Number(logSectionId),
+          monitoringPoint: logPoint,
+          recordedDate: logDate,
+          pm25UgM3: parseOptNum(calcPm25),
+          pm10UgM3: parseOptNum(calcPm10),
+          no2UgM3: parseOptNum(calcNo2),
+          so2UgM3: parseOptNum(calcSo2),
+          coMgM3: parseOptNum(calcCo),
+          notes: logNotes.trim() || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setFeedback({ type: 'error', text: data.error || 'Failed to save sensor reading.' });
+      } else {
+        setFeedback({
+          type: 'success',
+          text: `Saved Section ${logSectionId} air sample (CPCB AQI ${data.assessment?.aqi ?? 'Incomplete'} - ${data.assessment?.category}).`,
+        });
+        setLogNotes('');
+        await loadData();
+        setActiveTab('overview');
+      }
+    } catch {
+      setFeedback({ type: 'error', text: 'Network error saving air reading.' });
+    } finally {
+      setSubmittingReading(false);
+    }
+  };
+
+  const handleReportIncident = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFeedback(null);
+    setSubmittingIncident(true);
+    try {
+      const res = await fetch('/api/air-quality', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'INCIDENT',
+          sectionId: Number(incSectionId),
+          category: incCategory,
+          location: incLocation,
+          description: incDescription,
+          affectedHouseholds: Math.max(1, Number(incHouseholds) || 1),
+          isNearSensitiveFacility: incNearSensitive,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setFeedback({ type: 'error', text: data.error || 'Failed to submit air pollution report.' });
+      } else {
+        setFeedback({
+          type: 'success',
+          text: `Reported ${data.incident?.priority} priority pollution alert. Dispatched notification to Sanitation Officers (${data.incident?.recommendedUnit}).`,
+        });
+        setIncLocation('');
+        setIncDescription('');
+        await loadData();
+      }
+    } catch {
+      setFeedback({ type: 'error', text: 'Network error submitting pollution report.' });
+    } finally {
+      setSubmittingIncident(false);
+    }
+  };
+
+  const handleUpdateIncidentStatus = async (
+    id: string,
+    status: 'WATER_SPRINKLER_DISPATCHED' | 'ENFORCEMENT_ACTION' | 'RESOLVED'
+  ) => {
+    setFeedback(null);
+    setUpdatingIncidentId(id);
+    try {
+      const res = await fetch('/api/air-quality', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id,
+          status,
+          actionNotes: actionNotesMap[id] || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setFeedback({ type: 'error', text: data.error || 'Failed to update mitigation status.' });
+      } else {
+        setFeedback({ type: 'success', text: `Incident updated to ${status.replace(/_/g, ' ')}.` });
+        await loadData();
+      }
+    } catch {
+      setFeedback({ type: 'error', text: 'Network error updating incident.' });
+    } finally {
+      setUpdatingIncidentId(null);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 pb-16">
+      {/* Header Banner */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#0F2744] via-[#13355E] to-[#0D5257] text-white border-b border-slate-800">
+        <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-teal-400/10 blur-3xl animate-orb-drift pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-10">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-teal-200 text-xs font-semibold mb-3">
+                <Wind className="w-3.5 h-3.5" />
+                <span>CPCB India NAQI • Clean Air Action Hub</span>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                {t('page.airQuality.title')}
+              </h1>
+              <p className="mt-2 text-slate-200 max-w-2xl text-sm sm:text-base">
+                {t('page.airQuality.sub')}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Button
+                variant="secondary"
+                onClick={loadData}
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
+                <RefreshCw className="w-4 h-4 mr-1.5" />
+                Refresh Sensors
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => setActiveTab('incidents')}
+                className="bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold btn-sheen"
+              >
+                <Flame className="w-4 h-4 mr-1.5" />
+                Report Smoke / Dust
+              </Button>
+            </div>
+          </div>
+
+          {/* KPI Strip */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+            <div className="rounded-xl bg-white/10 backdrop-blur-md border border-white/15 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wider text-teal-200">
+                Kantheru Mean AQI
+              </p>
+              <div className="mt-1 flex items-baseline gap-2">
+                <span className="text-3xl font-black text-white">
+                  {villageAverageAqi !== null ? <AnimatedCounter value={villageAverageAqi} /> : '—'}
+                </span>
+                <span className="text-xs text-slate-300">CPCB NAQI</span>
+              </div>
+            </div>
+
+            <div className="rounded-xl bg-white/10 backdrop-blur-md border border-white/15 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wider text-teal-200">
+                Monitored Zones
+              </p>
+              <div className="mt-1 flex items-baseline gap-2">
+                <span className="text-3xl font-black text-white">
+                  <AnimatedCounter value={sectionSummaries.filter((s) => s.latestReading).length} />
+                </span>
+                <span className="text-xs text-slate-300">/ 5 Village Sections</span>
+              </div>
+            </div>
+
+            <div className="rounded-xl bg-white/10 backdrop-blur-md border border-white/15 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wider text-amber-200">
+                Active Dust & Smoke Alerts
+              </p>
+              <div className="mt-1 flex items-baseline gap-2">
+                <span className="text-3xl font-black text-amber-300">
+                  <AnimatedCounter value={activeIncidentsCount} />
+                </span>
+                <span className="text-xs text-slate-300">Open Mitigation Tickets</span>
+              </div>
+            </div>
+
+            <div className="rounded-xl bg-white/10 backdrop-blur-md border border-white/15 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wider text-rose-200">
+                Hotspot Corridor
+              </p>
+              <p className="mt-1 text-base font-bold text-white truncate">
+                {highestAqiSection
+                  ? `Section ${highestAqiSection.sectionId} (AQI ${highestAqiSection.assessment.aqi})`
+                  : 'No active hotspot'}
+              </p>
+              <p className="text-xs text-slate-300 truncate">
+                {highestAqiSection?.latestReading?.monitoringPoint || 'Awaiting readings'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        {feedback && (
+          <div
+            className={`mb-6 rounded-xl px-4 py-3 border flex items-center justify-between gap-3 ${
+              feedback.type === 'success'
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                : 'bg-rose-50 border-rose-200 text-rose-900'
+            }`}
+          >
+            <div className="flex items-center gap-2 text-sm font-medium">
+              {feedback.type === 'success' ? (
+                <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+              ) : (
+                <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+              )}
+              <span>{feedback.text}</span>
+            </div>
+            <button
+              onClick={() => setFeedback(null)}
+              className="text-xs font-bold uppercase tracking-wider opacity-70 hover:opacity-100"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {/* Navigation Tabs */}
+        <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-4 mb-6">
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+              activeTab === 'overview'
+                ? 'bg-[#0F2744] text-white shadow-sm'
+                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
+            }`}
+          >
+            <Activity className="w-4 h-4" />
+            5-Section Live AQI & Mitigation Hub
+          </button>
+
+          <button
+            onClick={() => setActiveTab('calculator')}
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+              activeTab === 'calculator'
+                ? 'bg-[#0F2744] text-white shadow-sm'
+                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
+            }`}
+          >
+            <Calculator className="w-4 h-4" />
+            CPCB AQI Calculator & Sensor Logger
+          </button>
+
+          <button
+            onClick={() => setActiveTab('incidents')}
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+              activeTab === 'incidents'
+                ? 'bg-[#0F2744] text-white shadow-sm'
+                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
+            }`}
+          >
+            <Truck className="w-4 h-4" />
+            Pollution Source Reporting & Sprinkler Queue
+            {activeIncidentsCount > 0 && (
+              <span className="ml-1 px-1.5 py-0.5 text-[11px] rounded-full bg-rose-500 text-white">
+                {activeIncidentsCount}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* TAB 1: OVERVIEW */}
+        {activeTab === 'overview' && (
+          <div className="space-y-8">
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <div key={n} className="h-56 rounded-xl bg-white border border-slate-200 animate-pulse p-5" />
+                ))}
+              </div>
+            ) : (
+              <>
+                {/* 5-Section Cards */}
+                <ScrollReveal>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {sectionSummaries.map((sec) => {
+                      const cat = sec.assessment.category;
+                      const latest = sec.latestReading;
+                      return (
+                        <Card key={sec.sectionId} className="overflow-hidden hover:shadow-md transition-shadow">
+                          <CardHeader
+                            className="pb-3"
+                            title={
+                              <div>
+                                <p className="text-xs font-bold uppercase tracking-wider text-teal-700">
+                                  Section {sec.sectionId}
+                                </p>
+                                <span className="text-base font-bold text-slate-900 mt-0.5 block">
+                                  {sec.sectionName}
+                                </span>
+                              </div>
+                            }
+                            subtitle={
+                              <span className="text-xs text-slate-500 flex items-center gap-1 mt-1">
+                                <MapPin className="w-3 h-3 shrink-0" />
+                                {latest?.monitoringPoint || 'No sensor station assigned'}
+                              </span>
+                            }
+                            action={<Badge variant={AQI_BADGE_MAP[cat]}>{cat.replace('_', ' ')}</Badge>}
+                          />
+
+                          <CardContent className="pt-4 space-y-4">
+                            <div className="flex items-end justify-between">
+                              <div>
+                                <span className="text-xs font-medium text-slate-500 block">
+                                  CPCB NAQI Score
+                                </span>
+                                <span className="text-3xl font-black text-[#0F2744]">
+                                  {sec.assessment.aqi ?? 'Incomplete'}
+                                </span>
+                              </div>
+                              <div className="text-right">
+                                <span className="text-xs font-medium text-slate-500 block">
+                                  Dominant Pollutant
+                                </span>
+                                <span className="text-sm font-bold text-slate-800">
+                                  {sec.assessment.dominantPollutant || 'N/A'}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Individual parameters - strictly non-inferential */}
+                            <div className="grid grid-cols-5 gap-1.5 text-center bg-slate-50 rounded-lg p-2 border border-slate-100">
+                              <div>
+                                <span className="block text-[10px] font-semibold text-slate-500">PM2.5</span>
+                                <span className="text-xs font-bold text-slate-800">
+                                  {latest?.pm25UgM3 ?? '—'}
+                                </span>
+                              </div>
+                              <div>
+                                <span className="block text-[10px] font-semibold text-slate-500">PM10</span>
+                                <span className="text-xs font-bold text-slate-800">
+                                  {latest?.pm10UgM3 ?? '—'}
+                                </span>
+                              </div>
+                              <div>
+                                <span className="block text-[10px] font-semibold text-slate-500">NO2</span>
+                                <span className="text-xs font-bold text-slate-800">
+                                  {latest?.no2UgM3 ?? '—'}
+                                </span>
+                              </div>
+                              <div>
+                                <span className="block text-[10px] font-semibold text-slate-500">SO2</span>
+                                <span className="text-xs font-bold text-slate-800">
+                                  {latest?.so2UgM3 ?? '—'}
+                                </span>
+                              </div>
+                              <div>
+                                <span className="block text-[10px] font-semibold text-slate-500">CO</span>
+                                <span className="text-xs font-bold text-slate-800">
+                                  {latest?.coMgM3 ?? '—'}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="rounded-lg bg-teal-50/70 border border-teal-100 p-2.5 text-xs text-slate-700">
+                              <span className="font-bold text-teal-900">Panchayat Action: </span>
+                              {sec.assessment.panchayatAction}
+                            </div>
+
+                            <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
+                              <span>Recorded: {latest?.recordedDate || 'N/A'}</span>
+                              <span>
+                                Open alerts:{' '}
+                                <strong className={sec.activeIncidentsCount > 0 ? 'text-rose-600' : 'text-slate-700'}>
+                                  {sec.activeIncidentsCount}
+                                </strong>
+                              </span>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </ScrollReveal>
+
+                {/* Comparative AQI Bar Chart & Panchayat Mitigation Playbook */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <Card className="lg:col-span-2">
+                    <CardHeader
+                      title="5-Section Comparative CPCB AQI Profile"
+                      subtitle="Calculated strictly from measured pollutant concentrations (0–500 CPCB NAQI scale). Unmeasured parameters are never inferred."
+                    />
+                    <CardContent className="space-y-4">
+                      {sectionSummaries.map((sec) => {
+                        const aqiVal = sec.assessment.aqi ?? 0;
+                        const pct = Math.min(100, Math.max(4, Math.round((aqiVal / 350) * 100)));
+                        const cat = sec.assessment.category;
+                        return (
+                          <div key={sec.sectionId} className="space-y-1.5">
+                            <div className="flex items-center justify-between text-xs font-semibold">
+                              <span className="text-slate-800">
+                                Sec {sec.sectionId}: {sec.latestReading?.monitoringPoint || sec.sectionName}
+                              </span>
+                              <span className="text-slate-900 font-bold">
+                                {sec.assessment.aqi !== null ? `AQI ${sec.assessment.aqi} (${cat})` : 'INCOMPLETE'}
+                              </span>
+                            </div>
+                            <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all duration-700 ${AQI_BAR_COLOR[cat]}`}
+                                style={{ width: sec.assessment.aqi !== null ? `${pct}%` : '4%' }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader
+                      title={
+                        <span className="flex items-center gap-2">
+                          <Sparkles className="w-5 h-5 text-teal-600" />
+                          Kantheru Clean Air Playbook
+                        </span>
+                      }
+                    />
+                    <CardContent className="space-y-3 text-sm text-slate-700">
+                      <div className="p-3 rounded-lg bg-sky-50 border border-sky-100">
+                        <p className="font-bold text-sky-900 flex items-center gap-1.5">
+                          <Droplets className="w-4 h-4 text-sky-600" />
+                          1. Targeted Water-Mist Suppression
+                        </p>
+                        <p className="text-xs mt-1 text-slate-600">
+                          When PM10 spikes above 100 µg/m³ on NH-16 service lanes or gravel roads, dispatch the 5,000L treated greywater tanker for dust wetting.
+                        </p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-amber-50 border border-amber-100">
+                        <p className="font-bold text-amber-900 flex items-center gap-1.5">
+                          <Flame className="w-4 h-4 text-amber-600" />
+                          2. Zero Open-Burning Patrol
+                        </p>
+                        <p className="text-xs mt-1 text-slate-600">
+                          Any plastic or dry waste fire within 200m of ZP High School, Anganwadis, or Kantheru PHC triggers CRITICAL dispatch priority.
+                        </p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-100">
+                        <p className="font-bold text-emerald-900 flex items-center gap-1.5">
+                          <ShieldAlert className="w-4 h-4 text-emerald-600" />
+                          3. School & PHC Exposure Safeguard
+                        </p>
+                        <p className="text-xs mt-1 text-slate-600">
+                          Citizens with respiratory sensitivity are advised to avoid outdoor exertion when CPCB AQI reaches POOR (&gt;200).
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* TAB 2: CALCULATOR & OFFICER SENSOR LOGGER */}
+        {activeTab === 'calculator' && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <Card className="lg:col-span-7">
+              <CardHeader
+                title="CPCB India NAQI Sub-Index Calculator"
+                subtitle="Enter any measured pollutant concentrations. Leave unmeasured fields blank — missing parameters are never estimated."
+                action={
+                  <div className="flex flex-wrap gap-1.5">
+                    <Button size="sm" variant="outline" onClick={() => applyPreset('clean')}>
+                      Clean Morning
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => applyPreset('dust')}>
+                      Road Dust
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => applyPreset('kiln')}>
+                      Heavy Smoke
+                    </Button>
+                  </div>
+                }
+              />
+
+              <CardContent className="space-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <Input
+                    label="PM2.5 (µg/m³)"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    value={calcPm25}
+                    onChange={(e) => setCalcPm25(e.target.value)}
+                    placeholder="e.g. 56"
+                  />
+                  <Input
+                    label="PM10 (µg/m³)"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    value={calcPm10}
+                    onChange={(e) => setCalcPm10(e.target.value)}
+                    placeholder="e.g. 138"
+                  />
+                  <Input
+                    label="NO2 (µg/m³)"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    value={calcNo2}
+                    onChange={(e) => setCalcNo2(e.target.value)}
+                    placeholder="e.g. 32"
+                  />
+                  <Input
+                    label="SO2 (µg/m³)"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    value={calcSo2}
+                    onChange={(e) => setCalcSo2(e.target.value)}
+                    placeholder="e.g. 14"
+                  />
+                  <Input
+                    label="CO (mg/m³)"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    value={calcCo}
+                    onChange={(e) => setCalcCo(e.target.value)}
+                    placeholder="e.g. 1.2"
+                  />
+                </div>
+
+                {/* Live Sub-Index Result */}
+                <div className="rounded-xl bg-slate-900 text-white p-5 space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                      <span className="text-xs uppercase tracking-wider text-teal-300 font-semibold">
+                        Computed Overall AQI
+                      </span>
+                      <div className="text-4xl font-black mt-0.5">
+                        {liveCalc.aqi !== null ? liveCalc.aqi : 'INCOMPLETE DATA'}
+                      </div>
+                    </div>
+                    <div className="text-right space-y-1">
+                      <Badge variant={AQI_BADGE_MAP[liveCalc.category]}>
+                        {liveCalc.category.replace('_', ' ')}
+                      </Badge>
+                      <p className="text-xs text-slate-300">
+                        Dominant: <strong>{liveCalc.dominantPollutant || 'None'}</strong> ({liveCalc.measuredParametersCount} metrics measured)
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-2 border-t border-white/10">
+                    {liveCalc.subIndices.map((sub) => (
+                      <div key={sub.parameter} className="rounded-lg bg-white/10 p-2 text-center">
+                        <span className="block text-[11px] text-slate-300 font-semibold">{sub.parameter}</span>
+                        <span className="block text-sm font-bold text-white">
+                          {sub.subIndex !== null ? `SI ${sub.subIndex}` : 'Unmeasured'}
+                        </span>
+                        <span className="block text-[10px] text-teal-200">
+                          {sub.value !== null ? `${sub.value} ${sub.unit}` : '—'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="text-xs space-y-1.5 text-slate-200 pt-1">
+                    <p>
+                      <strong className="text-teal-300">Citizen Advisory:</strong> {liveCalc.citizenAdvisory}
+                    </p>
+                    <p>
+                      <strong className="text-amber-300">Recommended Panchayat Action:</strong>{' '}
+                      {liveCalc.panchayatAction}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Officer Sensor Logger */}
+            <Card className="lg:col-span-5">
+              <CardHeader
+                title="Log Field Reading to Kantheru DB"
+                subtitle="Uses the pollutant measurements on the left to publish an official section station record."
+              />
+              <CardContent>
+                {!isOfficer ? (
+                  <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-900 space-y-3">
+                    <p className="font-semibold">
+                      Sanitation Officer or Admin Sign-In Required
+                    </p>
+                    <p className="text-xs text-amber-800">
+                      Anyone can use the CPCB AQI calculator on the left. Publishing official monitoring logs to the 5-section Panchayat database is restricted to Sanitation Officers & Admins.
+                    </p>
+                    {!currentUser && (
+                      <Link href="/login">
+                        <Button size="sm" variant="primary" className="mt-2">
+                          Sign In to Officer Account
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
+                ) : (
+                  <form onSubmit={handleSaveReading} className="space-y-4">
+                    <Select
+                      label="Kantheru Section"
+                      value={logSectionId}
+                      onChange={(e) => setLogSectionId(e.target.value)}
+                      options={SECTION_OPTIONS}
+                    />
+                    <Input
+                      label="Monitoring Station / Landmark"
+                      required
+                      value={logPoint}
+                      onChange={(e) => setLogPoint(e.target.value)}
+                      placeholder="e.g. NH-16 Bypass Kiln Road"
+                    />
+                    <Input
+                      label="Recorded Date"
+                      type="date"
+                      required
+                      value={logDate}
+                      onChange={(e) => setLogDate(e.target.value)}
+                    />
+                    <Input
+                      label="Field Observation Notes"
+                      value={logNotes}
+                      onChange={(e) => setLogNotes(e.target.value)}
+                      placeholder="Wind direction, visible smoke, moisture status..."
+                    />
+                    <Button
+                      type="submit"
+                      disabled={submittingReading}
+                      className="w-full btn-sheen"
+                    >
+                      <Plus className="w-4 h-4 mr-1.5" />
+                      {submittingReading ? 'Saving Reading...' : 'Publish Station Reading'}
+                    </Button>
+                  </form>
+                )}
+
+                {readings.length > 0 && (
+                  <div className="mt-6 pt-4 border-t border-slate-100">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                      Recent Official Station Logs
+                    </h3>
+                    <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                      {readings.slice(0, 5).map((r) => (
+                        <div
+                          key={r.id}
+                          className="p-2.5 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs"
+                        >
+                          <div className="min-w-0 pr-2">
+                            <p className="font-bold text-slate-800 truncate">
+                              Sec {r.sectionId}: {r.monitoringPoint}
+                            </p>
+                            <p className="text-[11px] text-slate-500">{r.recordedDate}</p>
+                          </div>
+                          <Badge variant={AQI_BADGE_MAP[r.aqiCategory]} size="sm">
+                            {r.calculatedAqi ?? '—'}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* TAB 3: INCIDENTS & MITIGATION QUEUE */}
+        {activeTab === 'incidents' && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Resident Reporting Form */}
+            <Card className="lg:col-span-5 h-fit">
+              <CardHeader
+                title="Report Localized Air Pollution Source"
+                subtitle="Automatically calculates response priority and notifies Kantheru Sanitation Officers."
+              />
+              <CardContent>
+                {!currentUser ? (
+                  <div className="rounded-xl bg-sky-50 border border-sky-200 p-4 text-sm text-sky-900 space-y-3">
+                    <p className="font-semibold">Sign in to report smoke or dust incidents</p>
+                    <p className="text-xs text-sky-800">
+                      Verified resident login prevents spam and lets you track sprinkler dispatch updates in real time.
+                    </p>
+                    <Link href="/login">
+                      <Button size="sm" variant="primary">
+                        Sign In / Register
+                      </Button>
+                    </Link>
+                  </div>
+                ) : (
+                  <form onSubmit={handleReportIncident} className="space-y-4">
+                    <Select
+                      label="Village Section"
+                      value={incSectionId}
+                      onChange={(e) => setIncSectionId(e.target.value)}
+                      options={SECTION_OPTIONS}
+                    />
+                    <Select
+                      label="Pollution Source Category"
+                      value={incCategory}
+                      onChange={(e) => setIncCategory(e.target.value)}
+                      options={CATEGORY_OPTIONS}
+                    />
+                    <Input
+                      label="Exact Spot / Landmark"
+                      required
+                      value={incLocation}
+                      onChange={(e) => setIncLocation(e.target.value)}
+                      placeholder="e.g. Behind ZP School Compound Wall"
+                    />
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Incident Description <span className="text-rose-500">*</span>
+                      </label>
+                      <textarea
+                        required
+                        minLength={8}
+                        rows={3}
+                        value={incDescription}
+                        onChange={(e) => setIncDescription(e.target.value)}
+                        placeholder="Describe smoke color, dust volume, and wind direction..."
+                        className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      />
+                    </div>
+                    <Input
+                      label="Estimated Affected Households"
+                      type="number"
+                      min="1"
+                      max="500"
+                      required
+                      value={incHouseholds}
+                      onChange={(e) => setIncHouseholds(e.target.value)}
+                    />
+                    <label className="flex items-start gap-2.5 p-3 rounded-lg bg-slate-50 border border-slate-200 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={incNearSensitive}
+                        onChange={(e) => setIncNearSensitive(e.target.checked)}
+                        className="mt-0.5 rounded text-teal-600 focus:ring-teal-500"
+                      />
+                      <span className="text-xs text-slate-700">
+                        <strong className="block text-slate-900">
+                          Near School, Anganwadi, or Primary Health Centre
+                        </strong>
+                        Automatically applies +20 sensitive exposure urgency bonus.
+                      </span>
+                    </label>
+
+                    {/* Live Priority Preview */}
+                    <div className="rounded-lg bg-slate-900 text-white p-3.5 text-xs space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-300 font-semibold">Computed Priority Preview</span>
+                        <Badge variant={PRIORITY_BADGE_MAP[livePriorityPreview.priority]} size="sm">
+                          {livePriorityPreview.priority} (Score {livePriorityPreview.severityScore})
+                        </Badge>
+                      </div>
+                      <p className="text-teal-300 font-medium">
+                        Unit: {livePriorityPreview.recommendedUnit}
+                      </p>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      disabled={submittingIncident}
+                      className="w-full btn-sheen"
+                    >
+                      <Flame className="w-4 h-4 mr-1.5" />
+                      {submittingIncident ? 'Submitting Report...' : 'Submit Air Pollution Alert'}
+                    </Button>
+                  </form>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Live Mitigation Queue */}
+            <div className="lg:col-span-7 space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold text-slate-900">
+                  Live Panchayat Mitigation & Sprinkler Queue ({incidents.length})
+                </h2>
+                <span className="text-xs text-slate-500">Ordered by Severity Score</span>
+              </div>
+
+              {incidents.length === 0 ? (
+                <Card>
+                  <CardContent className="py-12 text-center text-slate-500">
+                    <Wind className="w-10 h-10 mx-auto text-teal-500 mb-2" />
+                    <p className="font-semibold text-slate-700">No active air pollution incidents</p>
+                    <p className="text-xs mt-1">All 5 sections of Kantheru report clean operating conditions.</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                incidents.map((inc) => (
+                  <Card key={inc.id} className="overflow-hidden">
+                    <CardContent className="p-5 space-y-3">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Badge variant={PRIORITY_BADGE_MAP[inc.priority]}>
+                              {inc.priority} • {inc.severityScore}/100
+                            </Badge>
+                            <Badge variant={STATUS_BADGE_MAP[inc.status]}>
+                              {inc.status.replace(/_/g, ' ')}
+                            </Badge>
+                            {inc.isNearSensitiveFacility && (
+                              <Badge variant="rose" size="sm">
+                                School / PHC Zone
+                              </Badge>
+                            )}
+                          </div>
+                          <h3 className="text-base font-bold text-slate-900 mt-1">
+                            Section {inc.sectionId} — {inc.location}
+                          </h3>
+                        </div>
+                        <span className="text-xs font-semibold text-slate-500">
+                          {inc.affectedHouseholds} households affected
+                        </span>
+                      </div>
+
+                      <p className="text-sm text-slate-700">{inc.description}</p>
+
+                      <div className="rounded-lg bg-slate-50 border border-slate-200/80 p-3 text-xs space-y-1">
+                        <p className="font-semibold text-slate-800">
+                          Recommended Mitigation Unit:{' '}
+                          <span className="text-teal-700">{inc.recommendedUnit}</span>
+                        </p>
+                        {inc.actionNotes && (
+                          <p className="text-slate-600">
+                            <strong>Officer Log:</strong> {inc.actionNotes}
+                          </p>
+                        )}
+                      </div>
+
+                      {isOfficer && inc.status !== 'RESOLVED' && (
+                        <div className="pt-2 border-t border-slate-100 space-y-2.5">
+                          <Input
+                            placeholder="Add officer action note (e.g., Tanker AP07-112 dispatched at 10:15 AM)..."
+                            value={actionNotesMap[inc.id] || ''}
+                            onChange={(e) =>
+                              setActionNotesMap((prev) => ({ ...prev, [inc.id]: e.target.value }))
+                            }
+                          />
+                          <div className="flex flex-wrap gap-2">
+                            {inc.status === 'REPORTED' && (
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                disabled={updatingIncidentId === inc.id}
+                                onClick={() =>
+                                  handleUpdateIncidentStatus(inc.id, 'WATER_SPRINKLER_DISPATCHED')
+                                }
+                              >
+                                Dispatch Water Sprinkler
+                              </Button>
+                            )}
+                            {inc.status !== 'ENFORCEMENT_ACTION' && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={updatingIncidentId === inc.id}
+                                onClick={() =>
+                                  handleUpdateIncidentStatus(inc.id, 'ENFORCEMENT_ACTION')
+                                }
+                              >
+                                Log Enforcement Notice
+                              </Button>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="primary"
+                              disabled={updatingIncidentId === inc.id}
+                              onClick={() => handleUpdateIncidentStatus(inc.id, 'RESOLVED')}
+                            >
+                              Mark Resolved
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

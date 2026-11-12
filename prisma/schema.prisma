@@ -33,6 +33,8 @@ model User {
   assignedComplaints    SanitationComplaint[]    @relation("AssignedComplaints")
   auditLogs             AuditLog[]
   notifications         Notification[]
+  airReadingsRecorded   AirQualityReading[]      @relation("AirReadingsRecorded")
+  airIncidents          AirPollutionIncident[]   @relation("AirIncidentsReported")
 }
 
 // ==========================================
@@ -431,4 +433,46 @@ model AuditLog {
   details        String    // JSON snapshot or notes
   ipAddress      String?
   timestamp      DateTime  @default(now())
+}
+
+// ==========================================
+// MODULE 7 EXTENSION: CLEAN AIR & AQI ACTION HUB
+// ==========================================
+
+model AirQualityReading {
+  id                  String    @id @default(cuid())
+  sectionId           Int       // Kantheru Section 1-5
+  monitoringPoint     String    // e.g. "NH-16 Bypass Junction", "ZP High School Courtyard"
+  recordedDate        String    // YYYY-MM-DD
+  pm25UgM3            Float?
+  pm10UgM3            Float?
+  no2UgM3             Float?
+  so2UgM3             Float?
+  coMgM3              Float?
+  calculatedAqi       Int?
+  aqiCategory         String    @default("INCOMPLETE") // GOOD, SATISFACTORY, MODERATE, POOR, VERY_POOR, SEVERE, INCOMPLETE
+  dominantPollutant   String?
+  recordedById        String?
+  recordedByUser      User?     @relation("AirReadingsRecorded", fields: [recordedById], references: [id], onDelete: SetNull)
+  notes               String?
+  createdAt           DateTime  @default(now())
+}
+
+model AirPollutionIncident {
+  id                      String    @id @default(cuid())
+  reporterId              String
+  reporter                User      @relation("AirIncidentsReported", fields: [reporterId], references: [id], onDelete: Cascade)
+  sectionId               Int       // Section 1-5
+  category                String    // GARBAGE_PLASTIC_BURNING, STUBBLE_CROP_BURNING, INDUSTRIAL_BRICK_KILN_SMOKE, CONSTRUCTION_ROAD_DUST, VEHICULAR_CONGESTION
+  location                String
+  description             String
+  affectedHouseholds      Int       @default(5)
+  isNearSensitiveFacility Boolean   @default(false)
+  severityScore           Float     @default(40)
+  priority                String    @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  recommendedUnit         String    @default("Panchayat Water Sprinkler Tanker")
+  status                  String    @default("REPORTED") // REPORTED, WATER_SPRINKLER_DISPATCHED, ENFORCEMENT_ACTION, RESOLVED
+  actionNotes             String?
+  createdAt               DateTime  @default(now())
+  resolvedAt              DateTime?
 }

@@ -17,6 +17,7 @@ export const translations = {
     'nav.emergency': 'Emergency',
     'nav.water': 'Water',
     'nav.sanitation': 'Sanitation',
+    'nav.airQuality': 'Air Quality',
     'nav.intelligence': 'Intelligence',
     'nav.dashboard': 'My Dashboard',
     'nav.admin': 'Admin Console',
@@ -181,6 +182,8 @@ export const translations = {
     'page.sanitation.sub': 'Civic Hygiene & Drainage • Deterministic Priority Algorithm, Department Dispatch, Status Stepper & Reopen Verification',
     'page.intelligence.title': 'Community Intelligence',
     'page.intelligence.sub': 'Unified Operational Dashboard • Aggregates Live Relational Telemetry from all 5 Kantheru Public Service Domains',
+    'page.airQuality.title': 'Clean Air & CPCB AQI Hub',
+    'page.airQuality.sub': 'Kantheru 5-Section Air Quality Telemetry • Non-Inferential CPCB NAQI Engine, Smoke/Dust Alerts & Water-Sprinkler Dispatch',
     'page.dashboard.title': 'Personal Service Workspace',
   },
   te: {
@@ -199,6 +202,7 @@ export const translations = {
     'nav.emergency': 'అత్యవసర 108',
     'nav.water': 'మంచినీరు',
     'nav.sanitation': 'పారిశుధ్యం',
+    'nav.airQuality': 'గాలి నాణ్యత',
     'nav.intelligence': 'సమాచార కేంద్రం',
     'nav.dashboard': 'నా డ్యాష్‌బోర్డ్',
     'nav.admin': 'అడ్మిన్ కన్సోల్',
@@ -363,6 +367,8 @@ export const translations = {
     'page.sanitation.sub': 'గ్రామ పరిశుభ్రత & డ్రైనేజీ • ప్రాధాన్యత అల్గారిథమ్, బృంద కేటాయింపు, స్థితి ట్రాకింగ్ & రీఓపెన్',
     'page.intelligence.title': 'కమ్యూనిటీ ఇంటెలిజెన్స్',
     'page.intelligence.sub': 'సమీకృత కార్యకలాపాల డ్యాష్‌బోర్డ్ • అన్ని 5 ప్రజా సేవా విభాగాల లైవ్ గణాంకాలు',
+    'page.airQuality.title': 'స్వచ్ఛమైన గాలి & CPCB AQI కేంద్రం',
+    'page.airQuality.sub': 'కంతేరు 5-విభాగాల గాలి నాణ్యత • కచ్చితమైన CPCB NAQI లెక్కలు, పొగ/దుమ్ము ఫిర్యాదులు & వాటర్ స్ప్రింక్లర్ డిస్పాచ్',
     'page.dashboard.title': 'వ్యక్తిగత సేవా వర్క్‌స్పేస్',
   },
 } as const;
