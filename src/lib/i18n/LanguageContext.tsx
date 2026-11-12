@@ -82,15 +82,34 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const setLang = useCallback(
     (next: Lang) => {
-      setLangState(next);
-      try {
-        window.localStorage.setItem(STORAGE_KEY, next);
-        document.documentElement.lang = next;
-        document.cookie = `${STORAGE_KEY}=${next}; path=/; max-age=31536000; SameSite=Lax`;
-      } catch {
-        // ignore storage access issues
+      const applyChange = () => {
+        setLangState(next);
+        try {
+          window.localStorage.setItem(STORAGE_KEY, next);
+          document.documentElement.lang = next;
+          document.cookie = `${STORAGE_KEY}=${next}; path=/; max-age=31536000; SameSite=Lax`;
+        } catch {
+          // ignore storage access issues
+        }
+        router.refresh();
+      };
+
+      if (
+        typeof document !== 'undefined' &&
+        'startViewTransition' in document &&
+        typeof (document as any).startViewTransition === 'function' &&
+        !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ) {
+        try {
+          (document as any).startViewTransition(() => {
+            applyChange();
+          });
+          return;
+        } catch {
+          // Fallback if view transition fails
+        }
       }
-      router.refresh();
+      applyChange();
     },
     [router]
   );

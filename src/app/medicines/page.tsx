@@ -451,7 +451,7 @@ export default function MedicinesPage() {
 
       {/* VIEW 1: INVENTORY TABLE */}
       {activeView === 'inventory' && (
-        <div className="space-y-4">
+        <div className="space-y-4 animate-tab-switch">
           {/* Search & Filters */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200">
             <div className="relative w-full sm:w-80">
@@ -647,7 +647,7 @@ export default function MedicinesPage() {
 
       {/* VIEW 2: TRANSACTION LEDGER */}
       {activeView === 'history' && (
-        <Card>
+        <Card className="animate-tab-switch">
           <CardHeader
             title={tx('Stock Movement & Transaction Ledger', 'మందుల కదలిక & లావాదేవీల రికార్డు')}
             subtitle={tx('Immutable audit log of all stock receipts, dispensations, and inventory adjustments', 'కొనుగోలు, పంపిణీ మరియు మార్పుల పూర్తి ఆడిట్ లాగ్')}

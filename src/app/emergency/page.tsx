@@ -332,7 +332,7 @@ export default function EmergencyPage() {
 
       {/* TAB 1: SUBMIT EMERGENCY REQUEST */}
       {activeTab === 'request' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-tab-switch">
           <div className="lg:col-span-7 space-y-6">
             <Card>
               <CardHeader
@@ -589,7 +589,7 @@ export default function EmergencyPage() {
 
       {/* TAB 2: HOSPITALS & ICU BEDS */}
       {activeTab === 'facilities' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-tab-switch">
           {facilities.map((fac, idx) => {
             const availRatio = fac.totalIcuBeds > 0 ? Math.round((fac.icuBedsAvailable / fac.totalIcuBeds) * 100) : 0;
             return (
@@ -664,7 +664,7 @@ export default function EmergencyPage() {
 
       {/* TAB 3: AMBULANCE FLEET */}
       {activeTab === 'ambulances' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-tab-switch">
           {ambulances.map((amb, idx) => (
             <ScrollReveal key={amb.id} delayMs={idx * 50}>
               <Card className="border-slate-200 h-full">
@@ -740,7 +740,7 @@ export default function EmergencyPage() {
 
       {/* TAB 4: DIRECTORY HOTLINES */}
       {activeTab === 'directory' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-tab-switch">
           {contacts.map((c) => (
             <Card key={c.id}>
               <CardContent className="p-5 flex items-center justify-between gap-4">
@@ -765,7 +765,7 @@ export default function EmergencyPage() {
 
       {/* TAB 5: EMERGENCY COORDINATOR DESK */}
       {activeTab === 'coordinator' && isCoordinator && (
-        <div className="space-y-4">
+        <div className="space-y-4 animate-tab-switch">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-navy-950 uppercase tracking-wider">
               {tx('108 Emergency Incident Queue & Status Stepper', '108 అత్యవసర ఘటనల క్యూ & స్థితి దశలు')}

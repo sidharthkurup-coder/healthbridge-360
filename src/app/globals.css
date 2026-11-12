@@ -214,10 +214,60 @@ html[lang='te'] body {
 }
 
 /* Global table row & interactive control micro-physics */
+@keyframes rowCascade {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 tbody tr {
+  animation: rowCascade 0.36s cubic-bezier(0.16, 1, 0.3, 1) both;
   transition:
     background-color 0.18s ease,
     transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+tbody tr:nth-child(1) { animation-delay: 15ms; }
+tbody tr:nth-child(2) { animation-delay: 35ms; }
+tbody tr:nth-child(3) { animation-delay: 55ms; }
+tbody tr:nth-child(4) { animation-delay: 75ms; }
+tbody tr:nth-child(5) { animation-delay: 95ms; }
+tbody tr:nth-child(6) { animation-delay: 115ms; }
+tbody tr:nth-child(7) { animation-delay: 135ms; }
+tbody tr:nth-child(8) { animation-delay: 155ms; }
+
+/* View Transitions API native cross-fade & spring morph */
+::view-transition-old(root) {
+  animation: 180ms cubic-bezier(0.4, 0, 1, 1) both fadeOutStage;
+}
+::view-transition-new(root) {
+  animation: 340ms cubic-bezier(0.16, 1, 0.3, 1) both fadeInStage;
+}
+
+@keyframes fadeOutStage {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.992);
+  }
+}
+
+@keyframes fadeInStage {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.994);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* Off-screen paint skipping optimization for long pages */

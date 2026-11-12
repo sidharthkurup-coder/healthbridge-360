@@ -331,7 +331,7 @@ export default function HealthcarePage() {
 
       {/* TAB 1: DOCTORS & OPD BOOKING */}
       {activeTab === 'doctors' && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-tab-switch">
           {/* Search & Filter Bar */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200">
             <div className="relative w-full sm:w-80">
@@ -428,7 +428,7 @@ export default function HealthcarePage() {
 
       {/* TAB 2: APPOINTMENTS TRACKER & STAFF APPROVALS */}
       {activeTab === 'appointments' && (
-        <div className="space-y-4">
+        <div className="space-y-4 animate-tab-switch">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-sm font-bold text-navy-950 uppercase tracking-wider">
@@ -584,7 +584,7 @@ export default function HealthcarePage() {
 
       {/* TAB 3: HEALTH CENTRES DIRECTORY */}
       {activeTab === 'facilities' && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-tab-switch">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {centers.map((c) => (
               <Card key={c.id} className="border-slate-200">
@@ -632,7 +632,7 @@ export default function HealthcarePage() {
 
       {/* TAB 4: HEALTH CAMPS */}
       {activeTab === 'camps' && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-tab-switch">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {camps.map((camp, idx) => {
               const registeredCount = camp.registeredCount || 0;

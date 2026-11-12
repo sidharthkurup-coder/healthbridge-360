@@ -42,7 +42,49 @@ module.exports = {
       keyframes: {
         fadeUp: {
           '0%': { opacity: '0', transform: 'translate3d(0, 18px, 0) scale(0.985)' },
-          '100%': { opacity: '1', transform: 'translate3d(0, 0, 0) scale(1)' },
+          '100%': { opacity: '1', transform: 'none' },
+        },
+        pageEnter: {
+          '0%': {
+            opacity: '0',
+            transform: 'translate3d(0, 20px, 0) scale(0.99)',
+            filter: 'blur(4px)',
+          },
+          '65%': {
+            opacity: '1',
+            filter: 'blur(0px)',
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'none',
+            filter: 'none',
+          },
+        },
+        tabSwitch: {
+          '0%': {
+            opacity: '0',
+            transform: 'translate3d(0, 12px, 0) scale(0.992)',
+            filter: 'blur(2px)',
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'none',
+            filter: 'none',
+          },
+        },
+        veilSweep: {
+          '0%': {
+            opacity: '0.85',
+            transform: 'translate3d(0, -100%, 0) scaleY(1.1)',
+          },
+          '45%': {
+            opacity: '0.45',
+            transform: 'translate3d(0, 0%, 0) scaleY(1)',
+          },
+          '100%': {
+            opacity: '0',
+            transform: 'translate3d(0, 100%, 0) scaleY(0.9)',
+          },
         },
         fadeIn: {
           '0%': { opacity: '0' },
@@ -51,16 +93,16 @@ module.exports = {
         scaleIn: {
           '0%': { opacity: '0', transform: 'translate3d(0, 10px, 0) scale(0.93)' },
           '70%': { opacity: '1', transform: 'translate3d(0, -1px, 0) scale(1.008)' },
-          '100%': { opacity: '1', transform: 'translate3d(0, 0, 0) scale(1)' },
+          '100%': { opacity: '1', transform: 'none' },
         },
         modalSpring: {
-          '0%': { opacity: '0', transform: 'translate3d(0, 22px, 0) scale(0.92)' },
+          '0%': { opacity: '0', transform: 'translate3d(0, 24px, 0) scale(0.92)' },
           '65%': { opacity: '1', transform: 'translate3d(0, -2px, 0) scale(1.012)' },
-          '100%': { opacity: '1', transform: 'translate3d(0, 0, 0) scale(1)' },
+          '100%': { opacity: '1', transform: 'none' },
         },
         slideRight: {
           '0%': { opacity: '0', transform: 'translate3d(-14px, 0, 0)' },
-          '100%': { opacity: '1', transform: 'translate3d(0, 0, 0)' },
+          '100%': { opacity: '1', transform: 'none' },
         },
         floatSlow: {
           '0%, 100%': { transform: 'translate3d(0, 0px, 0)' },
@@ -84,8 +126,8 @@ module.exports = {
           '66%': { transform: 'translate3d(-14px, 12px, 0) scale(0.96)' },
         },
         langSwap: {
-          '0%': { opacity: '0.45', transform: 'translate3d(0, 4px, 0) scale(0.995)' },
-          '100%': { opacity: '1', transform: 'translate3d(0, 0, 0) scale(1)' },
+          '0%': { opacity: '0.35', transform: 'translate3d(0, 6px, 0) scale(0.994)', filter: 'blur(2px)' },
+          '100%': { opacity: '1', transform: 'none', filter: 'none' },
         },
         gradientX: {
           '0%, 100%': { backgroundPosition: '0% 50%' },
@@ -100,13 +142,16 @@ module.exports = {
       animation: {
         'fade-up': 'fadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'fade-up-fast': 'fadeUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'page-enter': 'pageEnter 0.58s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'tab-switch': 'tabSwitch 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'veil-sweep': 'veilSweep 0.52s cubic-bezier(0.22, 1, 0.36, 1) forwards',
         'fade-in': 'fadeIn 0.3s ease-out forwards',
         'scale-in': 'scaleIn 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'modal-spring': 'modalSpring 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'slide-right': 'slideRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'float-slow': 'floatSlow 4.5s ease-in-out infinite',
         'orb-drift': 'orbDrift 10s ease-in-out infinite',
-        'lang-swap': 'langSwap 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+        'lang-swap': 'langSwap 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'pulse-ring': 'pulseRing 2s cubic-bezier(0.24, 0, 0.38, 1) infinite',
         'shimmer': 'shimmer 2.5s linear infinite',
         'grow-width': 'growWidth 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards',

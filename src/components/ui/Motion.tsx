@@ -376,3 +376,42 @@ export const RouteProgressBar: React.FC = React.memo(() => {
   );
 });
 RouteProgressBar.displayName = 'RouteProgressBar';
+
+
+// ============================================================================
+// 6. AWARD-WINNING PAGE TRANSITION STAGE (3D Spring + Light Veil Sweep)
+// ============================================================================
+export const PageTransitionStage: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const pathname = usePathname();
+    const [animating, setAnimating] = useState(true);
+
+    useEffect(() => {
+        setAnimating(true);
+        const timer = window.setTimeout(() => {
+            setAnimating(false);
+        }, 620);
+        return () => window.clearTimeout(timer);
+    }, [pathname]);
+
+    return (
+        <div className="relative">
+            {animating && (
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none fixed inset-x-0 top-16 z-40 h-24 bg-gradient-to-b from-sky-400/10 via-teal-400/5 to-transparent animate-veil-sweep"
+                />
+            )}
+            <div
+                key={pathname}
+                onAnimationEnd={(e) => {
+                    if (e.target === e.currentTarget) {
+                        setAnimating(false);
+                    }
+                }}
+                className={animating ? 'animate-page-enter' : undefined}
+            >
+                {children}
+            </div>
+        </div>
+    );
+};

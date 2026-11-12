@@ -372,7 +372,7 @@ export default function WaterPage() {
 
       {/* TAB 1: 5-SECTION COMPARISON DASHBOARD */}
       {activeTab === 'comparison' && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-tab-switch">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h2 className="text-sm font-bold text-navy-950 uppercase tracking-wider">
@@ -589,7 +589,7 @@ export default function WaterPage() {
 
       {/* TAB 2: SCHEDULES & RECENT LOGS */}
       {activeTab === 'sections' && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-tab-switch">
           {/* 5-Section Configured Daily Schedules Grid */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -704,7 +704,7 @@ export default function WaterPage() {
 
       {/* TAB 3: WATER QUALITY LAB TESTING */}
       {activeTab === 'quality' && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-tab-switch">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h2 className="text-sm font-bold text-navy-950 uppercase tracking-wider">
@@ -900,7 +900,7 @@ export default function WaterPage() {
 
       {/* TAB 4: INTERRUPTION REPORTS & COMPLAINTS */}
       {activeTab === 'complaints' && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-tab-switch">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-navy-950 uppercase tracking-wider">
               {tx('Household Water Supply & Pressure Complaints', 'గృహ నీటి సరఫరా & ఒత్తిడి ఫిర్యాదులు')}

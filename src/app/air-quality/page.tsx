@@ -523,7 +523,7 @@ export default function AirQualityPage() {
 
         {/* TAB 1: OVERVIEW */}
         {activeTab === 'overview' && (
-          <div className="space-y-8">
+          <div className="space-y-8 animate-tab-switch">
             {loading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {[1, 2, 3, 4, 5].map((n) => (
@@ -729,7 +729,7 @@ export default function AirQualityPage() {
 
         {/* TAB 2: CALCULATOR & OFFICER SENSOR LOGGER */}
         {activeTab === 'calculator' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-tab-switch">
             <Card className="lg:col-span-7">
               <CardHeader
                 title={tx('CPCB India NAQI Sub-Index Calculator', 'CPCB ఇండియా NAQI సబ్-ఇండెక్స్ కాలిక్యులేటర్')}
@@ -951,7 +951,7 @@ export default function AirQualityPage() {
 
         {/* TAB 3: INCIDENTS & MITIGATION QUEUE */}
         {activeTab === 'incidents' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-tab-switch">
             {/* Resident Reporting Form */}
             <Card className="lg:col-span-5 h-fit">
               <CardHeader

@@ -282,7 +282,7 @@ export default function SanitationPage() {
 
       {/* TAB 1: COMPLAINTS QUEUE */}
       {activeTab === 'complaints' && (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-tab-switch">
           {/* Search & Filters */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200">
             <div className="relative w-full sm:w-80">
@@ -556,7 +556,7 @@ export default function SanitationPage() {
 
       {/* TAB 2: FILE NEW ISSUE */}
       {activeTab === 'file' && (
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto animate-tab-switch">
           <Card>
             <CardHeader
               title={tx('Report Sanitation / Environmental Hazard', 'పారిశుద్ధ్య / పర్యావరణ సమస్యను నివేదించండి')}
