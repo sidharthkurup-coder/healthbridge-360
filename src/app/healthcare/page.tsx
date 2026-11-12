@@ -47,7 +47,7 @@ function generateSlotsFromSchedules(schedules: any[]): string[] {
 }
 
 export default function HealthcarePage() {
-  const { lang, t } = useLanguage();
+  const { lang, t, tx, ts } = useLanguage();
   const [activeTab, setActiveTab] = useState<'doctors' | 'appointments' | 'facilities' | 'camps'>('doctors');
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [centers, setCenters] = useState<any[]>([]);
@@ -300,7 +300,7 @@ export default function HealthcarePage() {
               activeTab === 'doctors' ? 'bg-white text-navy-950 shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Doctors & OPD
+            {tx('Doctors & OPD', 'వైద్యులు & OPD')}
           </button>
           <button
             onClick={() => setActiveTab('appointments')}
@@ -308,7 +308,7 @@ export default function HealthcarePage() {
               activeTab === 'appointments' ? 'bg-white text-navy-950 shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Appointments ({appointments.length})
+            {tx('Appointments', 'అపాయింట్‌మెంట్లు')} ({appointments.length})
           </button>
           <button
             onClick={() => setActiveTab('facilities')}
@@ -316,7 +316,7 @@ export default function HealthcarePage() {
               activeTab === 'facilities' ? 'bg-white text-navy-950 shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Health Centres
+            {tx('Health Centres', 'వైద్య కేంద్రాలు')}
           </button>
           <button
             onClick={() => setActiveTab('camps')}
@@ -324,7 +324,7 @@ export default function HealthcarePage() {
               activeTab === 'camps' ? 'bg-white text-navy-950 shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Health Camps ({camps.length})
+            {tx('Health Camps', 'ఆరోగ్య శిబిరాలు')} ({camps.length})
           </button>
         </div>
       </div>
@@ -338,7 +338,7 @@ export default function HealthcarePage() {
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
               <input
                 type="text"
-                placeholder="Search doctors, specialization..."
+                placeholder={tx('Search doctors, specialization...', 'వైద్యులు, విభాగం ద్వారా వెతకండి...')}
                 value={doctorSearch}
                 onChange={(e) => setDoctorSearch(e.target.value)}
                 className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
@@ -346,13 +346,13 @@ export default function HealthcarePage() {
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs text-slate-500 shrink-0">Specialization:</span>
+              <span className="text-xs text-slate-500 shrink-0">{tx('Specialization:', 'విభాగం:')}</span>
               <select
                 value={specializationFilter}
                 onChange={(e) => setSpecializationFilter(e.target.value)}
                 className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
               >
-                <option value="ALL">All Specializations</option>
+                <option value="ALL">{tx('All Specializations', 'అన్ని విభాగాలు')}</option>
                 {Array.from(new Set(doctors.map((d) => d.specialization))).map((spec) => (
                   <option key={spec} value={spec}>
                     {spec}
@@ -382,7 +382,7 @@ export default function HealthcarePage() {
                         </div>
                       </div>
                       <Badge variant={doc.isAvailable !== false ? 'emerald' : 'amber'} size="sm">
-                        {doc.isAvailable !== false ? 'ON DUTY' : 'OFF SHIFT'}
+                        {doc.isAvailable !== false ? tx('ON DUTY', 'విధిలో ఉన్నారు') : tx('OFF SHIFT', 'సెలవులో ఉన్నారు')}
                       </Badge>
                     </div>
 
@@ -390,20 +390,20 @@ export default function HealthcarePage() {
 
                     <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs space-y-1.5">
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Facility:</span>
+                        <span className="text-slate-500">{tx('Facility:', 'ఆసుపత్రి:')}</span>
                         <span className="font-semibold text-slate-800">{doc.centerName}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-500">OPD Schedule:</span>
+                        <span className="text-slate-500">{tx('OPD Schedule:', 'OPD వేళలు:')}</span>
                         <span className="font-semibold text-slate-800 text-right">{doc.days}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Council Reg:</span>
+                        <span className="text-slate-500">{tx('Council Reg:', 'నమోదు సంఖ్య:')}</span>
                         <span className="font-mono text-slate-600">{doc.regNumber}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Consultation Fee:</span>
-                        <span className="font-semibold text-emerald-700">₹0 (Free Govt Service)</span>
+                        <span className="text-slate-500">{tx('Consultation Fee:', 'ఫీజు:')}</span>
+                        <span className="font-semibold text-emerald-700">{tx('₹0 (Free Govt Service)', '₹0 (ఉచిత ప్రభుత్వ సేవ)')}</span>
                       </div>
                     </div>
 
@@ -415,7 +415,7 @@ export default function HealthcarePage() {
                         onClick={() => handleOpenBooking(doc)}
                         icon={<Calendar className="w-3.5 h-3.5" />}
                       >
-                        Book OPD Consultation
+                        {tx('Book OPD Consultation', 'OPD అపాయింట్‌మెంట్ బుక్ చేయండి')}
                       </Button>
                     </div>
                   </CardContent>
@@ -432,12 +432,20 @@ export default function HealthcarePage() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-sm font-bold text-navy-950 uppercase tracking-wider">
-                {isStaff ? 'All Panchayat OPD Requests & Status Management' : 'My Healthcare Appointments'}
+                {isStaff
+                  ? tx('All Panchayat OPD Requests & Status Management', 'అన్ని పంచాయతీ OPD అభ్యర్థనలు & నిర్వహణ')
+                  : tx('My Healthcare Appointments', 'నా వైద్య అపాయింట్‌మెంట్లు')}
               </h2>
               <p className="text-xs text-slate-500">
                 {isStaff
-                  ? 'Healthcare staff dashboard: Review resident submissions, approve slots, reschedule, or complete consultations.'
-                  : 'Track the real-time approval, rescheduling, or completion status of your clinic appointments.'}
+                  ? tx(
+                      'Healthcare staff dashboard: Review resident submissions, approve slots, reschedule, or complete consultations.',
+                      'సిబ్బంది డ్యాష్‌బోర్డ్: రోగుల అభ్యర్థనలను ఆమోదించండి, సమయాన్ని మార్చండి లేదా పూర్తి చేయండి.'
+                    )
+                  : tx(
+                      'Track the real-time approval, rescheduling, or completion status of your clinic appointments.',
+                      'మీ క్లినిక్ అపాయింట్‌మెంట్ ఆమోదం మరియు స్థితిని లైవ్‌లో చూడండి.'
+                    )}
               </p>
             </div>
             {!isStaff && (
@@ -447,7 +455,7 @@ export default function HealthcarePage() {
                 onClick={() => setActiveTab('doctors')}
                 icon={<Plus className="w-3.5 h-3.5" />}
               >
-                Schedule Appointment
+                {tx('Schedule Appointment', 'అపాయింట్‌మెంట్ బుక్ చేయండి')}
               </Button>
             )}
           </div>
@@ -458,12 +466,12 @@ export default function HealthcarePage() {
                 <table className="w-full text-left text-xs text-slate-600">
                   <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
                     <tr>
-                      <th className="py-3 px-4">Patient / Resident</th>
-                      <th className="py-3 px-4">Doctor & Facility</th>
-                      <th className="py-3 px-4">Requested Slot</th>
-                      <th className="py-3 px-4">Priority / Reason</th>
-                      <th className="py-3 px-4">Status</th>
-                      <th className="py-3 px-4 text-right">Actions</th>
+                      <th className="py-3 px-4">{tx('Patient / Resident', 'రోగి / నివాసి')}</th>
+                      <th className="py-3 px-4">{tx('Doctor & Facility', 'వైద్యులు & కేంద్రం')}</th>
+                      <th className="py-3 px-4">{tx('Requested Slot', 'కోరిన సమయం')}</th>
+                      <th className="py-3 px-4">{tx('Priority / Reason', 'ప్రాధాన్యత / కారణం')}</th>
+                      <th className="py-3 px-4">{tx('Status', 'స్థితి')}</th>
+                      <th className="py-3 px-4 text-right">{tx('Actions', 'చర్యలు')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -519,7 +527,7 @@ export default function HealthcarePage() {
                                 : 'rose'
                             }
                           >
-                            {app.status}
+                            {ts(app.status)}
                           </Badge>
                         </td>
                         <td className="py-3 px-4 text-right">
@@ -536,14 +544,14 @@ export default function HealthcarePage() {
                                 setReviewModalOpen(true);
                               }}
                             >
-                              Update Status
+                              {tx('Update Status', 'స్థితిని అప్‌డేట్ చేయండి')}
                             </Button>
                           ) : app.status === 'PENDING' ? (
                             <Button
                               variant="danger"
                               size="sm"
                               onClick={async () => {
-                                if (confirm('Are you sure you want to cancel this appointment request?')) {
+                                if (confirm(tx('Are you sure you want to cancel this appointment request?', 'ఈ అపాయింట్‌మెంట్ అభ్యర్థనను రద్దు చేయాలనుకుంటున్నారా?'))) {
                                   await fetch('/api/healthcare/appointments', {
                                     method: 'PATCH',
                                     headers: { 'Content-Type': 'application/json' },
@@ -553,10 +561,10 @@ export default function HealthcarePage() {
                                 }
                               }}
                             >
-                              Cancel
+                              {tx('Cancel', 'రద్దు')}
                             </Button>
                           ) : (
-                            <span className="text-[11px] text-slate-400">Locked</span>
+                            <span className="text-[11px] text-slate-400">{tx('Locked', 'లాక్ చేయబడింది')}</span>
                           )}
                         </td>
                       </tr>
@@ -566,7 +574,7 @@ export default function HealthcarePage() {
               ) : (
                 <div className="p-8 text-center text-slate-500 space-y-2">
                   <Calendar className="w-8 h-8 text-slate-400 mx-auto" />
-                  <p className="text-xs">No appointment records found in database.</p>
+                  <p className="text-xs">{tx('No appointment records found in database.', 'అపాయింట్‌మెంట్ రికార్డులు కనుగొనబడలేదు.')}</p>
                 </div>
               )}
             </CardContent>
@@ -583,7 +591,7 @@ export default function HealthcarePage() {
                 <CardHeader
                   title={c.name}
                   subtitle={c.type}
-                  action={<Badge variant="teal">Verified Government Facility</Badge>}
+                  action={<Badge variant="teal">{tx('Verified Government Facility', 'ధృవీకరించిన ప్రభుత్వ ఆసుపత్రి')}</Badge>}
                 />
                 <CardContent className="space-y-4">
                   <div className="space-y-2 text-xs text-slate-600">
@@ -593,20 +601,20 @@ export default function HealthcarePage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-teal-600 shrink-0" />
-                      <span>Operating Hours: <strong>{c.hours}</strong></span>
+                      <span>{tx('Operating Hours:', 'పని వేళలు:')} <strong>{c.hours}</strong></span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="w-4 h-4 text-teal-600 shrink-0" />
-                      <span>Regular Desk: <a href={`tel:${c.phone}`} className="text-teal-700 font-semibold">{c.phone}</a></span>
+                      <span>{tx('Regular Desk:', 'సాధారణ డెస్క్:')} <a href={`tel:${c.phone}`} className="text-teal-700 font-semibold">{c.phone}</a></span>
                     </div>
                     <div className="flex items-center gap-2 text-rose-600 font-semibold">
                       <Phone className="w-4 h-4 shrink-0" />
-                      <span>Emergency 24x7 Line: <a href={`tel:${c.emergencyPhone}`}>{c.emergencyPhone}</a></span>
+                      <span>{tx('Emergency 24x7 Line:', '24x7 అత్యవసర లైన్:')} <a href={`tel:${c.emergencyPhone}`}>{c.emergencyPhone}</a></span>
                     </div>
                   </div>
 
                   <div>
-                    <h5 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">Available Clinical Services:</h5>
+                    <h5 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">{tx('Available Clinical Services:', 'అందుబాటులో ఉన్న వైద్య సేవలు:')}</h5>
                     <div className="flex flex-wrap gap-1.5">
                       {c.services.map((s: string) => (
                         <span key={s} className="px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium border border-slate-200">
@@ -637,7 +645,7 @@ export default function HealthcarePage() {
                       <div className="flex items-start justify-between gap-2">
                         <h3 className="text-base font-extrabold text-navy-950 font-display">{camp.title}</h3>
                         <Badge variant={camp.isUserRegistered ? 'emerald' : 'sky'}>
-                          {camp.isUserRegistered ? 'Registered' : camp.status || 'Scheduled'}
+                          {camp.isUserRegistered ? tx('Registered', 'నమోదైంది') : camp.status || tx('Scheduled', 'షెడ్యూల్డ్')}
                         </Badge>
                       </div>
                       <p className="text-xs text-slate-600 leading-relaxed">{camp.description}</p>
@@ -657,7 +665,7 @@ export default function HealthcarePage() {
                         </div>
                         <div className="pt-1.5 border-t border-slate-100 space-y-1">
                           <div className="flex justify-between text-[11px]">
-                            <span className="text-slate-500">Confirmed Attendees</span>
+                            <span className="text-slate-500">{tx('Confirmed Attendees', 'నమోదు చేసుకున్నవారు')}</span>
                             <span className="font-mono font-bold text-sky-800">
                               {registeredCount} / {maxCap}
                             </span>
@@ -680,7 +688,7 @@ export default function HealthcarePage() {
                           setIsCampModalOpen(true);
                         }}
                       >
-                        {camp.isUserRegistered ? 'Register Another Family Member' : 'Register Free for Camp'}
+                        {camp.isUserRegistered ? tx('Register Another Family Member', 'మరో కుటుంబ సభ్యుడిని నమోదు చేయండి') : tx('Register Free for Camp', 'శిబిరానికి ఉచితంగా నమోదు చేయండి')}
                       </Button>
                     </CardContent>
                   </Card>
@@ -695,7 +703,7 @@ export default function HealthcarePage() {
       <Modal
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
-        title="Request Doctor Appointment"
+        title={tx('Request Doctor Appointment', 'డాక్టర్ అపాయింట్‌మెంట్ అభ్యర్థించండి')}
         subtitle={selectedDoctor ? `${selectedDoctor.name} (${selectedDoctor.specialization}) • ${selectedDoctor.centerName}` : ''}
       >
         <form onSubmit={handleSubmitBooking} className="space-y-4">
@@ -715,7 +723,7 @@ export default function HealthcarePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
-              label="Consultation Date"
+              label={tx('Consultation Date', 'సంప్రదింపు తేదీ')}
               type="date"
               required
               min="2026-11-13"
@@ -724,7 +732,7 @@ export default function HealthcarePage() {
             />
 
             <Select
-              label="OPD Time Slot"
+              label={tx('OPD Time Slot', 'OPD సమయం')}
               options={
                 selectedDoctor?.slots.map((s: string) => ({ value: s, label: s })) || [
                   { value: '09:30 - 10:00', label: '09:30 - 10:00' },
@@ -736,12 +744,12 @@ export default function HealthcarePage() {
           </div>
 
           <Select
-            label="Patient Priority Category"
+            label={tx('Patient Priority Category', 'రోగి ప్రాధాన్యత విభాగం')}
             options={[
-              { value: 'NORMAL', label: 'Normal Routine OPD Consultation' },
-              { value: 'URGENT', label: 'Urgent Acute Symptoms (High Fevers, Severe Pain)' },
-              { value: 'SENIOR_CITIZEN', label: 'Senior Citizen Priority (>60 Years)' },
-              { value: 'MATERNAL', label: 'Maternal / Antenatal Checkup' },
+              { value: 'NORMAL', label: tx('Normal Routine OPD Consultation', 'సాధారణ OPD సంప్రదింపు') },
+              { value: 'URGENT', label: tx('Urgent Acute Symptoms (High Fevers, Severe Pain)', 'అత్యవసర లక్షణాలు (తీవ్ర జ్వరం, నొప్పి)') },
+              { value: 'SENIOR_CITIZEN', label: tx('Senior Citizen Priority (>60 Years)', 'సీనియర్ సిటిజన్ (>60 ఏళ్లు)') },
+              { value: 'MATERNAL', label: tx('Maternal / Antenatal Checkup', 'గర్భవతి / మాతృత్వ తనిఖీ') },
             ]}
             value={bookingPriority}
             onChange={(e) => setBookingPriority(e.target.value)}
@@ -749,24 +757,24 @@ export default function HealthcarePage() {
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-              Reason for Visit / Symptoms <span className="text-rose-500">*</span>
+              {tx('Reason for Visit / Symptoms', 'లక్షణాలు / కారణం')} <span className="text-rose-500">*</span>
             </label>
             <textarea
               required
               rows={3}
               value={bookingReason}
               onChange={(e) => setBookingReason(e.target.value)}
-              placeholder="Describe symptoms, duration, or regular medicine refill requirement..."
+              placeholder={tx('Describe symptoms, duration, or regular medicine refill requirement...', 'మీ లక్షణాలు లేదా మందుల అవసరాన్ని వివరించండి...')}
               className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
 
           <div className="pt-2 flex justify-end gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setIsBookingOpen(false)}>
-              Cancel
+              {tx('Cancel', 'రద్దు')}
             </Button>
             <Button type="submit" variant="primary" size="sm" isLoading={submittingBooking}>
-              Confirm Booking Request
+              {tx('Confirm Booking Request', 'అభ్యర్థన పంపండి')}
             </Button>
           </div>
         </form>
@@ -776,17 +784,17 @@ export default function HealthcarePage() {
       <Modal
         isOpen={reviewModalOpen}
         onClose={() => setReviewModalOpen(false)}
-        title="Review & Manage Appointment"
-        subtitle={`Patient: ${selectedAppointment?.resident?.name || 'Resident'} • Doctor: ${selectedAppointment?.doctor?.name}`}
+        title={tx('Review & Manage Appointment', 'అపాయింట్‌మెంట్‌ను పరిశీలించండి')}
+        subtitle={`${tx('Patient:', 'రోగి:')} ${selectedAppointment?.resident?.name || 'Resident'} • ${tx('Doctor:', 'వైద్యులు:')} ${selectedAppointment?.doctor?.name}`}
       >
         <form onSubmit={handleStaffUpdateAppointment} className="space-y-4">
           <Select
-            label="Update Booking Status"
+            label={tx('Update Booking Status', 'స్థితిని మార్చండి')}
             options={[
-              { value: 'APPROVED', label: 'Approve Appointment Slot' },
-              { value: 'RESCHEDULED', label: 'Reschedule to Alternate Date/Time' },
-              { value: 'COMPLETED', label: 'Mark Consultation as Completed' },
-              { value: 'REJECTED', label: 'Reject / Cancel Request' },
+              { value: 'APPROVED', label: tx('Approve Appointment Slot', 'అపాయింట్‌మెంట్ ఆమోదించండి') },
+              { value: 'RESCHEDULED', label: tx('Reschedule to Alternate Date/Time', 'మరో తేదీ/సమయానికి మార్చండి') },
+              { value: 'COMPLETED', label: tx('Mark Consultation as Completed', 'పరీక్ష పూర్తయినట్లు గుర్తించండి') },
+              { value: 'REJECTED', label: tx('Reject / Cancel Request', 'తిరస్కరించు / రద్దు చేయి') },
             ]}
             value={reviewStatus}
             onChange={(e) => setReviewStatus(e.target.value as any)}
@@ -795,14 +803,14 @@ export default function HealthcarePage() {
           {reviewStatus === 'RESCHEDULED' && (
             <div className="grid grid-cols-2 gap-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
               <Input
-                label="New Date"
+                label={tx('New Date', 'కొత్త తేదీ')}
                 type="date"
                 required
                 value={reschedDate}
                 onChange={(e) => setReschedDate(e.target.value)}
               />
               <Input
-                label="New Time Slot"
+                label={tx('New Time Slot', 'కొత్త సమయం')}
                 type="text"
                 required
                 value={reschedSlot}
@@ -814,23 +822,23 @@ export default function HealthcarePage() {
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-              OPD Staff Note / Instructions to Patient
+              {tx('OPD Staff Note / Instructions to Patient', 'రోగికి OPD సిబ్బంది సూచనలు')}
             </label>
             <textarea
               rows={3}
               value={staffNote}
               onChange={(e) => setStaffNote(e.target.value)}
-              placeholder="e.g. Please bring previous lab reports and arrive 15 minutes before scheduled slot."
+              placeholder={tx('e.g. Please bring previous lab reports and arrive 15 minutes before scheduled slot.', 'ఉదా: పాత రిపోర్టులతో 15 నిమిషాలు ముందుగా రండి.')}
               className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
 
           <div className="pt-2 flex justify-end gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setReviewModalOpen(false)}>
-              Cancel
+              {tx('Cancel', 'రద్దు')}
             </Button>
             <Button type="submit" variant="primary" size="sm" isLoading={reviewSubmitting}>
-              Save Status Update
+              {tx('Save Status Update', 'మార్పులను సేవ్ చేయండి')}
             </Button>
           </div>
         </form>
@@ -840,7 +848,7 @@ export default function HealthcarePage() {
       <Modal
         isOpen={isCampModalOpen}
         onClose={() => setIsCampModalOpen(false)}
-        title="Health Camp Registration"
+        title={tx('Health Camp Registration', 'ఆరోగ్య శిబిర నమోదు')}
         subtitle={selectedCamp?.title}
       >
         <form onSubmit={handleRegisterCamp} className="space-y-4">
@@ -852,7 +860,7 @@ export default function HealthcarePage() {
           )}
 
           <Input
-            label="Attendee Full Name"
+            label={tx('Attendee Full Name', 'హాజరయ్యే వారి పూర్తి పేరు')}
             required
             value={campAttendeeName}
             onChange={(e) => setCampAttendeeName(e.target.value)}
@@ -860,14 +868,14 @@ export default function HealthcarePage() {
 
           <div className="grid grid-cols-2 gap-4">
             <Input
-              label="Contact Phone"
+              label={tx('Contact Phone', 'ఫోన్ నంబర్')}
               required
               value={campPhone}
               onChange={(e) => setCampPhone(e.target.value)}
             />
 
             <Input
-              label="Age (Years)"
+              label={tx('Age (Years)', 'వయస్సు (సంవత్సరాలు)')}
               type="number"
               required
               value={campAge}
@@ -876,11 +884,11 @@ export default function HealthcarePage() {
           </div>
 
           <Select
-            label="Gender"
+            label={tx('Gender', 'లింగం')}
             options={[
-              { value: 'Female', label: 'Female' },
-              { value: 'Male', label: 'Male' },
-              { value: 'Other', label: 'Other' },
+              { value: 'Female', label: tx('Female', 'స్త్రీ') },
+              { value: 'Male', label: tx('Male', 'పురుషుడు') },
+              { value: 'Other', label: tx('Other', 'ఇతరులు') },
             ]}
             value={campGender}
             onChange={(e) => setCampGender(e.target.value)}
@@ -888,10 +896,10 @@ export default function HealthcarePage() {
 
           <div className="pt-2 flex justify-end gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setIsCampModalOpen(false)}>
-              Cancel
+              {tx('Cancel', 'రద్దు')}
             </Button>
             <Button type="submit" variant="secondary" size="sm" isLoading={campSubmitting}>
-              Confirm Camp Registration
+              {tx('Confirm Camp Registration', 'నమోదు నిర్ధారించండి')}
             </Button>
           </div>
         </form>

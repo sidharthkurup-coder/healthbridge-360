@@ -5,7 +5,36 @@ import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 
 /**
- * 1. ScrollReveal — GPU-accelerated IntersectionObserver spring reveal
+ * Shared singleton IntersectionObserver pool so multiple ScrollReveal elements
+ * share one observer instead of allocating N separate DOM observers.
+ */
+const revealCallbacks = new WeakMap<Element, () => void>();
+let sharedRevealObserver: IntersectionObserver | null = null;
+
+function getSharedRevealObserver(): IntersectionObserver | null {
+  if (typeof window === 'undefined' || !('IntersectionObserver' in window)) return null;
+  if (!sharedRevealObserver) {
+    sharedRevealObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const cb = revealCallbacks.get(entry.target);
+            if (cb) {
+              cb();
+              revealCallbacks.delete(entry.target);
+            }
+            sharedRevealObserver?.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -24px 0px' }
+    );
+  }
+  return sharedRevealObserver;
+}
+
+/**
+ * 1. ScrollReveal — GPU-accelerated singleton IntersectionObserver spring reveal
  */
 interface ScrollRevealProps {
   children: React.ReactNode;
@@ -27,20 +56,18 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
     const node = ref.current;
     if (!node) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setVisible(true);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -30px 0px' }
-    );
+    const obs = getSharedRevealObserver();
+    if (!obs) {
+      setVisible(true);
+      return;
+    }
 
-    observer.observe(node);
-    return () => observer.disconnect();
+    revealCallbacks.set(node, () => setVisible(true));
+    obs.observe(node);
+    return () => {
+      revealCallbacks.delete(node);
+      obs.unobserve(node);
+    };
   }, []);
 
   const hiddenClass = {
@@ -92,8 +119,15 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
     let rafId = 0;
 
     const startAnimation = () => {
-      const startTime = performance.now();
       const target = Number(value) || 0;
+      const prefersReduced =
+        typeof window !== 'undefined' &&
+        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      if (target === 0 || prefersReduced) {
+        setDisplayValue(target);
+        return;
+      }
+      const startTime = performance.now();
 
       const tick = (now: number) => {
         const elapsed = now - startTime;

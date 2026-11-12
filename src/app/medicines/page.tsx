@@ -30,7 +30,7 @@ import { AnimatedCounter, ScrollReveal } from '@/components/ui/Motion';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function MedicinesPage() {
-  const { lang, t } = useLanguage();
+  const { lang, t, tx, ts } = useLanguage();
   const [medicines, setMedicines] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -360,7 +360,7 @@ export default function MedicinesPage() {
               }}
               icon={<PlusCircle className="w-3.5 h-3.5" />}
             >
-              Add Medicine
+              {tx('Add Medicine', 'మందును జోడించండి')}
             </Button>
           )}
           <Button
@@ -370,7 +370,7 @@ export default function MedicinesPage() {
             disabled={medicines.length === 0}
             icon={<Download className="w-3.5 h-3.5" />}
           >
-            Export CSV
+            {tx('Export CSV', 'CSV ఎగుమతి')}
           </Button>
           <div className="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold">
             <button
@@ -379,7 +379,7 @@ export default function MedicinesPage() {
                 activeView === 'inventory' ? 'bg-white text-navy-950 shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Formulary Stock ({medicines.length})
+              {tx('Formulary Stock', 'మందుల నిల్వ')} ({medicines.length})
             </button>
             <button
               onClick={() => setActiveView('history')}
@@ -387,7 +387,7 @@ export default function MedicinesPage() {
                 activeView === 'history' ? 'bg-white text-navy-950 shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Transaction Ledger ({allTransactions.length})
+              {tx('Transaction Ledger', 'లావాదేవీల రికార్డు')} ({allTransactions.length})
             </button>
           </div>
         </div>
@@ -397,7 +397,11 @@ export default function MedicinesPage() {
       <div className="p-3 bg-amber-50/70 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-start gap-2.5">
         <Shield className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
         <p className="leading-relaxed">
-          <strong>Non-Automated Clinical Policy:</strong> HEALTHBRIDGE 360 is strictly an inventory, transaction, and threshold tracking system. It never generates automated prescriptions, medical diagnostics, or dosage recommendations. All dispensations require verified physician oversight.
+          <strong>{tx('Non-Automated Clinical Policy:', 'క్లినికల్ భద్రతా విధానం:')}</strong>{' '}
+          {tx(
+            'HEALTHBRIDGE 360 is strictly an inventory, transaction, and threshold tracking system. It never generates automated prescriptions, medical diagnostics, or dosage recommendations. All dispensations require verified physician oversight.',
+            'HEALTHBRIDGE 360 కేవలం మందుల నిల్వ & బ్యాచ్ ట్రాకింగ్ కోసం మాత్రమే. ఇది ఎప్పుడూ స్వయంచాలక ప్రిస్క్రిప్షన్లు లేదా మోతాదులను సూచించదు. వైద్యుల పర్యవేక్షణలోనే మందులు పంపిణీ చేయబడతాయి.'
+          )}
         </p>
       </div>
 
@@ -406,41 +410,41 @@ export default function MedicinesPage() {
         <ScrollReveal delayMs={40}>
           <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-xs hover:border-teal-300 transition-colors">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500">Total Usable Stock</span>
-              <Badge variant="teal">Verified Unexpired</Badge>
+              <span className="text-xs font-semibold text-slate-500">{tx('Total Usable Stock', 'మొత్తం వినియోగ నిల్వ')}</span>
+              <Badge variant="teal">{tx('Verified Unexpired', 'చెల్లుబాటు అయ్యేది')}</Badge>
             </div>
             <p className="text-2xl font-bold text-navy-950 mt-1">
               <AnimatedCounter value={totalAvailableStockAll} />
             </p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Units ready across all active batches</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">{tx('Units ready across all active batches', 'అన్ని యాక్టివ్ బ్యాచ్‌లలోని యూనిట్లు')}</p>
           </div>
         </ScrollReveal>
 
         <ScrollReveal delayMs={100}>
           <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-xs hover:border-amber-300 transition-colors">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500">Low Stock Warnings</span>
+              <span className="text-xs font-semibold text-slate-500">{tx('Low Stock Warnings', 'తక్కువ నిల్వ హెచ్చరికలు')}</span>
               <Badge variant={lowStockCount > 0 ? 'amber' : 'emerald'}>
-                {lowStockCount > 0 ? `${lowStockCount} Flagged` : 'All Stocked'}
+                {lowStockCount > 0 ? `${lowStockCount} ${tx('Flagged', 'హెచ్చరిక')}` : tx('All Stocked', 'సరిపడా నిల్వ')}
               </Badge>
             </div>
             <p className={`text-2xl font-bold mt-1 ${lowStockCount > 0 ? 'text-amber-700' : 'text-emerald-700'}`}>
-              <AnimatedCounter value={lowStockCount} suffix=" Medicines" />
+              <AnimatedCounter value={lowStockCount} suffix={tx(' Medicines', ' మందులు')} />
             </p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Below configured minimum threshold</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">{tx('Below configured minimum threshold', 'కనీస పరిమితి కంటే తక్కువగా ఉన్నవి')}</p>
           </div>
         </ScrollReveal>
 
         <ScrollReveal delayMs={160}>
           <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-xs hover:border-rose-300 transition-colors">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500">Quarantined Expired Units</span>
-              <Badge variant={totalExpiredStockAll > 0 ? 'rose' : 'slate'}>Isolated</Badge>
+              <span className="text-xs font-semibold text-slate-500">{tx('Quarantined Expired Units', 'వేరు చేసిన కాలం చెల్లినవి')}</span>
+              <Badge variant={totalExpiredStockAll > 0 ? 'rose' : 'slate'}>{tx('Isolated', 'వేరుచేయబడింది')}</Badge>
             </div>
             <p className="text-2xl font-bold text-rose-600 mt-1">
               <AnimatedCounter value={totalExpiredStockAll} />
             </p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Zero tolerance: Never counted in usable stock</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">{tx('Zero tolerance: Never counted in usable stock', 'ఇవి వినియోగ నిల్వలో ఎప్పుడూ లెక్కించబడవు')}</p>
           </div>
         </ScrollReveal>
       </div>
@@ -454,7 +458,7 @@ export default function MedicinesPage() {
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
               <input
                 type="text"
-                placeholder="Search by brand, generic name..."
+                placeholder={tx('Search by brand, generic name...', 'మందు పేరు, జెనరిక్ ద్వారా వెతకండి...')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
@@ -467,7 +471,7 @@ export default function MedicinesPage() {
                 onChange={(e) => setCategoryFilter(e.target.value)}
                 className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
               >
-                <option value="ALL">All Categories</option>
+                <option value="ALL">{tx('All Categories', 'అన్ని వర్గాలు')}</option>
                 {categories.map((c) => (
                   <option key={c} value={c}>
                     {c}
@@ -480,11 +484,11 @@ export default function MedicinesPage() {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
               >
-                <option value="ALL">All Statuses</option>
-                <option value="ADEQUATE">Adequate Stock</option>
-                <option value="LOW_STOCK">Low Stock (Alert)</option>
-                <option value="OUT_OF_STOCK">Out of Stock</option>
-                <option value="EXPIRED">Has Expired Batches</option>
+                <option value="ALL">{tx('All Statuses', 'అన్ని స్థితులు')}</option>
+                <option value="ADEQUATE">{tx('Adequate Stock', 'సరిపడా నిల్వ')}</option>
+                <option value="LOW_STOCK">{tx('Low Stock (Alert)', 'తక్కువ నిల్వ (హెచ్చరిక)')}</option>
+                <option value="OUT_OF_STOCK">{tx('Out of Stock', 'నిల్వ లేదు')}</option>
+                <option value="EXPIRED">{tx('Has Expired Batches', 'కాలం చెల్లిన బ్యాచ్‌లు')}</option>
               </select>
             </div>
           </div>
@@ -496,13 +500,13 @@ export default function MedicinesPage() {
                 <table className="w-full text-left text-xs text-slate-600">
                   <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
                     <tr>
-                      <th className="py-3 px-4">Medicine & Form</th>
-                      <th className="py-3 px-4">Strength & Unit</th>
-                      <th className="py-3 px-4">Available Stock</th>
-                      <th className="py-3 px-4">Threshold</th>
-                      <th className="py-3 px-4">Batches</th>
-                      <th className="py-3 px-4">Status</th>
-                      <th className="py-3 px-4 text-right">Actions</th>
+                      <th className="py-3 px-4">{tx('Medicine & Form', 'మందు & రూపం')}</th>
+                      <th className="py-3 px-4">{tx('Strength & Unit', 'సామర్థ్యం & యూనిట్')}</th>
+                      <th className="py-3 px-4">{tx('Available Stock', 'అందుబాటులో ఉన్న నిల్వ')}</th>
+                      <th className="py-3 px-4">{tx('Threshold', 'కనీస పరిమితి')}</th>
+                      <th className="py-3 px-4">{tx('Batches', 'బ్యాచ్‌లు')}</th>
+                      <th className="py-3 px-4">{tx('Status', 'స్థితి')}</th>
+                      <th className="py-3 px-4 text-right">{tx('Actions', 'చర్యలు')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -589,7 +593,7 @@ export default function MedicinesPage() {
                                   : 'emerald'
                               }
                             >
-                              {summary?.stockStatus?.replace(/_/g, ' ')}
+                              {ts(summary?.stockStatus || 'ADEQUATE')}
                             </Badge>
                           </td>
 
@@ -604,7 +608,7 @@ export default function MedicinesPage() {
                                     disabled={summary?.isOutOfStock}
                                     icon={<MinusCircle className="w-3.5 h-3.5" />}
                                   >
-                                    Dispense
+                                    {tx('Dispense', 'పంపిణీ')}
                                   </Button>
                                   <Button
                                     variant="ghost"
@@ -612,7 +616,7 @@ export default function MedicinesPage() {
                                     onClick={() => handleOpenAddBatch(med)}
                                     icon={<PlusCircle className="w-3.5 h-3.5" />}
                                   >
-                                    Add Batch
+                                    {tx('Add Batch', 'బ్యాచ్ చేర్చు')}
                                   </Button>
                                 </>
                               )}
@@ -621,7 +625,7 @@ export default function MedicinesPage() {
                                 size="sm"
                                 onClick={() => handleOpenBatchDetails(med)}
                               >
-                                View
+                                {tx('View', 'చూడు')}
                               </Button>
                             </div>
                           </td>
@@ -633,7 +637,7 @@ export default function MedicinesPage() {
               ) : (
                 <div className="p-8 text-center text-slate-500 space-y-2">
                   <Pill className="w-8 h-8 text-slate-400 mx-auto" />
-                  <p className="text-xs">No matching medicines found in catalog.</p>
+                  <p className="text-xs">{tx('No matching medicines found in catalog.', 'సరిపోయే మందులు కనుగొనబడలేదు.')}</p>
                 </div>
               )}
             </CardContent>
@@ -645,65 +649,65 @@ export default function MedicinesPage() {
       {activeView === 'history' && (
         <Card>
           <CardHeader
-            title="Stock Movement & Transaction Ledger"
-            subtitle="Immutable audit log of all stock receipts, dispensations, and inventory adjustments"
+            title={tx('Stock Movement & Transaction Ledger', 'మందుల కదలిక & లావాదేవీల రికార్డు')}
+            subtitle={tx('Immutable audit log of all stock receipts, dispensations, and inventory adjustments', 'కొనుగోలు, పంపిణీ మరియు మార్పుల పూర్తి ఆడిట్ లాగ్')}
           />
           <CardContent className="p-0 overflow-x-auto">
             {allTransactions.length > 0 ? (
               <table className="w-full text-left text-xs text-slate-600">
                 <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
                   <tr>
-                    <th className="py-3 px-4">Timestamp</th>
-                    <th className="py-3 px-4">Medicine</th>
-                    <th className="py-3 px-4">Type</th>
-                    <th className="py-3 px-4">Quantity</th>
-                    <th className="py-3 px-4">Previous → New</th>
-                    <th className="py-3 px-4">Reason & Reference</th>
-                    <th className="py-3 px-4">Dispensed By</th>
+                    <th className="py-3 px-4">{tx('Timestamp', 'సమయం')}</th>
+                    <th className="py-3 px-4">{tx('Medicine', 'మందు')}</th>
+                    <th className="py-3 px-4">{tx('Type', 'రకం')}</th>
+                    <th className="py-3 px-4">{tx('Quantity', 'పరిమాణం')}</th>
+                    <th className="py-3 px-4">{tx('Previous → New', 'ముందు → కొత్త')}</th>
+                    <th className="py-3 px-4">{tx('Reason & Reference', 'కారణం')}</th>
+                    <th className="py-3 px-4">{tx('Dispensed By', 'జారీ చేసినవారు')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {allTransactions.map((tx) => (
-                    <tr key={tx.id} className="hover:bg-slate-50/80 transition-colors">
+                  {allTransactions.map((tr) => (
+                    <tr key={tr.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="py-3 px-4 font-mono text-[11px]">
-                        {new Date(tx.timestamp).toLocaleString()}
+                        {new Date(tr.timestamp).toLocaleString()}
                       </td>
-                      <td className="py-3 px-4 font-bold text-navy-950">{tx.medicineName}</td>
+                      <td className="py-3 px-4 font-bold text-navy-950">{tr.medicineName}</td>
                       <td className="py-3 px-4">
                         <Badge
                           variant={
-                            tx.type === 'PURCHASE_RECEIPT'
+                            tr.type === 'PURCHASE_RECEIPT'
                               ? 'emerald'
-                              : tx.type === 'DISPENSED'
+                              : tr.type === 'DISPENSED'
                               ? 'amber'
                               : 'slate'
                           }
                           size="sm"
                         >
-                          {tx.type}
+                          {tr.type}
                         </Badge>
                       </td>
                       <td className="py-3 px-4 font-bold text-slate-900">
-                        {tx.type === 'DISPENSED' ? `-${tx.quantity}` : `+${tx.quantity}`}
+                        {tr.type === 'DISPENSED' ? `-${tr.quantity}` : `+${tr.quantity}`}
                       </td>
                       <td className="py-3 px-4 font-mono text-slate-700">
-                        {tx.previousQuantity} → {tx.newQuantity}
+                        {tr.previousQuantity} → {tr.newQuantity}
                       </td>
                       <td className="py-3 px-4 max-w-xs">
-                        <p className="line-clamp-1 text-slate-800">{tx.reason}</p>
-                        {tx.referenceNote && (
-                          <p className="text-[10px] text-slate-400">{tx.referenceNote}</p>
+                        <p className="line-clamp-1 text-slate-800">{tr.reason}</p>
+                        {tr.referenceNote && (
+                          <p className="text-[10px] text-slate-400">{tr.referenceNote}</p>
                         )}
                       </td>
                       <td className="py-3 px-4 text-slate-700">
-                        {tx.performedByUser?.name || 'Staff Pharmacist'}
+                        {tr.performedByUser?.name || tx('Staff Pharmacist', 'ఫార్మసిస్ట్')}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             ) : (
-              <div className="p-8 text-center text-slate-500">No transaction logs recorded.</div>
+              <div className="p-8 text-center text-slate-500">{tx('No transaction logs recorded.', 'లావాదేవీల రికార్డులు లేవు.')}</div>
             )}
           </CardContent>
         </Card>
@@ -713,8 +717,8 @@ export default function MedicinesPage() {
       <Modal
         isOpen={dispenseModalOpen}
         onClose={() => setDispenseModalOpen(false)}
-        title="Dispense Stock (FEFO Atomic Deduction)"
-        subtitle={selectedMedicine ? `${selectedMedicine.name} (${selectedMedicine.strength}) • Available: ${selectedMedicine.stockSummary?.totalAvailableStock}` : ''}
+        title={tx('Dispense Stock (FEFO Atomic Deduction)', 'మందుల పంపిణీ (FEFO కచ్చిత తగ్గింపు)')}
+        subtitle={selectedMedicine ? `${selectedMedicine.name} (${selectedMedicine.strength}) • ${tx('Available:', 'అందుబాటులో:')} ${selectedMedicine.stockSummary?.totalAvailableStock}` : ''}
       >
         <form onSubmit={handleDispenseSubmit} className="space-y-4">
           {dispenseFeedback && (
@@ -728,12 +732,12 @@ export default function MedicinesPage() {
               <p className="font-semibold">{dispenseFeedback.message}</p>
               {dispenseFeedback.allocations && (
                 <div className="mt-2 text-[11px] space-y-1">
-                  <p className="font-semibold text-emerald-800">FEFO Automated Allocations:</p>
+                  <p className="font-semibold text-emerald-800">{tx('FEFO Automated Allocations:', 'FEFO బ్యాచ్ కేటాయింపు:')}</p>
                   {dispenseFeedback.allocations.map((a: any) => (
                     <div key={a.batchId} className="flex justify-between border-t border-emerald-200/50 pt-1">
-                      <span>Batch {a.batchNumber}:</span>
+                      <span>{tx('Batch', 'బ్యాచ్')} {a.batchNumber}:</span>
                       <span>
-                        Deducted {a.deductedQuantity} (Remaining: {a.remainingBatchQuantity})
+                        {tx('Deducted', 'తగ్గించినవి')} {a.deductedQuantity} ({tx('Remaining:', 'మిగిలినవి:')} {a.remainingBatchQuantity})
                       </span>
                     </div>
                   ))}
@@ -743,14 +747,17 @@ export default function MedicinesPage() {
           )}
 
           <div className="p-3 bg-teal-50 border border-teal-200 rounded-lg text-[11px] text-teal-900">
-            <p className="font-semibold">First-Expired-First-Out (FEFO) Guarantee:</p>
+            <p className="font-semibold">{tx('First-Expired-First-Out (FEFO) Guarantee:', 'FEFO నియమం హామీ:')}</p>
             <p className="mt-0.5 text-teal-800">
-              The system automatically pulls from batches closest to expiry while strictly quarantining any already-expired stock. Stock can never turn negative.
+              {tx(
+                'The system automatically pulls from batches closest to expiry while strictly quarantining any already-expired stock. Stock can never turn negative.',
+                'ముందుగా గడువు ముగియబోయే బ్యాచ్ నుండి మందులను పంపిణీ చేస్తుంది. కాలం చెల్లినవి ఎప్పుడూ పంపిణీ చేయబడవు.'
+              )}
             </p>
           </div>
 
           <Input
-            label="Quantity to Dispense"
+            label={tx('Quantity to Dispense', 'పంపిణీ చేయాల్సిన పరిమాణం')}
             type="number"
             min="1"
             max={selectedMedicine?.stockSummary?.totalAvailableStock || 1000}
@@ -761,7 +768,7 @@ export default function MedicinesPage() {
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-              Dispensation Reason / Patient Ticket <span className="text-rose-500">*</span>
+              {tx('Dispensation Reason / Patient Ticket', 'పంపిణీ కారణం / రోగి వివరాలు')} <span className="text-rose-500">*</span>
             </label>
             <textarea
               required
@@ -774,7 +781,7 @@ export default function MedicinesPage() {
 
           <div className="pt-2 flex justify-end gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setDispenseModalOpen(false)}>
-              Close
+              {tx('Close', 'మూసివేయండి')}
             </Button>
             <Button
               type="submit"
@@ -783,7 +790,7 @@ export default function MedicinesPage() {
               isLoading={dispensingLoading}
               disabled={Number(dispenseQty) <= 0 || Number(dispenseQty) > (selectedMedicine?.stockSummary?.totalAvailableStock || 0)}
             >
-              Confirm FEFO Deduction
+              {tx('Confirm FEFO Deduction', 'FEFO పంపిణీ నిర్ధారించండి')}
             </Button>
           </div>
         </form>
@@ -793,7 +800,7 @@ export default function MedicinesPage() {
       <Modal
         isOpen={addBatchModalOpen}
         onClose={() => setAddBatchModalOpen(false)}
-        title="Add Incoming Medicine Batch"
+        title={tx('Add Incoming Medicine Batch', 'కొత్త మందుల బ్యాచ్ చేర్చండి')}
         subtitle={selectedMedicine ? `${selectedMedicine.name} (${selectedMedicine.strength})` : ''}
       >
         <form onSubmit={handleAddBatchSubmit} className="space-y-4">
@@ -805,14 +812,14 @@ export default function MedicinesPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <Input
-              label="Batch Number"
+              label={tx('Batch Number', 'బ్యాచ్ నంబర్')}
               required
               value={batchNumber}
               onChange={(e) => setBatchNumber(e.target.value)}
             />
 
             <Input
-              label="Quantity Received"
+              label={tx('Quantity Received', 'అందిన పరిమాణం')}
               type="number"
               min="1"
               required
@@ -823,7 +830,7 @@ export default function MedicinesPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <Input
-              label="Manufacturing Date"
+              label={tx('Manufacturing Date', 'తయారీ తేదీ')}
               type="date"
               required
               value={batchMfd}
@@ -831,7 +838,7 @@ export default function MedicinesPage() {
             />
 
             <Input
-              label="Expiry Date"
+              label={tx('Expiry Date', 'గడువు తేదీ')}
               type="date"
               required
               min="2026-11-13"
@@ -841,7 +848,7 @@ export default function MedicinesPage() {
           </div>
 
           <Input
-            label="Supplier / Consignment Source"
+            label={tx('Supplier / Consignment Source', 'సరఫరాదారు')}
             required
             value={batchSupplier}
             onChange={(e) => setBatchSupplier(e.target.value)}
@@ -849,10 +856,10 @@ export default function MedicinesPage() {
 
           <div className="pt-2 flex justify-end gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setAddBatchModalOpen(false)}>
-              Cancel
+              {tx('Cancel', 'రద్దు')}
             </Button>
             <Button type="submit" variant="primary" size="sm" isLoading={batchLoading}>
-              Receive & Register Batch
+              {tx('Receive & Register Batch', 'బ్యాచ్ నమోదు చేయండి')}
             </Button>
           </div>
         </form>
@@ -862,7 +869,7 @@ export default function MedicinesPage() {
       <Modal
         isOpen={batchDetailsModalOpen}
         onClose={() => setBatchDetailsModalOpen(false)}
-        title="Batch-by-Batch Stock Breakdown"
+        title={tx('Batch-by-Batch Stock Breakdown', 'బ్యాచ్ వారీగా నిల్వ వివరాలు')}
         subtitle={selectedMedicine ? `${selectedMedicine.name} (${selectedMedicine.genericName})` : ''}
         maxWidth="lg"
       >
@@ -871,12 +878,12 @@ export default function MedicinesPage() {
             <table className="w-full text-left text-xs text-slate-600">
               <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
                 <tr>
-                  <th className="py-2.5 px-3">Batch Number</th>
-                  <th className="py-2.5 px-3">Available</th>
-                  <th className="py-2.5 px-3">Expiry Date</th>
-                  <th className="py-2.5 px-3">Days Remaining</th>
-                  <th className="py-2.5 px-3">Status</th>
-                  {isStaff && <th className="py-2.5 px-3 text-right">Batch Action</th>}
+                  <th className="py-2.5 px-3">{tx('Batch Number', 'బ్యాచ్ నంబర్')}</th>
+                  <th className="py-2.5 px-3">{tx('Available', 'లభ్యం')}</th>
+                  <th className="py-2.5 px-3">{tx('Expiry Date', 'గడువు తేదీ')}</th>
+                  <th className="py-2.5 px-3">{tx('Days Remaining', 'మిగిలిన రోజులు')}</th>
+                  <th className="py-2.5 px-3">{tx('Status', 'స్థితి')}</th>
+                  {isStaff && <th className="py-2.5 px-3 text-right">{tx('Batch Action', 'చర్య')}</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -891,16 +898,16 @@ export default function MedicinesPage() {
                       <td className="py-2.5 px-3">{b.expiryDate}</td>
                       <td className="py-2.5 px-3">
                         {isExp ? (
-                          <span className="text-rose-600 font-bold">Expired ({Math.abs(daysLeft)}d ago)</span>
+                          <span className="text-rose-600 font-bold">{tx('Expired', 'కాలం చెల్లింది')} ({Math.abs(daysLeft)}d)</span>
                         ) : daysLeft <= 60 ? (
-                          <span className="text-amber-700 font-bold">{daysLeft} days left (Expiring Soon)</span>
+                          <span className="text-amber-700 font-bold">{daysLeft} {tx('days left (Expiring Soon)', 'రోజులు మిగిలాయి')}</span>
                         ) : (
-                          <span className="text-emerald-700 font-medium">{daysLeft} days left</span>
+                          <span className="text-emerald-700 font-medium">{daysLeft} {tx('days left', 'రోజులు')}</span>
                         )}
                       </td>
                       <td className="py-2.5 px-3">
                         <Badge variant={isExp || isQuaran ? 'rose' : 'emerald'} size="sm">
-                          {isExp ? 'EXPIRED' : isQuaran ? 'QUARANTINED' : 'ACTIVE'}
+                          {isExp ? ts('EXPIRED') : isQuaran ? tx('QUARANTINED', 'వేరు చేయబడింది') : tx('ACTIVE', 'యాక్టివ్')}
                         </Badge>
                       </td>
                       {isStaff && (
@@ -919,7 +926,7 @@ export default function MedicinesPage() {
                                 )
                               }
                             >
-                              {isQuaran ? 'Release' : 'Quarantine'}
+                              {isQuaran ? tx('Release', 'విడుదల') : tx('Quarantine', 'వేరుచేయి')}
                             </Button>
                           )}
                         </td>
@@ -933,7 +940,7 @@ export default function MedicinesPage() {
 
           <div className="flex justify-end pt-2">
             <Button variant="outline" size="sm" onClick={() => setBatchDetailsModalOpen(false)}>
-              Close
+              {tx('Close', 'మూసివేయండి')}
             </Button>
           </div>
         </div>
@@ -943,8 +950,8 @@ export default function MedicinesPage() {
       <Modal
         isOpen={addMedModalOpen}
         onClose={() => setAddMedModalOpen(false)}
-        title="Register New Medicine in Formulary"
-        subtitle="Adds a new catalog entry to Kantheru PHC dispensary (batches added separately)"
+        title={tx('Register New Medicine in Formulary', 'కొత్త మందును జాబితాలో చేర్చండి')}
+        subtitle={tx('Adds a new catalog entry to Kantheru PHC dispensary (batches added separately)', 'కంతేరు PHC డిస్పెన్సరీకి కొత్త మందును జోడించండి')}
       >
         <form onSubmit={handleAddMedicineSubmit} className="space-y-4">
           {addMedError && (
@@ -955,14 +962,14 @@ export default function MedicinesPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
-              label="Brand / Catalog Name"
+              label={tx('Brand / Catalog Name', 'బ్రాండ్ / పేరు')}
               required
               value={medName}
               onChange={(e) => setMedName(e.target.value)}
               placeholder="e.g. ORS Electrolytes Sachet"
             />
             <Input
-              label="Generic Name"
+              label={tx('Generic Name', 'జెనరిక్ పేరు')}
               required
               value={medGeneric}
               onChange={(e) => setMedGeneric(e.target.value)}
@@ -972,7 +979,7 @@ export default function MedicinesPage() {
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <Select
-              label="Category"
+              label={tx('Category', 'వర్గం')}
               options={[
                 { value: 'Antibiotic', label: 'Antibiotic' },
                 { value: 'Analgesic', label: 'Analgesic' },
@@ -985,7 +992,7 @@ export default function MedicinesPage() {
               onChange={(e) => setMedCategory(e.target.value)}
             />
             <Select
-              label="Form"
+              label={tx('Form', 'రూపం')}
               options={[
                 { value: 'Tablet', label: 'Tablet' },
                 { value: 'Capsule', label: 'Capsule' },
@@ -997,14 +1004,14 @@ export default function MedicinesPage() {
               onChange={(e) => setMedForm(e.target.value)}
             />
             <Input
-              label="Strength"
+              label={tx('Strength', 'సామర్థ్యం')}
               required
               value={medStrength}
               onChange={(e) => setMedStrength(e.target.value)}
               placeholder="500mg"
             />
             <Input
-              label="Unit"
+              label={tx('Unit', 'యూనిట్')}
               required
               value={medUnit}
               onChange={(e) => setMedUnit(e.target.value)}
@@ -1014,7 +1021,7 @@ export default function MedicinesPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
-              label="Minimum Safe Threshold"
+              label={tx('Minimum Safe Threshold', 'కనీస సురక్షిత నిల్వ')}
               type="number"
               min="1"
               required
@@ -1022,7 +1029,7 @@ export default function MedicinesPage() {
               onChange={(e) => setMedThreshold(e.target.value)}
             />
             <Input
-              label="Storage Conditions"
+              label={tx('Storage Conditions', 'నిల్వ పరిస్థితులు')}
               value={medStorage}
               onChange={(e) => setMedStorage(e.target.value)}
             />
@@ -1030,10 +1037,10 @@ export default function MedicinesPage() {
 
           <div className="pt-2 flex justify-end gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setAddMedModalOpen(false)}>
-              Cancel
+              {tx('Cancel', 'రద్దు')}
             </Button>
             <Button type="submit" variant="primary" size="sm" isLoading={addingMed}>
-              Save to Formulary
+              {tx('Save to Formulary', 'మందును సేవ్ చేయండి')}
             </Button>
           </div>
         </form>

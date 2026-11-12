@@ -16,12 +16,20 @@ export const Card: React.FC<CardProps> = ({
   onMouseMove,
   ...props
 }) => {
+  const rafRef = React.useRef<number>(0);
+
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (hoverEffect) {
-        const rect = e.currentTarget.getBoundingClientRect();
-        e.currentTarget.style.setProperty('--spot-x', `${e.clientX - rect.left}px`);
-        e.currentTarget.style.setProperty('--spot-y', `${e.clientY - rect.top}px`);
+        const target = e.currentTarget;
+        const clientX = e.clientX;
+        const clientY = e.clientY;
+        if (rafRef.current) cancelAnimationFrame(rafRef.current);
+        rafRef.current = requestAnimationFrame(() => {
+          const rect = target.getBoundingClientRect();
+          target.style.setProperty('--spot-x', `${clientX - rect.left}px`);
+          target.style.setProperty('--spot-y', `${clientY - rect.top}px`);
+        });
       }
       if (onMouseMove) onMouseMove(e);
     },
@@ -32,7 +40,7 @@ export const Card: React.FC<CardProps> = ({
     <div
       onMouseMove={handleMouseMove}
       className={clsx(
-        'bg-white border border-slate-200/85 rounded-2xl shadow-soft overflow-hidden transform-gpu transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
+        'perf-card bg-white border border-slate-200/85 rounded-2xl shadow-soft overflow-hidden transform-gpu transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
         hoverEffect &&
           'spotlight-surface hover:-translate-y-1.5 hover:shadow-elevated hover:border-teal-300/90 group',
         className

@@ -30,7 +30,7 @@ import { AnimatedCounter, ScrollReveal } from '@/components/ui/Motion';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function WaterPage() {
-  const { lang, t } = useLanguage();
+  const { lang, t, tx, ts } = useLanguage();
   const [activeTab, setActiveTab] = useState<'comparison' | 'sections' | 'quality' | 'complaints'>('comparison');
   const [sections, setSections] = useState<any[]>([]);
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -287,7 +287,7 @@ export default function WaterPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 1500000) {
-      alert('Please attach a document/image under 1.5 MB.');
+      alert(tx('Please attach a document/image under 1.5 MB.', 'దయచేసి 1.5 MB కంటే తక్కువ డాక్యుమెంట్/చిత్రాన్ని జత చేయండి.'));
       return;
     }
     setQReportFileName(file.name);
@@ -320,14 +320,14 @@ export default function WaterPage() {
         </div>
 
         {/* View Switcher */}
-        <div className="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+        <div className="flex flex-wrap items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold">
           <button
             onClick={() => setActiveTab('comparison')}
             className={`px-3 py-1.5 rounded-lg transition-all ${
               activeTab === 'comparison' ? 'bg-white text-navy-950 shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            5-Section Comparison
+            {tx('5-Section Comparison', '5-విభాగాల పోలిక')}
           </button>
           <button
             onClick={() => setActiveTab('sections')}
@@ -335,7 +335,7 @@ export default function WaterPage() {
               activeTab === 'sections' ? 'bg-white text-navy-950 shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Schedules & Supply Logs ({records.length})
+            {tx(`Schedules & Supply Logs (${records.length})`, `షెడ్యూళ్ళు & సరఫరా లాగ్‌లు (${records.length})`)}
           </button>
           <button
             onClick={() => setActiveTab('quality')}
@@ -343,7 +343,7 @@ export default function WaterPage() {
               activeTab === 'quality' ? 'bg-white text-navy-950 shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Lab Water Quality ({qualityReports.length})
+            {tx(`Lab Water Quality (${qualityReports.length})`, `ల్యాబ్ నీటి నాణ్యత (${qualityReports.length})`)}
           </button>
           <button
             onClick={() => setActiveTab('complaints')}
@@ -351,7 +351,7 @@ export default function WaterPage() {
               activeTab === 'complaints' ? 'bg-white text-navy-950 shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Interruption Reports ({complaints.length})
+            {tx(`Interruption Reports (${complaints.length})`, `సరఫరా అంతరాయ ఫిర్యాదులు (${complaints.length})`)}
           </button>
         </div>
       </div>
@@ -360,9 +360,12 @@ export default function WaterPage() {
       <div className="p-3.5 bg-teal-50/80 border border-teal-200 rounded-xl text-xs text-teal-900 flex items-start gap-2.5">
         <Shield className="w-4 h-4 text-teal-700 shrink-0 mt-0.5" />
         <div>
-          <p className="font-semibold text-teal-950">Scientific Quality Assurance Protocol:</p>
+          <p className="font-semibold text-teal-950">{tx('Scientific Quality Assurance Protocol:', 'శాస్త్రీయ నాణ్యతా హామీ నిబంధన:')}</p>
           <p className="mt-0.5 text-teal-800 leading-relaxed">
-            HEALTHBRIDGE 360 strictly adheres to non-inferential water data standards. Sodium and Fluoride concentrations are NEVER inferred from TDS. Water is NEVER declared potable from incomplete testing data. All 5 parameters (Sodium, Fluoride, pH, TDS, Microbial Coliform) must be verified before safe drinking status is certified.
+            {tx(
+              'HEALTHBRIDGE 360 strictly adheres to non-inferential water data standards. Sodium and Fluoride concentrations are NEVER inferred from TDS. Water is NEVER declared potable from incomplete testing data. All 5 parameters (Sodium, Fluoride, pH, TDS, Microbial Coliform) must be verified before safe drinking status is certified.',
+              'HEALTHBRIDGE 360 ఖచ్చితమైన శాస్త్రీయ నీటి పరీక్షా ప్రమాణాలను పాటిస్తుంది. సోడియం మరియు ఫ్లోరైడ్ స్థాయిలను TDS నుండి ఎన్నడూ అంచనా వేయబడదు. 5 పారామీటర్లు (సోడియం, ఫ్లోరైడ్, pH, TDS, కోలిఫామ్) నిర్ధారించబడిన తర్వాతే తాగునీటి సురక్షిత సర్టిఫికెట్ ఇవ్వబడుతుంది.'
+            )}
           </p>
         </div>
       </div>
@@ -370,13 +373,16 @@ export default function WaterPage() {
       {/* TAB 1: 5-SECTION COMPARISON DASHBOARD */}
       {activeTab === 'comparison' && (
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h2 className="text-sm font-bold text-navy-950 uppercase tracking-wider">
-                Five-Section Water Distribution Comparison
+                {tx('Five-Section Water Distribution Comparison', 'ఐదు విభాగాల నీటి పంపిణీ పోలిక')}
               </h2>
               <p className="text-xs text-slate-500">
-                Calculated strictly from real telemetry records using the Water Distribution Analysis Algorithm
+                {tx(
+                  'Calculated strictly from real telemetry records using the Water Distribution Analysis Algorithm',
+                  'వాస్తవ టెలిమెట్రీ రికార్డుల ఆధారంగా నీటి పంపిణీ విశ్లేషణ అల్గారిథమ్ ద్వారా లెక్కించబడింది'
+                )}
               </p>
             </div>
             {isOfficer && (
@@ -386,7 +392,7 @@ export default function WaterPage() {
                 onClick={() => setLogModalOpen(true)}
                 icon={<Plus className="w-3.5 h-3.5" />}
               >
-                Log Supply Record
+                {tx('Log Supply Record', 'సరఫరా రికార్డు నమోదు')}
               </Button>
             )}
           </div>
@@ -398,65 +404,65 @@ export default function WaterPage() {
                 <ScrollReveal key={sec.id} delayMs={sec.id * 55}>
                   <Card className="border-slate-200 hover:border-teal-400 transition-all flex flex-col justify-between h-full">
                   <CardHeader
-                    title={`Section ${sec.id}`}
+                    title={tx(`Section ${sec.id}`, `విభాగం ${sec.id}`)}
                     subtitle={sec.name.split(' - ')[1] || sec.name}
                     className="p-4"
                   />
                   <CardContent className="p-4 space-y-3 pt-0 text-xs">
                     <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-100 space-y-1.5">
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Total Volume:</span>
+                        <span className="text-slate-500">{tx('Total Volume:', 'మొత్తం పరిమాణం:')}</span>
                         <strong className="text-navy-950 font-mono">
                           {analysis?.totalMeasuredVolumeKL || 0} KL
                         </strong>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Avg Duration:</span>
+                        <span className="text-slate-500">{tx('Avg Duration:', 'సగటు వ్యవధి:')}</span>
                         <span className="font-semibold text-slate-800">
                           {analysis?.averageSupplyDurationMinutes !== null
-                            ? `${analysis.averageSupplyDurationMinutes} mins`
-                            : 'No Data'}
+                            ? `${analysis.averageSupplyDurationMinutes} ${tx('mins', 'నిమి')}`
+                            : tx('No Data', 'డేటా లేదు')}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Avg Flow Rate:</span>
+                        <span className="text-slate-500">{tx('Avg Flow Rate:', 'సగటు ప్రవాహం:')}</span>
                         <span className="font-mono text-teal-700 font-semibold">
                           {analysis?.averageFlowRateLpm !== null
                             ? `${analysis.averageFlowRateLpm} L/min`
-                            : 'Sensor Missing'}
+                            : tx('Sensor Missing', 'సెన్సార్ లేదు')}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Avg Pressure:</span>
+                        <span className="text-slate-500">{tx('Avg Pressure:', 'సగటు ఒత్తిడి:')}</span>
                         <span className="font-mono text-slate-700">
                           {analysis?.averagePressureBar !== null
                             ? `${analysis.averagePressureBar} Bar`
-                            : 'Gauge Missing'}
+                            : tx('Gauge Missing', 'గేజ్ లేదు')}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-500">Interruptions:</span>
+                        <span className="text-slate-500">{tx('Interruptions:', 'అంతరాయాలు:')}</span>
                         <Badge
                           variant={analysis?.interruptionCount > 0 ? 'amber' : 'emerald'}
                           size="sm"
                         >
-                          {analysis?.interruptionCount || 0} Logs
+                          {analysis?.interruptionCount || 0} {tx('Logs', 'లాగ్‌లు')}
                         </Badge>
                       </div>
                       <div className="flex justify-between pt-1 border-t border-slate-200/60">
-                        <span className="text-slate-500">Last Supply:</span>
+                        <span className="text-slate-500">{tx('Last Supply:', 'చివరి సరఫరా:')}</span>
                         <span className="font-semibold text-slate-800">
                           {analysis?.daysSinceLastRecordedSupply !== null
-                            ? `${analysis.daysSinceLastRecordedSupply}d ago`
-                            : 'Pending'}
+                            ? `${analysis.daysSinceLastRecordedSupply}${tx('d ago', 'రో. క్రితం')}`
+                            : tx('Pending', 'పెండింగ్')}
                         </span>
                       </div>
                     </div>
 
                     <div className="text-[11px] text-slate-500 space-y-0.5">
-                      <p>Households: <strong>{sec.householdsCount}</strong></p>
-                      <p>Tank: <strong>{(sec.tankCapacityLiters / 1000).toFixed(0)} KL</strong></p>
-                      <p className="truncate">Operator: {sec.pumpOperatorName}</p>
+                      <p>{tx('Households:', 'కుటుంబాలు:')} <strong>{sec.householdsCount}</strong></p>
+                      <p>{tx('Tank:', 'ట్యాంక్:')} <strong>{(sec.tankCapacityLiters / 1000).toFixed(0)} KL</strong></p>
+                      <p className="truncate">{tx('Operator:', 'ఆపరేటర్:')} {sec.pumpOperatorName}</p>
                     </div>
                   </CardContent>
                   </Card>
@@ -469,8 +475,8 @@ export default function WaterPage() {
           {sectionAnalyses.length > 0 && (
             <Card>
               <CardHeader
-                title="5-Section Cumulative Supplied Volume Comparison (KL)"
-                subtitle="Proportional distribution equity across Sections 1–5 from real pumping records"
+                title={tx('5-Section Cumulative Supplied Volume Comparison (KL)', '5-విభాగాల మొత్తం సరఫరా పరిమాణం పోలిక (KL)')}
+                subtitle={tx('Proportional distribution equity across Sections 1–5 from real pumping records', 'వాస్తవ పంపింగ్ రికార్డుల నుండి 1–5 విభాగాలలో సమాన నీటి పంపిణీ')}
                 action={<BarChart className="w-4 h-4 text-teal-600" />}
               />
               <CardContent className="space-y-3">
@@ -483,7 +489,7 @@ export default function WaterPage() {
                       <div key={a.sectionId} className="space-y-1">
                         <div className="flex items-center justify-between text-xs">
                           <span className="font-semibold text-navy-950">
-                            Section {a.sectionId} • {sec?.name?.split(' - ')[1] || ''}
+                            {tx(`Section ${a.sectionId}`, `విభాగం ${a.sectionId}`)} • {sec?.name?.split(' - ')[1] || ''}
                           </span>
                           <span className="font-mono font-bold text-teal-700">
                             <AnimatedCounter value={Math.round(a.totalMeasuredVolumeKL || 0)} suffix=" KL" />
@@ -506,21 +512,21 @@ export default function WaterPage() {
           {/* Comparative Analytical Table */}
           <Card>
             <CardHeader
-              title="Verified Cross-Section Metrics Table"
-              subtitle="Explicitly identifies uninstalled sensors separately from zero measurement values"
+              title={tx('Verified Cross-Section Metrics Table', 'ధృవీకరించబడిన విభాగాల వారీ మెట్రిక్స్ పట్టిక')}
+              subtitle={tx('Explicitly identifies uninstalled sensors separately from zero measurement values', 'అమర్చని సెన్సార్లను సున్నా విలువల నుండి స్పష్టంగా వేరు చేస్తుంది')}
             />
             <CardContent className="p-0 overflow-x-auto">
               <table className="w-full text-left text-xs text-slate-600">
                 <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
                   <tr>
-                    <th className="py-3 px-4">Section Zone</th>
-                    <th className="py-3 px-4">Households</th>
-                    <th className="py-3 px-4">Total Supplied Volume</th>
-                    <th className="py-3 px-4">Avg Duration</th>
-                    <th className="py-3 px-4">Avg Flow Rate (Lpm)</th>
-                    <th className="py-3 px-4">Avg Pressure (Bar)</th>
-                    <th className="py-3 px-4">Interruption Rate</th>
-                    <th className="py-3 px-4">Telemetry Quality</th>
+                    <th className="py-3 px-4">{tx('Section Zone', 'విభాగం జోన్')}</th>
+                    <th className="py-3 px-4">{tx('Households', 'కుటుంబాలు')}</th>
+                    <th className="py-3 px-4">{tx('Total Supplied Volume', 'మొత్తం సరఫరా (KL)')}</th>
+                    <th className="py-3 px-4">{tx('Avg Duration', 'సగటు వ్యవధి')}</th>
+                    <th className="py-3 px-4">{tx('Avg Flow Rate (Lpm)', 'సగటు ప్రవాహం (Lpm)')}</th>
+                    <th className="py-3 px-4">{tx('Avg Pressure (Bar)', 'సగటు ఒత్తిడి (Bar)')}</th>
+                    <th className="py-3 px-4">{tx('Interruption Rate', 'అంతరాయ రేటు')}</th>
+                    <th className="py-3 px-4">{tx('Telemetry Quality', 'టెలిమెట్రీ నాణ్యత')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -529,7 +535,7 @@ export default function WaterPage() {
                     return (
                       <tr key={a.sectionId} className="hover:bg-slate-50/80 transition-colors">
                         <td className="py-3 px-4">
-                          <strong className="text-navy-950">Section {a.sectionId}</strong>
+                          <strong className="text-navy-950">{tx(`Section ${a.sectionId}`, `విభాగం ${a.sectionId}`)}</strong>
                           <p className="text-[11px] text-slate-500">{sec?.name.split(' - ')[1]}</p>
                         </td>
                         <td className="py-3 px-4 font-semibold text-slate-800">{sec?.householdsCount}</td>
@@ -538,7 +544,7 @@ export default function WaterPage() {
                         </td>
                         <td className="py-3 px-4">
                           {a.averageSupplyDurationMinutes !== null
-                            ? `${a.averageSupplyDurationMinutes} mins`
+                            ? `${a.averageSupplyDurationMinutes} ${tx('mins', 'నిమి')}`
                             : '—'}
                         </td>
                         <td className="py-3 px-4 font-mono">
@@ -546,7 +552,7 @@ export default function WaterPage() {
                             <span className="text-teal-700 font-semibold">{a.averageFlowRateLpm} L/min</span>
                           ) : (
                             <span className="text-amber-700 bg-amber-50 px-2 py-0.5 rounded text-[10px]">
-                              Sensor Missing
+                              {tx('Sensor Missing', 'సెన్సార్ లేదు')}
                             </span>
                           )}
                         </td>
@@ -554,7 +560,7 @@ export default function WaterPage() {
                           {a.averagePressureBar !== null ? (
                             <span>{a.averagePressureBar} Bar</span>
                           ) : (
-                            <span className="text-slate-400 italic">Unrecorded</span>
+                            <span className="text-slate-400 italic">{tx('Unrecorded', 'నమోదు కాలేదు')}</span>
                           )}
                         </td>
                         <td className="py-3 px-4">
@@ -564,10 +570,10 @@ export default function WaterPage() {
                         </td>
                         <td className="py-3 px-4">
                           {a.hasMissingMeasurements ? (
-                            <span className="text-[11px] text-amber-700 font-medium">Partial Sensors</span>
+                            <span className="text-[11px] text-amber-700 font-medium">{tx('Partial Sensors', 'పాక్షిక సెన్సార్లు')}</span>
                           ) : (
                             <span className="text-[11px] text-emerald-700 font-medium flex items-center gap-1">
-                              <CheckCircle className="w-3 h-3" /> Fully Metered
+                              <CheckCircle className="w-3 h-3" /> {tx('Fully Metered', 'పూర్తిగా మీటర్ చేయబడింది')}
                             </span>
                           )}
                         </td>
@@ -588,9 +594,9 @@ export default function WaterPage() {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold text-navy-950 uppercase tracking-wider">
-                Configured Section Supply Timetables (Sections 1–5)
+                {tx('Configured Section Supply Timetables (Sections 1–5)', 'నిర్ణయించిన విభాగాల నీటి సరఫరా సమయాలు (విభాగాలు 1–5)')}
               </h2>
-              <span className="text-xs text-slate-500">Daily Overhead Tank Release Windows</span>
+              <span className="text-xs text-slate-500">{tx('Daily Overhead Tank Release Windows', 'రోజువారీ ఓవర్‌హెడ్ ట్యాంక్ విడుదల సమయాలు')}</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
               {sections.map((sec) => {
@@ -598,9 +604,9 @@ export default function WaterPage() {
                 return (
                   <Card key={sec.id} className="border-slate-200 p-4 space-y-2.5">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-xs text-navy-950">Section {sec.id}</span>
+                      <span className="font-bold text-xs text-navy-950">{tx(`Section ${sec.id}`, `విభాగం ${sec.id}`)}</span>
                       <Badge variant={sch?.isActive !== false ? 'emerald' : 'amber'} size="sm">
-                        {sch?.isActive !== false ? 'Active' : 'Paused'}
+                        {sch?.isActive !== false ? tx('Active', 'సక్రియం') : tx('Paused', 'నిలిపివేత')}
                       </Badge>
                     </div>
                     <p className="text-[11px] text-slate-500 truncate">{sec.name.split(' - ')[1] || sec.name}</p>
@@ -609,7 +615,7 @@ export default function WaterPage() {
                         {sch ? `${sch.scheduledStartTime} – ${sch.scheduledEndTime}` : '06:00 – 08:00'}
                       </p>
                       <p className="text-[10px] text-slate-500 mt-0.5">
-                        {sch ? `${sch.durationMinutes} min • Target ${sch.targetQuantityKL} KL` : 'Default Window'}
+                        {sch ? `${sch.durationMinutes} ${tx('min • Target', 'నిమి • లక్ష్యం')} ${sch.targetQuantityKL} KL` : tx('Default Window', 'సాధారణ సమయం')}
                       </p>
                     </div>
                     {isOfficer && (
@@ -620,7 +626,7 @@ export default function WaterPage() {
                         onClick={() => handleOpenEditSchedule(sec.id)}
                         icon={<Sliders className="w-3 h-3" />}
                       >
-                        Edit Schedule
+                        {tx('Edit Schedule', 'షెడ్యూల్ మార్చండి')}
                       </Button>
                     )}
                   </Card>
@@ -631,7 +637,7 @@ export default function WaterPage() {
 
           <div className="flex items-center justify-between pt-2">
             <h2 className="text-sm font-bold text-navy-950 uppercase tracking-wider">
-              Water Pumping & Supply Records Log
+              {tx('Water Pumping & Supply Records Log', 'నీటి పంపింగ్ & సరఫరా రికార్డుల లాగ్')}
             </h2>
             {isOfficer && (
               <Button
@@ -640,7 +646,7 @@ export default function WaterPage() {
                 onClick={() => setLogModalOpen(true)}
                 icon={<Plus className="w-3.5 h-3.5" />}
               >
-                Log Supply Operation
+                {tx('Log Supply Operation', 'సరఫరా నమోదు చేయండి')}
               </Button>
             )}
           </div>
@@ -650,21 +656,21 @@ export default function WaterPage() {
               <table className="w-full text-left text-xs text-slate-600">
                 <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
                   <tr>
-                    <th className="py-3 px-4">Date</th>
-                    <th className="py-3 px-4">Section</th>
-                    <th className="py-3 px-4">Supply Window</th>
-                    <th className="py-3 px-4">Supplied KL</th>
-                    <th className="py-3 px-4">Flow & Pressure</th>
-                    <th className="py-3 px-4">Interruption</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4">Logged By</th>
+                    <th className="py-3 px-4">{tx('Date', 'తేదీ')}</th>
+                    <th className="py-3 px-4">{tx('Section', 'విభాగం')}</th>
+                    <th className="py-3 px-4">{tx('Supply Window', 'సరఫరా సమయం')}</th>
+                    <th className="py-3 px-4">{tx('Supplied KL', 'సరఫరా (KL)')}</th>
+                    <th className="py-3 px-4">{tx('Flow & Pressure', 'ప్రవాహం & ఒత్తిడి')}</th>
+                    <th className="py-3 px-4">{tx('Interruption', 'అంతరాయం')}</th>
+                    <th className="py-3 px-4">{tx('Status', 'స్థితి')}</th>
+                    <th className="py-3 px-4">{tx('Logged By', 'నమోదు చేసినవారు')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {records.map((r) => (
                     <tr key={r.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="py-3 px-4 font-mono font-semibold text-slate-900">{r.supplyDate}</td>
-                      <td className="py-3 px-4 font-bold text-navy-950">Section {r.sectionId}</td>
+                      <td className="py-3 px-4 font-bold text-navy-950">{tx(`Section ${r.sectionId}`, `విభాగం ${r.sectionId}`)}</td>
                       <td className="py-3 px-4 font-mono">
                         {r.actualStartTime} - {r.actualEndTime} ({r.actualDurationMinutes}m)
                       </td>
@@ -675,18 +681,18 @@ export default function WaterPage() {
                       <td className="py-3 px-4">
                         {r.interruptionOccurred ? (
                           <span className="text-amber-800 font-semibold text-[11px] block">
-                            ⚠️ {r.interruptionReason || 'Interrupted'}
+                            ⚠️ {r.interruptionReason || tx('Interrupted', 'అంతరాయం')}
                           </span>
                         ) : (
-                          <span className="text-emerald-700 text-[11px]">Uninterrupted</span>
+                          <span className="text-emerald-700 text-[11px]">{tx('Uninterrupted', 'నిరంతరాయం')}</span>
                         )}
                       </td>
                       <td className="py-3 px-4">
                         <Badge variant={r.status === 'COMPLETED' ? 'emerald' : 'amber'}>
-                          {r.status}
+                          {ts(r.status)}
                         </Badge>
                       </td>
-                      <td className="py-3 px-4 text-slate-500">{r.recordedByUser?.name || 'Water Operator'}</td>
+                      <td className="py-3 px-4 text-slate-500">{r.recordedByUser?.name || tx('Water Operator', 'వాటర్ ఆపరేటర్')}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -699,13 +705,16 @@ export default function WaterPage() {
       {/* TAB 3: WATER QUALITY LAB TESTING */}
       {activeTab === 'quality' && (
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h2 className="text-sm font-bold text-navy-950 uppercase tracking-wider">
-                Laboratory Water Quality Testing & Potability Certification
+                {tx('Laboratory Water Quality Testing & Potability Certification', 'ప్రయోగశాల నీటి నాణ్యత పరీక్ష & త్రాగునీటి ధృవీకరణ')}
               </h2>
               <p className="text-xs text-slate-500">
-                Individual chemical & microbial testing matrix evaluated against BIS 10500:2012 permissible standards
+                {tx(
+                  'Individual chemical & microbial testing matrix evaluated against BIS 10500:2012 permissible standards',
+                  'BIS 10500:2012 ప్రమాణాల ప్రకారం రసాయన & సూక్ష్మజీవ పరీక్షా ఫలితాలు'
+                )}
               </p>
             </div>
             {isOfficer && (
@@ -715,7 +724,7 @@ export default function WaterPage() {
                 onClick={() => setQualityModalOpen(true)}
                 icon={<Plus className="w-3.5 h-3.5" />}
               >
-                Upload Lab Test Report
+                {tx('Upload Lab Test Report', 'ల్యాబ్ పరీక్ష నివేదిక అప్‌లోడ్')}
               </Button>
             )}
           </div>
@@ -726,8 +735,8 @@ export default function WaterPage() {
               return (
                 <Card key={r.id} className="border-slate-200">
                   <CardHeader
-                    title={`Section ${r.sectionId} — ${r.sampleLocation}`}
-                    subtitle={`Tested on ${r.testDate} by ${r.testedBy} (${r.labName})`}
+                    title={`${tx(`Section ${r.sectionId}`, `విభాగం ${r.sectionId}`)} — ${r.sampleLocation}`}
+                    subtitle={`${tx('Tested on', 'పరీక్ష తేదీ')} ${r.testDate} ${tx('by', 'ద్వారా')} ${r.testedBy} (${r.labName})`}
                     action={
                       <div className="flex items-center gap-2">
                         <Badge
@@ -739,7 +748,7 @@ export default function WaterPage() {
                               : 'rose'
                           }
                         >
-                          {r.verificationStatus}
+                          {ts(r.verificationStatus)}
                         </Badge>
                         <Badge
                           variant={
@@ -750,14 +759,14 @@ export default function WaterPage() {
                               : 'amber'
                           }
                         >
-                          {assessment?.overallPotabilityStatus?.replace(/_/g, ' ')}
+                          {ts(assessment?.overallPotabilityStatus || '')}
                         </Badge>
                       </div>
                     }
                   />
                   <CardContent className="space-y-4">
                     <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                      <strong className="text-slate-800">Quality Assessment Result:</strong>{' '}
+                      <strong className="text-slate-800">{tx('Quality Assessment Result:', 'నాణ్యతా అంచనా ఫలితం:')}</strong>{' '}
                       <span className="text-slate-700">{assessment?.assessmentSummary}</span>
                     </div>
 
@@ -765,11 +774,11 @@ export default function WaterPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 text-xs">
                       {/* pH */}
                       <div className="p-3 rounded-lg border bg-white border-slate-200">
-                        <p className="text-slate-500 font-semibold">pH Value</p>
+                        <p className="text-slate-500 font-semibold">{tx('pH Value', 'pH విలువ')}</p>
                         <p className="text-lg font-bold text-navy-950 mt-1">
-                          {r.phValue !== null ? r.phValue : 'Not Tested'}
+                          {r.phValue !== null ? r.phValue : tx('Not Tested', 'పరీక్షించబడలేదు')}
                         </p>
-                        <p className="text-[10px] text-slate-400">Spec: 6.5 - 8.5</p>
+                        <p className="text-[10px] text-slate-400">{tx('Spec:', 'ప్రమాణం:')} 6.5 - 8.5</p>
                         <Badge
                           variant={assessment?.parameters?.ph?.isSafe ? 'emerald' : 'amber'}
                           size="sm"
@@ -783,9 +792,9 @@ export default function WaterPage() {
                       <div className="p-3 rounded-lg border bg-white border-slate-200">
                         <p className="text-slate-500 font-semibold">TDS (ppm)</p>
                         <p className="text-lg font-bold text-navy-950 mt-1">
-                          {r.tdsPpm !== null ? `${r.tdsPpm} ppm` : 'Not Tested'}
+                          {r.tdsPpm !== null ? `${r.tdsPpm} ppm` : tx('Not Tested', 'పరీక్షించబడలేదు')}
                         </p>
-                        <p className="text-[10px] text-slate-400">Spec: ≤ 500 ppm</p>
+                        <p className="text-[10px] text-slate-400">{tx('Spec:', 'ప్రమాణం:')} ≤ 500 ppm</p>
                         <Badge
                           variant={assessment?.parameters?.tds?.isSafe ? 'emerald' : 'amber'}
                           size="sm"
@@ -797,11 +806,11 @@ export default function WaterPage() {
 
                       {/* Fluoride */}
                       <div className="p-3 rounded-lg border bg-white border-slate-200">
-                        <p className="text-slate-500 font-semibold">Fluoride (mg/L)</p>
+                        <p className="text-slate-500 font-semibold">{tx('Fluoride (mg/L)', 'ఫ్లోరైడ్ (mg/L)')}</p>
                         <p className="text-lg font-bold text-navy-950 mt-1">
-                          {r.fluorideMgL !== null ? `${r.fluorideMgL} mg/L` : 'Not Tested'}
+                          {r.fluorideMgL !== null ? `${r.fluorideMgL} mg/L` : tx('Not Tested', 'పరీక్షించబడలేదు')}
                         </p>
-                        <p className="text-[10px] text-slate-400">Spec: ≤ 1.0 mg/L</p>
+                        <p className="text-[10px] text-slate-400">{tx('Spec:', 'ప్రమాణం:')} ≤ 1.0 mg/L</p>
                         <Badge
                           variant={assessment?.parameters?.fluoride?.isSafe ? 'emerald' : 'rose'}
                           size="sm"
@@ -813,11 +822,11 @@ export default function WaterPage() {
 
                       {/* Sodium */}
                       <div className="p-3 rounded-lg border bg-white border-slate-200">
-                        <p className="text-slate-500 font-semibold">Sodium (mg/L)</p>
+                        <p className="text-slate-500 font-semibold">{tx('Sodium (mg/L)', 'సోడియం (mg/L)')}</p>
                         <p className="text-lg font-bold text-navy-950 mt-1">
-                          {r.sodiumMgL !== null ? `${r.sodiumMgL} mg/L` : 'Not Tested'}
+                          {r.sodiumMgL !== null ? `${r.sodiumMgL} mg/L` : tx('Not Tested', 'పరీక్షించబడలేదు')}
                         </p>
-                        <p className="text-[10px] text-slate-400">Spec: ≤ 200 mg/L</p>
+                        <p className="text-[10px] text-slate-400">{tx('Spec:', 'ప్రమాణం:')} ≤ 200 mg/L</p>
                         <Badge
                           variant={assessment?.parameters?.sodium?.isSafe ? 'emerald' : 'amber'}
                           size="sm"
@@ -829,13 +838,13 @@ export default function WaterPage() {
 
                       {/* Microbial Coliform */}
                       <div className="p-3 rounded-lg border bg-white border-slate-200">
-                        <p className="text-slate-500 font-semibold">Microbial Coliform</p>
+                        <p className="text-slate-500 font-semibold">{tx('Microbial Coliform', 'కోలిఫామ్ బ్యాక్టీరియా')}</p>
                         <p className="text-lg font-bold text-navy-950 mt-1">
                           {r.microbialColiformColonies !== null
                             ? `${r.microbialColiformColonies} CFU/100ml`
-                            : 'Not Tested'}
+                            : tx('Not Tested', 'పరీక్షించబడలేదు')}
                         </p>
-                        <p className="text-[10px] text-slate-400">Spec: 0 CFU/100ml</p>
+                        <p className="text-[10px] text-slate-400">{tx('Spec:', 'ప్రమాణం:')} 0 CFU/100ml</p>
                         <Badge
                           variant={assessment?.parameters?.microbial?.isSafe ? 'emerald' : 'rose'}
                           size="sm"
@@ -855,7 +864,7 @@ export default function WaterPage() {
                           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 font-semibold hover:bg-teal-100 transition-colors"
                         >
                           <FileText className="w-3.5 h-3.5" />
-                          View Attached Laboratory Document
+                          {tx('View Attached Laboratory Document', 'జతచేసిన ల్యాబ్ డాక్యుమెంట్ చూడండి')}
                           <ExternalLink className="w-3 h-3" />
                         </a>
                       </div>
@@ -863,21 +872,21 @@ export default function WaterPage() {
 
                     {isOfficer && r.verificationStatus === 'PENDING_VERIFICATION' && (
                       <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                        <span className="text-xs text-slate-500 mr-2">Officer Action:</span>
+                        <span className="text-xs text-slate-500 mr-2">{tx('Officer Action:', 'అధికారి చర్య:')}</span>
                         <Button
                           variant="success"
                           size="sm"
                           onClick={() => handleVerifyReport(r.id, 'VERIFIED')}
                           icon={<CheckCircle className="w-3.5 h-3.5" />}
                         >
-                          Certify & Verify Lab Report
+                          {tx('Certify & Verify Lab Report', 'ధృవీకరించండి')}
                         </Button>
                         <Button
                           variant="danger"
                           size="sm"
                           onClick={() => handleVerifyReport(r.id, 'REJECTED')}
                         >
-                          Reject Report
+                          {tx('Reject Report', 'తిరస్కరించండి')}
                         </Button>
                       </div>
                     )}
@@ -894,7 +903,7 @@ export default function WaterPage() {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-navy-950 uppercase tracking-wider">
-              Household Water Supply & Pressure Complaints
+              {tx('Household Water Supply & Pressure Complaints', 'గృహ నీటి సరఫరా & ఒత్తిడి ఫిర్యాదులు')}
             </h2>
             <Button
               variant="primary"
@@ -902,7 +911,7 @@ export default function WaterPage() {
               onClick={() => setComplaintModalOpen(true)}
               icon={<Plus className="w-3.5 h-3.5" />}
             >
-              Report Supply Interruption
+              {tx('Report Supply Interruption', 'సరఫరా అంతరాయాన్ని నివేదించండి')}
             </Button>
           </div>
 
@@ -912,20 +921,20 @@ export default function WaterPage() {
                 <table className="w-full text-left text-xs text-slate-600">
                   <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
                     <tr>
-                      <th className="py-3 px-4">Date</th>
-                      <th className="py-3 px-4">Section</th>
-                      <th className="py-3 px-4">Issue Type</th>
-                      <th className="py-3 px-4">Description</th>
-                      <th className="py-3 px-4">Affected Families</th>
-                      <th className="py-3 px-4">Status</th>
-                      {isOfficer && <th className="py-3 px-4 text-right">Officer Actions</th>}
+                      <th className="py-3 px-4">{tx('Date', 'తేదీ')}</th>
+                      <th className="py-3 px-4">{tx('Section', 'విభాగం')}</th>
+                      <th className="py-3 px-4">{tx('Issue Type', 'సమస్య రకం')}</th>
+                      <th className="py-3 px-4">{tx('Description', 'వివరణ')}</th>
+                      <th className="py-3 px-4">{tx('Affected Families', 'ప్రభావిత కుటుంబాలు')}</th>
+                      <th className="py-3 px-4">{tx('Status', 'స్థితి')}</th>
+                      {isOfficer && <th className="py-3 px-4 text-right">{tx('Officer Actions', 'అధికారి చర్యలు')}</th>}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {complaints.map((c) => (
                       <tr key={c.id} className="hover:bg-slate-50/80 transition-colors">
                         <td className="py-3 px-4 font-mono">{new Date(c.createdAt).toLocaleDateString()}</td>
-                        <td className="py-3 px-4 font-bold text-navy-950">Section {c.sectionId}</td>
+                        <td className="py-3 px-4 font-bold text-navy-950">{tx(`Section ${c.sectionId}`, `విభాగం ${c.sectionId}`)}</td>
                         <td className="py-3 px-4">
                           <Badge variant="amber" size="sm">
                             {c.issueType.replace(/_/g, ' ')}
@@ -934,13 +943,13 @@ export default function WaterPage() {
                         <td className="py-3 px-4 max-w-sm">
                           <p>{c.description}</p>
                           {c.adminNotes && (
-                            <p className="text-[11px] text-teal-700 font-medium mt-0.5">Note: {c.adminNotes}</p>
+                            <p className="text-[11px] text-teal-700 font-medium mt-0.5">{tx('Note:', 'గమనిక:')} {c.adminNotes}</p>
                           )}
                         </td>
                         <td className="py-3 px-4 font-semibold text-slate-800">{c.affectedHouseholds}</td>
                         <td className="py-3 px-4">
                           <Badge variant={c.status === 'RESOLVED' ? 'emerald' : c.status === 'IN_PROGRESS' ? 'teal' : 'amber'}>
-                            {c.status}
+                            {ts(c.status)}
                           </Badge>
                         </td>
                         {isOfficer && (
@@ -953,7 +962,7 @@ export default function WaterPage() {
                                   isLoading={complaintActionId === c.id}
                                   onClick={() => handleUpdateComplaintStatus(c.id, 'IN_PROGRESS')}
                                 >
-                                  Dispatch Crew
+                                  {tx('Dispatch Crew', 'సిబ్బందిని పంపండి')}
                                 </Button>
                               )}
                               {c.status !== 'RESOLVED' && (
@@ -963,7 +972,7 @@ export default function WaterPage() {
                                   isLoading={complaintActionId === c.id}
                                   onClick={() => handleUpdateComplaintStatus(c.id, 'RESOLVED')}
                                 >
-                                  Resolve
+                                  {tx('Resolve', 'పరిష్కరించండి')}
                                 </Button>
                               )}
                             </div>
@@ -974,7 +983,7 @@ export default function WaterPage() {
                   </tbody>
                 </table>
               ) : (
-                <p className="p-8 text-center text-xs text-slate-500">No active water supply complaints logged.</p>
+                <p className="p-8 text-center text-xs text-slate-500">{tx('No active water supply complaints logged.', 'సక్రియ నీటి సరఫరా ఫిర్యాదులు లేవు.')}</p>
               )}
             </CardContent>
           </Card>
@@ -985,19 +994,19 @@ export default function WaterPage() {
       <Modal
         isOpen={logModalOpen}
         onClose={() => setLogModalOpen(false)}
-        title="Log Section Water Supply Record"
-        subtitle="Records actual pumping duration, quantity, and telemetry"
+        title={tx('Log Section Water Supply Record', 'విభాగం నీటి సరఫరా రికార్డు నమోదు')}
+        subtitle={tx('Records actual pumping duration, quantity, and telemetry', 'వాస్తవ పంపింగ్ సమయం, పరిమాణం మరియు టెలిమెట్రీ నమోదు చేస్తుంది')}
       >
         <form onSubmit={handleLogSupply} className="space-y-4">
           <Select
-            label="Kantheru Section"
+            label={tx('Kantheru Section', 'కాంతేరు విభాగం')}
             options={sections.map((s) => ({ value: s.id, label: s.name }))}
             value={logSectionId}
             onChange={(e) => setLogSectionId(Number(e.target.value))}
           />
 
           <Input
-            label="Supply Date"
+            label={tx('Supply Date', 'సరఫరా తేదీ')}
             type="date"
             required
             value={logDate}
@@ -1006,14 +1015,14 @@ export default function WaterPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <Input
-              label="Start Time"
+              label={tx('Start Time', 'ప్రారంభ సమయం')}
               type="time"
               required
               value={logStart}
               onChange={(e) => setLogStart(e.target.value)}
             />
             <Input
-              label="End Time"
+              label={tx('End Time', 'ముగింపు సమయం')}
               type="time"
               required
               value={logEnd}
@@ -1023,14 +1032,14 @@ export default function WaterPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <Input
-              label="Actual Duration (Minutes)"
+              label={tx('Actual Duration (Minutes)', 'వ్యవధి (నిమిషాలు)')}
               type="number"
               required
               value={logDuration}
               onChange={(e) => setLogDuration(e.target.value)}
             />
             <Input
-              label="Quantity Supplied (KiloLiters)"
+              label={tx('Quantity Supplied (KiloLiters)', 'సరఫరా పరిమాణం (KL)')}
               type="number"
               step="0.1"
               required
@@ -1041,19 +1050,19 @@ export default function WaterPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <Input
-              label="Flow Rate (Liters / Minute)"
+              label={tx('Flow Rate (Liters / Minute)', 'ప్రవాహ రేటు (LPM)')}
               type="number"
               value={logFlow}
               onChange={(e) => setLogFlow(e.target.value)}
-              placeholder="Leave blank if sensor missing"
+              placeholder={tx('Leave blank if sensor missing', 'సెన్సార్ లేకుంటే ఖాళీగా ఉంచండి')}
             />
             <Input
-              label="Pressure (Bar)"
+              label={tx('Pressure (Bar)', 'ఒత్తిడి (Bar)')}
               type="number"
               step="0.1"
               value={logPressure}
               onChange={(e) => setLogPressure(e.target.value)}
-              placeholder="Leave blank if gauge missing"
+              placeholder={tx('Leave blank if gauge missing', 'గేజ్ లేకుంటే ఖాళీగా ఉంచండి')}
             />
           </div>
 
@@ -1063,25 +1072,25 @@ export default function WaterPage() {
               checked={logInterrupted}
               onChange={(e) => setLogInterrupted(e.target.checked)}
             />
-            <span>Pumping Interruption Occurred during this shift</span>
+            <span>{tx('Pumping Interruption Occurred during this shift', 'ఈ షిఫ్ట్‌లో పంపింగ్ అంతరాయం ఏర్పడింది')}</span>
           </label>
 
           {logInterrupted && (
             <Input
-              label="Interruption Reason"
+              label={tx('Interruption Reason', 'అంతరాయానికి కారణం')}
               required
               value={logReason}
               onChange={(e) => setLogReason(e.target.value)}
-              placeholder="e.g. 3-phase power tripping, motor coil overheating, pipeline fracture..."
+              placeholder={tx('e.g. 3-phase power tripping, motor coil overheating, pipeline fracture...', 'ఉదా. పవర్ కట్, మోటార్ సమస్య, పైప్‌లైన్ లీకేజీ...')}
             />
           )}
 
           <div className="pt-2 flex justify-end gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setLogModalOpen(false)}>
-              Cancel
+              {tx('Cancel', 'రద్దు')}
             </Button>
             <Button type="submit" variant="primary" size="sm" isLoading={logSubmitting}>
-              Save Supply Record
+              {tx('Save Supply Record', 'సరఫరా రికార్డు సేవ్ చేయండి')}
             </Button>
           </div>
         </form>
@@ -1091,12 +1100,12 @@ export default function WaterPage() {
       <Modal
         isOpen={qualityModalOpen}
         onClose={() => setQualityModalOpen(false)}
-        title="Upload Laboratory Water Test Report"
-        subtitle="Mandatory 5-parameter chemical and biological testing results"
+        title={tx('Upload Laboratory Water Test Report', 'ల్యాబ్ నీటి పరీక్ష నివేదిక అప్‌లోడ్')}
+        subtitle={tx('Mandatory 5-parameter chemical and biological testing results', 'తప్పనిసరి 5-పారామీటర్ల రసాయన & జీవ పరీక్ష ఫలితాలు')}
       >
         <form onSubmit={handleAddQualityReport} className="space-y-4">
           <Select
-            label="Section Zone"
+            label={tx('Section Zone', 'విభాగం జోన్')}
             options={sections.map((s) => ({ value: s.id, label: s.name }))}
             value={qSectionId}
             onChange={(e) => setQSectionId(Number(e.target.value))}
@@ -1104,14 +1113,14 @@ export default function WaterPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <Input
-              label="Sample Collection Date"
+              label={tx('Sample Collection Date', 'నమూనా సేకరణ తేదీ')}
               type="date"
               required
               value={qTestDate}
               onChange={(e) => setQTestDate(e.target.value)}
             />
             <Input
-              label="Sample Point Location"
+              label={tx('Sample Point Location', 'నమూనా సేకరణ స్థలం')}
               required
               value={qLocation}
               onChange={(e) => setQLocation(e.target.value)}
@@ -1119,7 +1128,7 @@ export default function WaterPage() {
           </div>
 
           <Input
-            label="Testing Laboratory Name"
+            label={tx('Testing Laboratory Name', 'పరీక్షా ప్రయోగశాల పేరు')}
             required
             value={qLab}
             onChange={(e) => setQLab(e.target.value)}
@@ -1140,7 +1149,7 @@ export default function WaterPage() {
               onChange={(e) => setQTds(e.target.value)}
             />
             <Input
-              label="Fluoride (≤ 1.0 mg/L)"
+              label={tx('Fluoride (≤ 1.0 mg/L)', 'ఫ్లోరైడ్ (≤ 1.0 mg/L)')}
               type="number"
               step="0.01"
               value={qFluoride}
@@ -1150,14 +1159,14 @@ export default function WaterPage() {
 
           <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
             <Input
-              label="Sodium (≤ 200 mg/L)"
+              label={tx('Sodium (≤ 200 mg/L)', 'సోడియం (≤ 200 mg/L)')}
               type="number"
               step="0.1"
               value={qSodium}
               onChange={(e) => setQSodium(e.target.value)}
             />
             <Input
-              label="Coliform (0 CFU/100ml)"
+              label={tx('Coliform (0 CFU/100ml)', 'కోలిఫామ్ (0 CFU/100ml)')}
               type="number"
               value={qColiform}
               onChange={(e) => setQColiform(e.target.value)}
@@ -1166,18 +1175,18 @@ export default function WaterPage() {
 
           <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700">
-              Attach Lab Certificate Scan / Document (Optional)
+              {tx('Attach Lab Certificate Scan / Document (Optional)', 'ల్యాబ్ సర్టిఫికెట్ స్కాన్ జతచేయండి (ఐచ్ఛికం)')}
             </label>
             <div className="flex flex-wrap items-center gap-2">
               <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer">
                 <Upload className="w-3.5 h-3.5 text-teal-600" />
-                {qReportFileName || 'Choose File (PDF/Image)'}
+                {qReportFileName || tx('Choose File (PDF/Image)', 'ఫైల్ ఎంచుకోండి (PDF/Image)')}
                 <input type="file" accept="image/*,.pdf" onChange={handleLabFileSelect} className="hidden" />
               </label>
-              {qReportFileUrl && <Badge variant="emerald" size="sm">Attached</Badge>}
+              {qReportFileUrl && <Badge variant="emerald" size="sm">{tx('Attached', 'జతచేయబడింది')}</Badge>}
             </div>
             <Input
-              label="Or Direct Lab Report Document URL"
+              label={tx('Or Direct Lab Report Document URL', 'లేదా ల్యాబ్ నివేదిక URL')}
               type="url"
               value={qReportFileUrl.startsWith('data:') ? '' : qReportFileUrl}
               onChange={(e) => {
@@ -1190,10 +1199,10 @@ export default function WaterPage() {
 
           <div className="pt-2 flex justify-end gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setQualityModalOpen(false)}>
-              Cancel
+              {tx('Cancel', 'రద్దు')}
             </Button>
             <Button type="submit" variant="primary" size="sm" isLoading={qSubmitting}>
-              Submit Lab Report
+              {tx('Submit Lab Report', 'నివేదికను సమర్పించండి')}
             </Button>
           </div>
         </form>
@@ -1203,20 +1212,20 @@ export default function WaterPage() {
       <Modal
         isOpen={schedModalOpen}
         onClose={() => setSchedModalOpen(false)}
-        title={`Configure Section ${schedSectionId} Supply Schedule`}
-        subtitle="Updates official Kantheru Panchayat pumping schedule & target quota"
+        title={tx(`Configure Section ${schedSectionId} Supply Schedule`, `విభాగం ${schedSectionId} సరఫరా షెడ్యూల్ సవరణ`)}
+        subtitle={tx('Updates official Kantheru Panchayat pumping schedule & target quota', 'అధికారిక కాంతేరు పంచాయతీ పంపింగ్ షెడ్యూల్‌ను అప్‌డేట్ చేస్తుంది')}
       >
         <form onSubmit={handleSaveSchedule} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <Input
-              label="Scheduled Start Time (HH:MM)"
+              label={tx('Scheduled Start Time (HH:MM)', 'ప్రారంభ సమయం (HH:MM)')}
               type="time"
               required
               value={schedStart}
               onChange={(e) => setSchedStart(e.target.value)}
             />
             <Input
-              label="Scheduled End Time (HH:MM)"
+              label={tx('Scheduled End Time (HH:MM)', 'ముగింపు సమయం (HH:MM)')}
               type="time"
               required
               value={schedEnd}
@@ -1225,7 +1234,7 @@ export default function WaterPage() {
           </div>
 
           <Input
-            label="Target Supply Volume (KL)"
+            label={tx('Target Supply Volume (KL)', 'లక్ష్య సరఫరా పరిమాణం (KL)')}
             type="number"
             min="5"
             step="1"
@@ -1241,15 +1250,15 @@ export default function WaterPage() {
               onChange={(e) => setSchedActive(e.target.checked)}
               className="rounded text-teal-600"
             />
-            <span>Schedule is currently active for Section {schedSectionId}</span>
+            <span>{tx(`Schedule is currently active for Section ${schedSectionId}`, `విభాగం ${schedSectionId} కోసం ప్రస్తుతం షెడ్యూల్ సక్రియంగా ఉంది`)}</span>
           </label>
 
           <div className="pt-2 flex justify-end gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setSchedModalOpen(false)}>
-              Cancel
+              {tx('Cancel', 'రద్దు')}
             </Button>
             <Button type="submit" variant="primary" size="sm" isLoading={schedSaving}>
-              Save Schedule
+              {tx('Save Schedule', 'షెడ్యూల్ సేవ్ చేయండి')}
             </Button>
           </div>
         </form>
@@ -1259,32 +1268,32 @@ export default function WaterPage() {
       <Modal
         isOpen={complaintModalOpen}
         onClose={() => setComplaintModalOpen(false)}
-        title="Report Water Supply Issue"
-        subtitle="Direct notice to Section Pump Operator & Panchayat Water Officer"
+        title={tx('Report Water Supply Issue', 'నీటి సరఫరా సమస్యను నివేదించండి')}
+        subtitle={tx('Direct notice to Section Pump Operator & Panchayat Water Officer', 'విభాగం పంప్ ఆపరేటర్ & పంచాయతీ నీటి అధికారికి ప్రత్యక్ష నోటీసు')}
       >
         <form onSubmit={handleFileComplaint} className="space-y-4">
           <Select
-            label="Affected Kantheru Section"
+            label={tx('Affected Kantheru Section', 'ప్రభావిత కాంతేరు విభాగం')}
             options={sections.map((s) => ({ value: s.id, label: s.name }))}
             value={cSectionId}
             onChange={(e) => setCSectionId(Number(e.target.value))}
           />
 
           <Select
-            label="Type of Interruption"
+            label={tx('Type of Interruption', 'అంతరాయ రకం')}
             options={[
-              { value: 'LOW_PRESSURE', label: 'Extremely Low Pressure (Tail-end starvation)' },
-              { value: 'SUPPLY_INTERRUPTION', label: 'Complete Supply Outage / No Water' },
-              { value: 'CONTAMINATED_WATER', label: 'Muddy / Discolored Water' },
-              { value: 'ODOR_TASTE', label: 'Peculiar Chemical / Organic Odor' },
-              { value: 'PIPELINE_LEAKAGE', label: 'Bursted / Leaking Distribution Main' },
+              { value: 'LOW_PRESSURE', label: tx('Extremely Low Pressure (Tail-end starvation)', 'చాలా తక్కువ నీటి ఒత్తిడి') },
+              { value: 'SUPPLY_INTERRUPTION', label: tx('Complete Supply Outage / No Water', 'సరఫరా పూర్తిగా నిలిచిపోయింది') },
+              { value: 'CONTAMINATED_WATER', label: tx('Muddy / Discolored Water', 'మట్టి / కలుషిత నీరు') },
+              { value: 'ODOR_TASTE', label: tx('Peculiar Chemical / Organic Odor', 'దుర్వాసన / రుచి మార్పు') },
+              { value: 'PIPELINE_LEAKAGE', label: tx('Bursted / Leaking Distribution Main', 'పైప్‌లైన్ లీకేజీ / పగులు') },
             ]}
             value={cType}
             onChange={(e) => setCType(e.target.value)}
           />
 
           <Input
-            label="Number of Affected Households"
+            label={tx('Number of Affected Households', 'ప్రభావిత కుటుంబాల సంఖ్య')}
             type="number"
             min="1"
             value={cHouseholds}
@@ -1293,24 +1302,24 @@ export default function WaterPage() {
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-              Specific Street & Issue Description
+              {tx('Specific Street & Issue Description', 'వీధి & సమస్య వివరణ')}
             </label>
             <textarea
               required
               rows={3}
               value={cDesc}
               onChange={(e) => setCDesc(e.target.value)}
-              placeholder="e.g. Water tap has only been dripping for the past 2 days in BC Colony lane 3..."
+              placeholder={tx('e.g. Water tap has only been dripping for the past 2 days in BC Colony lane 3...', 'ఉదా. గత 2 రోజులుగా BC కాలనీ వీధి 3లో కుళాయిలో నీరు చుక్కలు చుక్కలుగా మాత్రమే వస్తోంది...')}
               className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
 
           <div className="pt-2 flex justify-end gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setComplaintModalOpen(false)}>
-              Cancel
+              {tx('Cancel', 'రద్దు')}
             </Button>
             <Button type="submit" variant="primary" size="sm" isLoading={cSubmitting}>
-              Submit Complaint
+              {tx('Submit Complaint', 'ఫిర్యాదు సమర్పించండి')}
             </Button>
           </div>
         </form>

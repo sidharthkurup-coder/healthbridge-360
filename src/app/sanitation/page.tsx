@@ -31,15 +31,15 @@ import { prioritizeComplaint } from '@/lib/algorithms/complaint-prioritization';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 const SANITATION_STAGES = [
-  { key: 'SUBMITTED', label: 'Submitted' },
-  { key: 'UNDER_REVIEW', label: 'Review' },
-  { key: 'ASSIGNED', label: 'Assigned' },
-  { key: 'IN_PROGRESS', label: 'In Progress' },
-  { key: 'RESOLVED', label: 'Resolved' },
+  { key: 'SUBMITTED', en: 'Submitted', te: 'నమోదు' },
+  { key: 'UNDER_REVIEW', en: 'Review', te: 'సమీక్ష' },
+  { key: 'ASSIGNED', en: 'Assigned', te: 'కేటాయింపు' },
+  { key: 'IN_PROGRESS', en: 'In Progress', te: 'పనిలో ఉంది' },
+  { key: 'RESOLVED', en: 'Resolved', te: 'పరిష్కారం' },
 ];
 
 export default function SanitationPage() {
-  const { lang, t } = useLanguage();
+  const { lang, t, tx, ts } = useLanguage();
   const [activeTab, setActiveTab] = useState<'complaints' | 'file'>('complaints');
   const [complaints, setComplaints] = useState<any[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -104,7 +104,7 @@ export default function SanitationPage() {
 
   const readImageAsDataUrl = (file: File, onLoaded: (url: string) => void) => {
     if (file.size > 2000000) {
-      alert('Please select an image smaller than 2 MB.');
+      alert(tx('Please select an image smaller than 2 MB.', 'దయచేసి 2 MB కంటే తక్కువ చిత్రాన్ని ఎంచుకోండి.'));
       return;
     }
     const reader = new FileReader();
@@ -148,7 +148,7 @@ export default function SanitationPage() {
 
       setFormFeedback({
         success: true,
-        message: 'Civic complaint submitted and mathematically prioritised!',
+        message: tx('Civic complaint submitted and mathematically prioritised!', 'పారిశుద్ధ్య ఫిర్యాదు నమోదైంది & ప్రాధాన్యత గణించబడింది!'),
         priorityResult: data.priorityResult,
       });
 
@@ -267,7 +267,7 @@ export default function SanitationPage() {
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Complaints Queue ({complaints.length})
+            {tx(`Complaints Queue (${complaints.length})`, `ఫిర్యాదుల క్యూ (${complaints.length})`)}
           </button>
           <button
             onClick={() => setActiveTab('file')}
@@ -275,7 +275,7 @@ export default function SanitationPage() {
               activeTab === 'file' ? 'bg-white text-navy-950 shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Report Issue
+            {tx('Report Issue', 'సమస్యను నివేదించండి')}
           </button>
         </div>
       </div>
@@ -289,7 +289,7 @@ export default function SanitationPage() {
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
               <input
                 type="text"
-                placeholder="Search street, description..."
+                placeholder={tx('Search street, description...', 'వీధి, వివరణ వెతకండి...')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
@@ -302,13 +302,13 @@ export default function SanitationPage() {
                 onChange={(e) => setCategoryFilter(e.target.value)}
                 className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
               >
-                <option value="ALL">All Categories</option>
-                <option value="SUSPECTED_WATER_CONTAMINATION">Water Contamination</option>
-                <option value="SEWAGE_OVERFLOW">Sewage Overflow</option>
-                <option value="BLOCKED_DRAINAGE">Blocked Drainage</option>
-                <option value="STAGNANT_WASTEWATER">Stagnant Wastewater</option>
-                <option value="IMPROPER_WASTE_DISPOSAL">Improper Waste</option>
-                <option value="UNHYGIENIC_PUBLIC_AREA">Unhygienic Area</option>
+                <option value="ALL">{tx('All Categories', 'అన్ని విభాగాలు')}</option>
+                <option value="SUSPECTED_WATER_CONTAMINATION">{tx('Water Contamination', 'నీటి కలుషితం')}</option>
+                <option value="SEWAGE_OVERFLOW">{tx('Sewage Overflow', 'మురుగునీటి పొంగు')}</option>
+                <option value="BLOCKED_DRAINAGE">{tx('Blocked Drainage', 'డ్రైనేజీ అడ్డుపడటం')}</option>
+                <option value="STAGNANT_WASTEWATER">{tx('Stagnant Wastewater', 'నిలిచిన మురుగునీరు')}</option>
+                <option value="IMPROPER_WASTE_DISPOSAL">{tx('Improper Waste', 'చెత్త వ్యర్థాలు')}</option>
+                <option value="UNHYGIENIC_PUBLIC_AREA">{tx('Unhygienic Area', 'అపరిశుభ్ర ప్రదేశం')}</option>
               </select>
 
               <select
@@ -316,11 +316,11 @@ export default function SanitationPage() {
                 onChange={(e) => setPriorityFilter(e.target.value)}
                 className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
               >
-                <option value="ALL">All Priorities</option>
-                <option value="CRITICAL">Critical</option>
-                <option value="HIGH">High</option>
-                <option value="MEDIUM">Medium</option>
-                <option value="LOW">Low</option>
+                <option value="ALL">{tx('All Priorities', 'అన్ని ప్రాధాన్యతలు')}</option>
+                <option value="CRITICAL">{ts('CRITICAL')}</option>
+                <option value="HIGH">{ts('HIGH')}</option>
+                <option value="MEDIUM">{ts('MEDIUM')}</option>
+                <option value="LOW">{ts('LOW')}</option>
               </select>
 
               <select
@@ -328,12 +328,12 @@ export default function SanitationPage() {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
               >
-                <option value="ALL">All Statuses</option>
-                <option value="SUBMITTED">Submitted</option>
-                <option value="UNDER_REVIEW">Under Review</option>
-                <option value="ASSIGNED">Assigned</option>
-                <option value="IN_PROGRESS">In Progress</option>
-                <option value="RESOLVED">Resolved</option>
+                <option value="ALL">{tx('All Statuses', 'అన్ని స్థితులు')}</option>
+                <option value="SUBMITTED">{ts('SUBMITTED')}</option>
+                <option value="UNDER_REVIEW">{ts('UNDER_REVIEW')}</option>
+                <option value="ASSIGNED">{ts('ASSIGNED')}</option>
+                <option value="IN_PROGRESS">{ts('IN_PROGRESS')}</option>
+                <option value="RESOLVED">{ts('RESOLVED')}</option>
               </select>
             </div>
           </div>
@@ -357,13 +357,13 @@ export default function SanitationPage() {
                         </span>
                         {c.reopenCount > 0 && (
                           <Badge variant="rose" size="sm">
-                            Reopened {c.reopenCount}x
+                            {tx(`Reopened ${c.reopenCount}x`, `${c.reopenCount}x తిరిగి తెరవబడింది`)}
                           </Badge>
                         )}
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
                         <MapPin className="w-3.5 h-3.5 text-teal-600" />
-                        {c.location} • Section {c.sectionId} ({c.affectedHouseholds} families)
+                        {c.location} • {tx(`Section ${c.sectionId}`, `విభాగం ${c.sectionId}`)} ({c.affectedHouseholds} {tx('families', 'కుటుంబాలు')})
                       </p>
                     </div>
 
@@ -377,7 +377,7 @@ export default function SanitationPage() {
                             : 'slate'
                         }
                       >
-                        {c.calculatedPriority} ({c.priorityScore})
+                        {ts(c.calculatedPriority)} ({c.priorityScore})
                       </Badge>
                       <Badge
                         variant={
@@ -389,7 +389,7 @@ export default function SanitationPage() {
                         }
                         size="sm"
                       >
-                        {c.status}
+                        {ts(c.status)}
                       </Badge>
                     </div>
                   </div>
@@ -413,7 +413,7 @@ export default function SanitationPage() {
                     <div className="flex items-center justify-between">
                       <p className="font-semibold text-slate-800 flex items-center gap-1">
                         <Shield className="w-3.5 h-3.5 text-teal-600" />
-                        Priority Engine Justification:
+                        {tx('Priority Engine Justification:', 'ప్రాధాన్యతా ఇంజిన్ విశ్లేషణ:')}
                       </p>
                       <span className="font-mono font-bold text-navy-950">{c.priorityScore} / 100</span>
                     </div>
@@ -454,7 +454,7 @@ export default function SanitationPage() {
                                 active ? 'text-navy-950 font-bold' : completed ? 'text-teal-700' : 'text-slate-400'
                               }`}
                             >
-                              {stage.label}
+                              {lang === 'te' ? stage.te : stage.en}
                             </span>
                           </div>
                         );
@@ -466,16 +466,16 @@ export default function SanitationPage() {
                   {c.assignedDepartment && (
                     <div className="text-xs text-slate-600 bg-teal-50/50 p-2.5 rounded-lg border border-teal-100 flex items-center justify-between">
                       <span>
-                        Assigned Unit: <strong>{c.assignedDepartment}</strong>
+                        {tx('Assigned Unit:', 'కేటాయించిన బృందం:')} <strong>{c.assignedDepartment}</strong>
                       </span>
-                      {c.assignedToUser && <span className="text-slate-500">Officer: {c.assignedToUser.name}</span>}
+                      {c.assignedToUser && <span className="text-slate-500">{tx('Officer:', 'అధికారి:')} {c.assignedToUser.name}</span>}
                     </div>
                   )}
 
                   {/* Resolution Notes & Evidence */}
                   {c.status === 'RESOLVED' && c.resolutionNotes && (
                     <div className="text-xs text-emerald-900 bg-emerald-50/60 p-2.5 rounded-lg border border-emerald-200 space-y-1">
-                      <p className="font-semibold">Resolution Summary:</p>
+                      <p className="font-semibold">{tx('Resolution Summary:', 'పరిష్కార సారాంశం:')}</p>
                       <p>{c.resolutionNotes}</p>
                       {c.resolutionEvidenceUrl && (
                         <a
@@ -484,7 +484,7 @@ export default function SanitationPage() {
                           rel="noreferrer"
                           className="text-[11px] text-teal-700 font-semibold flex items-center gap-1 hover:underline"
                         >
-                          View Completion Inspection Evidence <ExternalLink className="w-3 h-3" />
+                          {tx('View Completion Inspection Evidence', 'పని పూర్తి ఆధారాన్ని చూడండి')} <ExternalLink className="w-3 h-3" />
                         </a>
                       )}
                     </div>
@@ -500,7 +500,7 @@ export default function SanitationPage() {
                       className="text-teal-700 hover:text-teal-800 font-semibold flex items-center gap-1"
                     >
                       <Clock className="w-3.5 h-3.5" />
-                      Status History ({c.statusLogs?.length || 1})
+                      {tx('Status History', 'స్థితి చరిత్ర')} ({c.statusLogs?.length || 1})
                     </button>
 
                     <div className="flex items-center gap-2">
@@ -516,7 +516,7 @@ export default function SanitationPage() {
                           }}
                           icon={<RotateCcw className="w-3.5 h-3.5 text-amber-600" />}
                         >
-                          Reopen Issue
+                          {tx('Reopen Issue', 'తిరిగి తెరవండి')}
                         </Button>
                       )}
 
@@ -540,7 +540,7 @@ export default function SanitationPage() {
                             setStatusModalOpen(true);
                           }}
                         >
-                          Advance Workflow
+                          {tx('Advance Workflow', 'తదుపరి దశకు మార్చు')}
                         </Button>
                       )}
                     </div>
@@ -559,8 +559,8 @@ export default function SanitationPage() {
         <div className="max-w-2xl mx-auto">
           <Card>
             <CardHeader
-              title="Report Sanitation / Environmental Hazard"
-              subtitle="Every submission is mathematically prioritised for immediate field squad deployment"
+              title={tx('Report Sanitation / Environmental Hazard', 'పారిశుద్ధ్య / పర్యావరణ సమస్యను నివేదించండి')}
+              subtitle={tx('Every submission is mathematically prioritised for immediate field squad deployment', 'ప్రతి ఫిర్యాదు తక్షణ సిబ్బంది పంపిణీ కోసం గణితశాస్త్రపరంగా ప్రాధాన్యత పొందుతుంది')}
             />
             <CardContent className="space-y-4">
               {formFeedback && (
@@ -575,8 +575,8 @@ export default function SanitationPage() {
                   {formFeedback.priorityResult && (
                     <div className="p-2.5 bg-white/80 rounded border border-emerald-300 space-y-1">
                       <div className="flex justify-between font-bold">
-                        <span>Calculated Priority: {formFeedback.priorityResult.priority}</span>
-                        <span>Score: {formFeedback.priorityResult.score}/100</span>
+                        <span>{tx('Calculated Priority:', 'లెక్కించిన ప్రాధాన్యత:')} {ts(formFeedback.priorityResult.priority)}</span>
+                        <span>{tx('Score:', 'స్కోరు:')} {formFeedback.priorityResult.score}/100</span>
                       </div>
                       <p className="text-[11px] text-slate-600">
                         {formFeedback.priorityResult.summaryExplanation}
@@ -588,14 +588,14 @@ export default function SanitationPage() {
 
               <form onSubmit={handleCreateComplaint} className="space-y-4">
                 <Select
-                  label="Category of Sanitation Hazard"
+                  label={tx('Category of Sanitation Hazard', 'పారిశుద్ధ్య సమస్య రకం')}
                   options={[
-                    { value: 'SUSPECTED_WATER_CONTAMINATION', label: 'Suspected Water Contamination (CRITICAL - Auto Escalate)' },
-                    { value: 'SEWAGE_OVERFLOW', label: 'Sewage Overflow / Broken Drainage Main' },
-                    { value: 'BLOCKED_DRAINAGE', label: 'Blocked Drainage Culvert / Silt Chokage' },
-                    { value: 'STAGNANT_WASTEWATER', label: 'Stagnant Wastewater Pool (Mosquito Breeding)' },
-                    { value: 'IMPROPER_WASTE_DISPOSAL', label: 'Improper Waste Disposal / Garbage Heap' },
-                    { value: 'UNHYGIENIC_PUBLIC_AREA', label: 'Unhygienic Public Area / Street Market Filth' },
+                    { value: 'SUSPECTED_WATER_CONTAMINATION', label: tx('Suspected Water Contamination (CRITICAL - Auto Escalate)', 'నీటి కలుషిత అనుమానం (అత్యవసరం - ఆటో ఎస్కలేట్)') },
+                    { value: 'SEWAGE_OVERFLOW', label: tx('Sewage Overflow / Broken Drainage Main', 'మురుగునీటి పొంగు / పగిలిన డ్రైనేజీ') },
+                    { value: 'BLOCKED_DRAINAGE', label: tx('Blocked Drainage Culvert / Silt Chokage', 'పూడికపోయిన డ్రైనేజీ / కాలువ') },
+                    { value: 'STAGNANT_WASTEWATER', label: tx('Stagnant Wastewater Pool (Mosquito Breeding)', 'నిలిచిన మురుగునీరు (దోమల పెరుగుదల)') },
+                    { value: 'IMPROPER_WASTE_DISPOSAL', label: tx('Improper Waste Disposal / Garbage Heap', 'చెత్త పేరుకుపోవడం') },
+                    { value: 'UNHYGIENIC_PUBLIC_AREA', label: tx('Unhygienic Public Area / Street Market Filth', 'అపరిశుభ్ర బహిరంగ ప్రదేశం') },
                   ]}
                   value={cat}
                   onChange={(e) => setCat(e.target.value)}
@@ -603,20 +603,20 @@ export default function SanitationPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <Select
-                    label="Kantheru Section Zone"
+                    label={tx('Kantheru Section Zone', 'కాంతేరు విభాగం జోన్')}
                     options={[
-                      { value: 1, label: 'Section 1 - North Kantheru (Old Village)' },
-                      { value: 2, label: 'Section 2 - South Kantheru (Ramalayam)' },
-                      { value: 3, label: 'Section 3 - East Kantheru (SC Colony / ZP School)' },
-                      { value: 4, label: 'Section 4 - West Kantheru (Bypass Road)' },
-                      { value: 5, label: 'Section 5 - Central Kantheru (Panchayat / PHC)' },
+                      { value: 1, label: tx('Section 1 - North Kantheru (Old Village)', 'విభాగం 1 - ఉత్తర కాంతేరు') },
+                      { value: 2, label: tx('Section 2 - South Kantheru (Ramalayam)', 'విభాగం 2 - దక్షిణ కాంతేరు (రామాలయం)') },
+                      { value: 3, label: tx('Section 3 - East Kantheru (SC Colony / ZP School)', 'విభాగం 3 - తూర్పు కాంతేరు (SC కాలనీ / పాఠశాల)') },
+                      { value: 4, label: tx('Section 4 - West Kantheru (Bypass Road)', 'విభాగం 4 - పడమర కాంతేరు (బైపాస్ రోడ్)') },
+                      { value: 5, label: tx('Section 5 - Central Kantheru (Panchayat / PHC)', 'విభాగం 5 - మధ్య కాంతేరు (పంచాయతీ / PHC)') },
                     ]}
                     value={secId}
                     onChange={(e) => setSecId(Number(e.target.value))}
                   />
 
                   <Input
-                    label="Approximate Households Affected"
+                    label={tx('Approximate Households Affected', 'ప్రభావిత కుటుంబాల సంఖ్య')}
                     type="number"
                     min="1"
                     required
@@ -626,23 +626,23 @@ export default function SanitationPage() {
                 </div>
 
                 <Input
-                  label="Specific Street, Door No. or Landmark"
+                  label={tx('Specific Street, Door No. or Landmark', 'వీధి, ఇంటి నం. లేదా గుర్తు')}
                   required
                   value={loc}
                   onChange={(e) => setLoc(e.target.value)}
-                  placeholder="e.g. Near Ramalayam Temple Arch, Lane 3"
+                  placeholder={tx('e.g. Near Ramalayam Temple Arch, Lane 3', 'ఉదా. రామాలయం ఆర్చ్ దగ్గర, వీధి 3')}
                 />
 
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Detailed Problem Description <span className="text-rose-500">*</span>
+                    {tx('Detailed Problem Description', 'సమస్య పూర్తి వివరణ')} <span className="text-rose-500">*</span>
                   </label>
                   <textarea
                     required
                     rows={3}
                     value={desc}
                     onChange={(e) => setDesc(e.target.value)}
-                    placeholder="Describe how long the issue has persisted, extent of overflow, odor or contamination..."
+                    placeholder={tx('Describe how long the issue has persisted, extent of overflow, odor or contamination...', 'సమస్య ఎన్ని రోజులుగా ఉంది, పొంగు లేదా దుర్వాసన తీవ్రతను వివరించండి...')}
                     className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
@@ -650,11 +650,11 @@ export default function SanitationPage() {
                 <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="text-xs font-semibold uppercase tracking-wider text-slate-700">
-                      Upload Hazard Photograph (Camera / Gallery)
+                      {tx('Upload Hazard Photograph (Camera / Gallery)', 'సమస్య ఫోటో అప్‌లోడ్ చేయండి (కెమెరా / గ్యాలరీ)')}
                     </span>
                     <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-navy-950 hover:bg-slate-100 cursor-pointer">
                       <Upload className="w-3.5 h-3.5 text-teal-600" />
-                      Upload Photo
+                      {tx('Upload Photo', 'ఫోటో అప్‌లోడ్')}
                       <input
                         type="file"
                         accept="image/*"
@@ -674,19 +674,19 @@ export default function SanitationPage() {
                         className="w-16 h-16 rounded-lg object-cover border border-slate-200"
                       />
                       <div className="text-[11px] text-slate-500">
-                        <p className="font-semibold text-slate-700">Evidence image attached</p>
+                        <p className="font-semibold text-slate-700">{tx('Evidence image attached', 'సాక్ష్యం ఫోటో జతచేయబడింది')}</p>
                         <button
                           type="button"
                           onClick={() => setPhotoUrl('')}
                           className="text-rose-600 hover:underline mt-0.5"
                         >
-                          Remove photo
+                          {tx('Remove photo', 'ఫోటో తీసివేయండి')}
                         </button>
                       </div>
                     </div>
                   )}
                   <Input
-                    label="Or Photograph Proof URL (Optional)"
+                    label={tx('Or Photograph Proof URL (Optional)', 'లేదా ఫోటో URL (ఐచ్ఛికం)')}
                     type="text"
                     value={photoUrl.startsWith('data:') ? '' : photoUrl}
                     onChange={(e) => setPhotoUrl(e.target.value)}
@@ -702,14 +702,17 @@ export default function SanitationPage() {
                     className="mt-0.5 rounded text-teal-600"
                   />
                   <span>
-                    Hazard is located adjacent to an <strong>Anganwadi, School, Health Centre, or Community Water Well</strong> (+10 pts Priority Bonus).
+                    {tx(
+                      'Hazard is located adjacent to an Anganwadi, School, Health Centre, or Community Water Well (+10 pts Priority Bonus).',
+                      'ఈ సమస్య అంగన్‌వాడీ, పాఠశాల, ఆరోగ్య కేంద్రం లేదా తాగునీటి బావి పక్కన ఉంది (+10 పాయింట్ల అదనపు ప్రాధాన్యత).'
+                    )}
                   </span>
                 </label>
 
                 {/* Live Deterministic Score Preview */}
                 <div className="p-3.5 rounded-xl bg-navy-950 text-white text-xs space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-teal-300">Live Deterministic Priority Estimator</span>
+                    <span className="font-semibold text-teal-300">{tx('Live Deterministic Priority Estimator', 'ప్రత్యక్ష ప్రాధాన్యతా స్కోర్ అంచనా')}</span>
                     <Badge
                       variant={
                         livePriorityPreview.priority === 'CRITICAL'
@@ -720,7 +723,7 @@ export default function SanitationPage() {
                       }
                       size="sm"
                     >
-                      {livePriorityPreview.priority} • {livePriorityPreview.score}/100
+                      {ts(livePriorityPreview.priority)} • {livePriorityPreview.score}/100
                     </Badge>
                   </div>
                   <div className="w-full h-1.5 bg-navy-800 rounded-full overflow-hidden">
@@ -730,7 +733,7 @@ export default function SanitationPage() {
                     />
                   </div>
                   <p className="text-[11px] text-slate-300">
-                    Estimated Response Target: <strong>Within {livePriorityPreview.targetResponseHours} hours</strong> — {livePriorityPreview.recommendedAction}
+                    {tx('Estimated Response Target:', 'అంచనా స్పందన లక్ష్యం:')} <strong>{tx(`Within ${livePriorityPreview.targetResponseHours} hours`, `${livePriorityPreview.targetResponseHours} గంటలలోపు`)}</strong> — {livePriorityPreview.recommendedAction}
                   </p>
                 </div>
 
@@ -742,7 +745,7 @@ export default function SanitationPage() {
                   isLoading={submittingForm}
                   icon={<Recycle className="w-4 h-4" />}
                 >
-                  Submit & Compute Priority Score
+                  {tx('Submit & Compute Priority Score', 'సమర్పించి ప్రాధాన్యత స్కోర్ లెక్కించండి')}
                 </Button>
               </form>
             </CardContent>
@@ -754,17 +757,17 @@ export default function SanitationPage() {
       <Modal
         isOpen={statusModalOpen}
         onClose={() => setStatusModalOpen(false)}
-        title="Sanitation Workflow Advancement"
-        subtitle={selectedComplaint ? `Ticket: ${selectedComplaint.category.replace(/_/g, ' ')} (${selectedComplaint.location})` : ''}
+        title={tx('Sanitation Workflow Advancement', 'పారిశుద్ధ్య పని దశ పురోగతి')}
+        subtitle={selectedComplaint ? `${tx('Ticket:', 'టికెట్:')} ${selectedComplaint.category.replace(/_/g, ' ')} (${selectedComplaint.location})` : ''}
       >
         <form onSubmit={handleUpdateStatus} className="space-y-4">
           <Select
-            label="Target Workflow State"
+            label={tx('Target Workflow State', 'తదుపరి దశ స్థితి')}
             options={[
-              { value: 'UNDER_REVIEW', label: '1. UNDER REVIEW (Verified by Ward Secretary)' },
-              { value: 'ASSIGNED', label: '2. ASSIGNED (Dispatched to Cleansing Squad)' },
-              { value: 'IN_PROGRESS', label: '3. IN PROGRESS (Machinery / Crew On Site)' },
-              { value: 'RESOLVED', label: '4. RESOLVED (Completed & Disinfected)' },
+              { value: 'UNDER_REVIEW', label: tx('1. UNDER REVIEW (Verified by Ward Secretary)', '1. సమీక్షలో ఉంది (వార్డు కార్యదర్శి ధృవీకరణ)') },
+              { value: 'ASSIGNED', label: tx('2. ASSIGNED (Dispatched to Cleansing Squad)', '2. కేటాయించబడింది (పారిశుద్ధ్య బృందానికి)') },
+              { value: 'IN_PROGRESS', label: tx('3. IN PROGRESS (Machinery / Crew On Site)', '3. పని జరుగుతోంది (సిబ్బంది స్థలంలో ఉన్నారు)') },
+              { value: 'RESOLVED', label: tx('4. RESOLVED (Completed & Disinfected)', '4. పరిష్కరించబడింది (శుభ్రపరచడం పూర్తి)') },
             ]}
             value={nextStatus}
             onChange={(e) => setNextStatus(e.target.value)}
@@ -772,12 +775,12 @@ export default function SanitationPage() {
 
           {nextStatus === 'ASSIGNED' && (
             <Select
-              label="Assign Sanitation Squad"
+              label={tx('Assign Sanitation Squad', 'పారిశుద్ధ్య బృందాన్ని కేటాయించండి')}
               options={[
-                { value: 'Panchayat Drainage Cleansing Squad', label: 'Panchayat Drainage Cleansing Squad' },
-                { value: 'Mechanised Suction Tractor Unit', label: 'Mechanised Suction Tractor Unit' },
-                { value: 'Solid Waste Collection Tractor Team', label: 'Solid Waste Collection Tractor Team' },
-                { value: 'Rapid Decontamination & Lime Powder Crew', label: 'Rapid Decontamination & Lime Powder Crew' },
+                { value: 'Panchayat Drainage Cleansing Squad', label: tx('Panchayat Drainage Cleansing Squad', 'పంచాయతీ డ్రైనేజీ శుభ్రపరిచే బృందం') },
+                { value: 'Mechanised Suction Tractor Unit', label: tx('Mechanised Suction Tractor Unit', 'మెకనైజ్డ్ సక్షన్ ట్రాక్టర్ యూనిట్') },
+                { value: 'Solid Waste Collection Tractor Team', label: tx('Solid Waste Collection Tractor Team', 'ఘన వ్యర్థాల సేకరణ ట్రాక్టర్ బృందం') },
+                { value: 'Rapid Decontamination & Lime Powder Crew', label: tx('Rapid Decontamination & Lime Powder Crew', 'బ్లీచింగ్ & లైమ్ పౌడర్ బృందం') },
               ]}
               value={assignDept}
               onChange={(e) => setAssignDept(e.target.value)}
@@ -787,20 +790,20 @@ export default function SanitationPage() {
           {nextStatus === 'RESOLVED' && (
             <div className="space-y-3 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
               <Input
-                label="Resolution Notes & Remediation Summary"
+                label={tx('Resolution Notes & Remediation Summary', 'పరిష్కార వివరాలు & నివారణ సారాంశం')}
                 required
                 value={resNotes}
                 onChange={(e) => setResNotes(e.target.value)}
-                placeholder="e.g. Silt removed, pipeline cleared, sprinkled 50kg bleaching powder..."
+                placeholder={tx('e.g. Silt removed, pipeline cleared, sprinkled 50kg bleaching powder...', 'ఉదా. పూడిక తీయబడింది, 50 కిలోల బ్లీచింగ్ పౌడర్ చల్లబడింది...')}
               />
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-emerald-900">
-                    Post-Cleansing Completion Photo (Optional)
+                    {tx('Post-Cleansing Completion Photo (Optional)', 'శుభ్రపరచిన తర్వాత ఫోటో (ఐచ్ఛికం)')}
                   </span>
                   <label className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-white border border-emerald-300 text-[11px] font-semibold text-emerald-900 cursor-pointer hover:bg-emerald-100">
                     <Upload className="w-3 h-3" />
-                    Upload Photo
+                    {tx('Upload Photo', 'ఫోటో అప్‌లోడ్')}
                     <input
                       type="file"
                       accept="image/*"
@@ -813,7 +816,7 @@ export default function SanitationPage() {
                   </label>
                 </div>
                 <Input
-                  label="Or Evidence URL"
+                  label={tx('Or Evidence URL', 'లేదా ఆధార URL')}
                   type="text"
                   value={resEvidenceUrl.startsWith('data:') ? '' : resEvidenceUrl}
                   onChange={(e) => setResEvidenceUrl(e.target.value)}
@@ -825,24 +828,24 @@ export default function SanitationPage() {
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-              Officer Audit Comment <span className="text-rose-500">*</span>
+              {tx('Officer Audit Comment', 'అధికారి ఆడిట్ గమనిక')} <span className="text-rose-500">*</span>
             </label>
             <textarea
               required
               rows={2}
               value={officerComment}
               onChange={(e) => setOfficerComment(e.target.value)}
-              placeholder="e.g. Cleansing team scheduled for early morning shift."
+              placeholder={tx('e.g. Cleansing team scheduled for early morning shift.', 'ఉదా. ఉదయం షిఫ్ట్‌లో బృందం పంపబడింది.')}
               className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
 
           <div className="pt-2 flex justify-end gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setStatusModalOpen(false)}>
-              Cancel
+              {tx('Cancel', 'రద్దు')}
             </Button>
             <Button type="submit" variant="primary" size="sm" isLoading={updatingStatus}>
-              Commit Status Update
+              {tx('Commit Status Update', 'స్థితి నవీకరణను నమోదు చేయండి')}
             </Button>
           </div>
         </form>
@@ -852,34 +855,41 @@ export default function SanitationPage() {
       <Modal
         isOpen={reopenModalOpen}
         onClose={() => setReopenModalOpen(false)}
-        title="Reopen Unresolved Sanitation Issue"
-        subtitle="Escalates priority and alerts Panchayat Executive Officer"
+        title={tx('Reopen Unresolved Sanitation Issue', 'పరిష్కారం కాని సమస్యను తిరిగి తెరవండి')}
+        subtitle={tx('Escalates priority and alerts Panchayat Executive Officer', 'ప్రాధాన్యతను పెంచి పంచాయతీ అధికారిని అప్రమత్తం చేస్తుంది')}
       >
         <form onSubmit={handleReopenComplaint} className="space-y-4">
           <div className="p-3 bg-amber-50 rounded-lg border border-amber-200 text-xs text-amber-900">
-            <strong>Reopening Escalation Policy:</strong> Reopening a ticket automatically increments the reopen count, applies mathematical penalty points to the priority score, and notifies senior officers of incomplete fieldwork.
+            <strong>{tx('Reopening Escalation Policy:', 'రీ-ఓపెన్ నిబంధన:')}</strong>{' '}
+            {tx(
+              'Reopening a ticket automatically increments the reopen count, applies mathematical penalty points to the priority score, and notifies senior officers of incomplete fieldwork.',
+              'టికెట్‌ను తిరిగి తెరవడం వల్ల దాని ప్రాధాన్యతా స్కోరు పెరిగి, అసంపూర్తి పని గురించి పై అధికారులకు తక్షణ అలర్ట్ వెళ్తుంది.'
+            )}
           </div>
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-              Reason for Reopening <span className="text-rose-500">*</span>
+              {tx('Reason for Reopening', 'తిరిగి తెరవడానికి కారణం')} <span className="text-rose-500">*</span>
             </label>
             <textarea
               required
               rows={3}
               value={reopenReason}
               onChange={(e) => setReopenReason(e.target.value)}
-              placeholder="Explain why the issue remains unresolved (e.g. Drainage was only partially cleared and backed up again within 24 hours)..."
+              placeholder={tx(
+                'Explain why the issue remains unresolved (e.g. Drainage was only partially cleared and backed up again within 24 hours)...',
+                'సమస్య ఎందుకు పరిష్కారం కాలేదో వివరించండి (ఉదా. 24 గంటల్లో మళ్ళీ మురుగునీరు నిండిపోయింది)...'
+              )}
               className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
 
           <div className="pt-2 flex justify-end gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setReopenModalOpen(false)}>
-              Cancel
+              {tx('Cancel', 'రద్దు')}
             </Button>
             <Button type="submit" variant="danger" size="sm" isLoading={reopeningLoading}>
-              Reopen with Reason
+              {tx('Reopen with Reason', 'కారణంతో తిరిగి తెరవండి')}
             </Button>
           </div>
         </form>
@@ -889,8 +899,8 @@ export default function SanitationPage() {
       <Modal
         isOpen={timelineModalOpen}
         onClose={() => setTimelineModalOpen(false)}
-        title="Status History & Audit Trail"
-        subtitle={selectedComplaint ? `Ticket ID: ${selectedComplaint.id}` : ''}
+        title={tx('Status History & Audit Trail', 'స్థితి చరిత్ర & ఆడిట్ వివరాలు')}
+        subtitle={selectedComplaint ? `${tx('Ticket ID:', 'టికెట్ ID:')} ${selectedComplaint.id}` : ''}
       >
         <div className="space-y-4">
           <div className="divide-y divide-slate-100">
@@ -900,10 +910,10 @@ export default function SanitationPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Badge variant="teal" size="sm">
-                        {log.toStatus}
+                        {ts(log.toStatus)}
                       </Badge>
                       {log.fromStatus !== 'NONE' && (
-                        <span className="text-[10px] text-slate-400">from {log.fromStatus}</span>
+                        <span className="text-[10px] text-slate-400">{tx('from', 'నుండి')} {ts(log.fromStatus)}</span>
                       )}
                     </div>
                     <span className="font-mono text-[10px] text-slate-400">
@@ -912,18 +922,18 @@ export default function SanitationPage() {
                   </div>
                   {log.comment && <p className="text-xs text-slate-700">{log.comment}</p>}
                   {log.changedByName && (
-                    <p className="text-[10px] text-slate-400">Action by: {log.changedByName}</p>
+                    <p className="text-[10px] text-slate-400">{tx('Action by:', 'చర్య తీసుకున్నవారు:')} {log.changedByName}</p>
                   )}
                 </div>
               ))
             ) : (
-              <p className="text-xs text-slate-500 py-3">No status history logs recorded.</p>
+              <p className="text-xs text-slate-500 py-3">{tx('No status history logs recorded.', 'స్థితి చరిత్ర లాగ్‌లు నమోదు కాలేదు.')}</p>
             )}
           </div>
 
           <div className="flex justify-end pt-2">
             <Button variant="outline" size="sm" onClick={() => setTimelineModalOpen(false)}>
-              Close
+              {tx('Close', 'మూసివేయండి')}
             </Button>
           </div>
         </div>

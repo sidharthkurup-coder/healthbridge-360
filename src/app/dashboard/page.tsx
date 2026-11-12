@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 import {
   HeartPulse,
   Pill,
@@ -32,6 +33,8 @@ export const revalidate = 0;
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
+  const isTe = cookies().get('hb360_lang')?.value === 'te';
+  const tx = (en: string, te: string) => (isTe ? te : en);
 
   if (!user) {
     redirect('/login?demo=true');
@@ -132,7 +135,9 @@ export default async function DashboardPage() {
               {user.sectionId && (
                 <>
                   <span>•</span>
-                  <span className="font-semibold text-teal-700">Kantheru Section {user.sectionId}</span>
+                  <span className="font-semibold text-teal-700">
+                    {tx(`Kantheru Section ${user.sectionId}`, `కంతేరు విభాగం ${user.sectionId}`)}
+                  </span>
                 </>
               )}
             </p>
@@ -145,7 +150,7 @@ export default async function DashboardPage() {
               href="/admin"
               className="px-4 py-2 rounded-lg bg-purple-700 hover:bg-purple-800 text-white text-xs font-semibold shadow-sm transition-colors"
             >
-              Panchayat Administration
+              {tx('Panchayat Administration', 'పంచాయతీ పరిపాలన')}
             </Link>
           )}
           <Link
@@ -153,13 +158,13 @@ export default async function DashboardPage() {
             className="px-4 py-2 rounded-lg bg-navy-900 hover:bg-navy-800 text-white text-xs font-semibold shadow-sm transition-colors flex items-center gap-1.5"
           >
             <BarChart3 className="w-3.5 h-3.5" />
-            Operational Intelligence
+            {tx('Operational Intelligence', 'కార్యకలాపాల సమాచారం')}
           </Link>
           <Link
             href="/login?demo=true"
             className="px-3.5 py-2 rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors"
           >
-            Switch Role
+            {tx('Switch Role', 'పాత్ర మార్చండి')}
           </Link>
         </div>
       </div>
@@ -170,9 +175,9 @@ export default async function DashboardPage() {
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
               <Shield className="w-4 h-4 text-teal-600" />
-              Administrative & Operational Queue
+              {tx('Administrative & Operational Queue', 'పరిపాలన & కార్యకలాపాల క్యూ')}
             </h2>
-            <span className="text-xs text-slate-500">Live system status across all modules</span>
+            <span className="text-xs text-slate-500">{tx('Live system status across all modules', 'అన్ని విభాగాల లైవ్ స్థితి')}</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -182,14 +187,14 @@ export default async function DashboardPage() {
               className="p-4 rounded-xl border border-slate-200 bg-white hover:border-sky-400 hover:shadow-sm transition-all"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-600">Pending Appointments</span>
+                <span className="text-xs font-semibold text-slate-600">{tx('Pending Appointments', 'పెండింగ్ అపాయింట్‌మెంట్లు')}</span>
                 <Badge variant={pendingAppointmentsCount > 0 ? 'amber' : 'slate'}>
-                  {pendingAppointmentsCount} Requests
+                  {pendingAppointmentsCount} {tx('Requests', 'అభ్యర్థనలు')}
                 </Badge>
               </div>
               <p className="text-2xl font-bold text-navy-950 mt-2">{pendingAppointmentsCount}</p>
               <p className="text-[11px] text-sky-700 mt-1 flex items-center gap-1">
-                Review & Approve OPD Slots <ArrowRight className="w-3 h-3" />
+                {tx('Review & Approve OPD Slots', 'OPD స్లాట్లను పరిశీలించండి')} <ArrowRight className="w-3 h-3" />
               </p>
             </Link>
 
@@ -199,14 +204,14 @@ export default async function DashboardPage() {
               className="p-4 rounded-xl border border-slate-200 bg-white hover:border-amber-400 hover:shadow-sm transition-all"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-600">Medicine Stock Alerts</span>
+                <span className="text-xs font-semibold text-slate-600">{tx('Medicine Stock Alerts', 'మందుల నిల్వ హెచ్చరికలు')}</span>
                 <Badge variant={lowStockCount > 0 ? 'rose' : 'emerald'}>
-                  {lowStockCount > 0 ? `${lowStockCount} Low` : 'Normal'}
+                  {lowStockCount > 0 ? `${lowStockCount} ${tx('Low', 'తక్కువ')}` : tx('Normal', 'సాధారణం')}
                 </Badge>
               </div>
               <p className="text-2xl font-bold text-navy-950 mt-2">{lowStockCount}</p>
               <p className="text-[11px] text-amber-700 mt-1 flex items-center gap-1">
-                Manage FEFO Batches <ArrowRight className="w-3 h-3" />
+                {tx('Manage FEFO Batches', 'FEFO బ్యాచ్‌లను నిర్వహించండి')} <ArrowRight className="w-3 h-3" />
               </p>
             </Link>
 
@@ -216,14 +221,14 @@ export default async function DashboardPage() {
               className="p-4 rounded-xl border border-slate-200 bg-white hover:border-rose-400 hover:shadow-sm transition-all"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-600">Active Emergencies</span>
+                <span className="text-xs font-semibold text-slate-600">{tx('Active Emergencies', 'యాక్టివ్ అత్యవసరాలు')}</span>
                 <Badge variant={activeEmergencyRequests.length > 0 ? 'rose' : 'slate'}>
-                  {activeEmergencyRequests.length} Active
+                  {activeEmergencyRequests.length} {tx('Active', 'యాక్టివ్')}
                 </Badge>
               </div>
               <p className="text-2xl font-bold text-rose-600 mt-2">{activeEmergencyRequests.length}</p>
               <p className="text-[11px] text-rose-700 mt-1 flex items-center gap-1">
-                Ambulance Dispatch Desk <ArrowRight className="w-3 h-3" />
+                {tx('Ambulance Dispatch Desk', 'అంబులెన్స్ డిస్పాచ్ డెస్క్')} <ArrowRight className="w-3 h-3" />
               </p>
             </Link>
 
@@ -233,14 +238,14 @@ export default async function DashboardPage() {
               className="p-4 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition-all"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-600">Sanitation Complaints</span>
+                <span className="text-xs font-semibold text-slate-600">{tx('Sanitation Complaints', 'పారిశుధ్య ఫిర్యాదులు')}</span>
                 <Badge variant={unassignedComplaintsCount > 0 ? 'amber' : 'emerald'}>
-                  {unassignedComplaintsCount} Pending
+                  {unassignedComplaintsCount} {tx('Pending', 'పెండింగ్')}
                 </Badge>
               </div>
               <p className="text-2xl font-bold text-navy-950 mt-2">{unassignedComplaintsCount}</p>
               <p className="text-[11px] text-teal-700 mt-1 flex items-center gap-1">
-                Assign Sanitation Squads <ArrowRight className="w-3 h-3" />
+                {tx('Assign Sanitation Squads', 'పారిశుధ్య బృందాలను పంపండి')} <ArrowRight className="w-3 h-3" />
               </p>
             </Link>
           </div>
@@ -258,18 +263,18 @@ export default async function DashboardPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm font-bold text-navy-950">
-                    Your Water Supply Zone: Section {userSection.id} ({userSection.name.split(' - ')[1] || userSection.name})
+                    {tx('Your Water Supply Zone: Section', 'మీ త్రాగునీటి విభాగం: సెక్షన్')} {userSection.id} ({userSection.name.split(' - ')[1] || userSection.name})
                   </h3>
-                  <Badge variant="teal">Connected</Badge>
+                  <Badge variant="teal">{tx('Connected', 'అనుసంధానితమైంది')}</Badge>
                 </div>
                 <p className="text-xs text-slate-600 mt-0.5">
-                  Scheduled Daily Timing:{' '}
+                  {tx('Scheduled Daily Timing:', 'రోజువారీ నీటి సమయం:')}{' '}
                   <strong>
                     {userSection.schedules[0]
                       ? `${userSection.schedules[0].scheduledStartTime} - ${userSection.schedules[0].scheduledEndTime}`
                       : '06:00 - 08:30'}
                   </strong>{' '}
-                  • Pump Operator: {userSection.pumpOperatorName} ({userSection.pumpOperatorPhone})
+                  • {tx('Pump Operator:', 'పంప్ ఆపరేటర్:')} {userSection.pumpOperatorName} ({userSection.pumpOperatorPhone})
                 </p>
               </div>
             </div>
@@ -279,7 +284,7 @@ export default async function DashboardPage() {
                 href="/water"
                 className="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs transition-colors flex items-center gap-1"
               >
-                Water Schedules & Lab Reports <ArrowRight className="w-3.5 h-3.5" />
+                {tx('Water Schedules & Lab Reports', 'నీటి సమయాలు & ల్యాబ్ నివేదికలు')} <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </CardContent>
@@ -296,8 +301,8 @@ export default async function DashboardPage() {
             <Calendar className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-slate-900">Book Doctor OPD</h4>
-            <p className="text-[11px] text-slate-500">Kantheru PHC & CHC</p>
+            <h4 className="text-xs font-bold text-slate-900">{tx('Book Doctor OPD', 'డాక్టర్ OPD బుక్ చేయండి')}</h4>
+            <p className="text-[11px] text-slate-500">{tx('Kantheru PHC & CHC', 'కంతేరు PHC & CHC')}</p>
           </div>
         </Link>
 
@@ -309,8 +314,8 @@ export default async function DashboardPage() {
             <PlusCircle className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-slate-900">Report Sanitation Issue</h4>
-            <p className="text-[11px] text-slate-500">Drainage, Sewage, Waste</p>
+            <h4 className="text-xs font-bold text-slate-900">{tx('Report Sanitation Issue', 'పారిశుధ్య సమస్య నివేదించండి')}</h4>
+            <p className="text-[11px] text-slate-500">{tx('Drainage, Sewage, Waste', 'డ్రైనేజీ, మురుగు, చెత్త')}</p>
           </div>
         </Link>
 
@@ -322,8 +327,8 @@ export default async function DashboardPage() {
             <PhoneCall className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-slate-900">Request Emergency Triage</h4>
-            <p className="text-[11px] text-slate-500">Location-aided 108 ticket</p>
+            <h4 className="text-xs font-bold text-slate-900">{tx('Request Emergency Triage', 'అత్యవసర 108 సహాయం కోరండి')}</h4>
+            <p className="text-[11px] text-slate-500">{tx('Location-aided 108 ticket', 'లొకేషన్ ఆధారిత 108 టికెట్')}</p>
           </div>
         </Link>
 
@@ -335,8 +340,8 @@ export default async function DashboardPage() {
             <Pill className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-slate-900">Search Available Medicines</h4>
-            <p className="text-[11px] text-slate-500">Verified PHC stock availability</p>
+            <h4 className="text-xs font-bold text-slate-900">{tx('Search Available Medicines', 'అందుబాటులో ఉన్న మందులు వెతకండి')}</h4>
+            <p className="text-[11px] text-slate-500">{tx('Verified PHC stock availability', 'PHC మందుల నిల్వ వివరాలు')}</p>
           </div>
         </Link>
       </div>
@@ -346,11 +351,11 @@ export default async function DashboardPage() {
         {/* Left Column: My Appointments */}
         <Card>
           <CardHeader
-            title="My Healthcare Appointments"
-            subtitle="Status of your clinic bookings at Kantheru PHC & CHC"
+            title={tx('My Healthcare Appointments', 'నా వైద్య అపాయింట్‌మెంట్లు')}
+            subtitle={tx('Status of your clinic bookings at Kantheru PHC & CHC', 'కంతేరు PHC & CHC వద్ద మీ క్లినిక్ బుకింగ్‌ల స్థితి')}
             action={
               <Link href="/healthcare" className="text-xs font-semibold text-teal-700 hover:underline">
-                Book New
+                {tx('Book New', 'కొత్తది బుక్ చేయండి')}
               </Link>
             }
           />
@@ -401,12 +406,12 @@ export default async function DashboardPage() {
             ) : (
               <div className="p-8 text-center text-slate-500 space-y-2">
                 <Calendar className="w-8 h-8 text-slate-400 mx-auto" />
-                <p className="text-xs">No appointment bookings found.</p>
+                <p className="text-xs">{tx('No appointment bookings found.', 'అపాయింట్‌మెంట్ బుకింగ్‌లు కనుగొనబడలేదు.')}</p>
                 <Link
                   href="/healthcare"
                   className="inline-block text-xs font-semibold text-teal-700 hover:underline"
                 >
-                  Schedule an OPD appointment
+                  {tx('Schedule an OPD appointment', 'OPD అపాయింట్‌మెంట్ బుక్ చేయండి')}
                 </Link>
               </div>
             )}
@@ -416,11 +421,11 @@ export default async function DashboardPage() {
         {/* Right Column: My Sanitation Reports */}
         <Card>
           <CardHeader
-            title="My Sanitation Complaints"
-            subtitle="Real-time status & explainable priority tracking"
+            title={tx('My Sanitation Complaints', 'నా పారిశుధ్య ఫిర్యాదులు')}
+            subtitle={tx('Real-time status & explainable priority tracking', 'లైవ్ స్థితి & ప్రాధాన్యత ట్రాకింగ్')}
             action={
               <Link href="/sanitation" className="text-xs font-semibold text-teal-700 hover:underline">
-                File Complaint
+                {tx('File Complaint', 'ఫిర్యాదు చేయండి')}
               </Link>
             }
           />
@@ -480,12 +485,12 @@ export default async function DashboardPage() {
             ) : (
               <div className="p-8 text-center text-slate-500 space-y-2">
                 <Recycle className="w-8 h-8 text-slate-400 mx-auto" />
-                <p className="text-xs">No active sanitation complaints logged.</p>
+                <p className="text-xs">{tx('No active sanitation complaints logged.', 'యాక్టివ్ పారిశుధ్య ఫిర్యాదులు లేవు.')}</p>
                 <Link
                   href="/sanitation"
                   className="inline-block text-xs font-semibold text-teal-700 hover:underline"
                 >
-                  Report a street issue or drainage overflow
+                  {tx('Report a street issue or drainage overflow', 'వీధి సమస్య లేదా డ్రైనేజీ పొంగు నివేదించండి')}
                 </Link>
               </div>
             )}

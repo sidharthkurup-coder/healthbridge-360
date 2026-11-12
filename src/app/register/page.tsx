@@ -7,8 +7,10 @@ import { Activity, ArrowRight, AlertCircle, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input, Select } from '@/components/ui/Input';
 import { Card, CardContent } from '@/components/ui/Card';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function RegisterPage() {
+  const { tx } = useLanguage();
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
@@ -62,10 +64,10 @@ export default function RegisterPage() {
           <Activity className="w-8 h-8 text-teal-400" />
         </div>
         <h2 className="text-2xl font-bold tracking-tight text-navy-950">
-          Resident Registration
+          {tx('Resident Registration', 'నివాసి నమోదు')}
         </h2>
         <p className="mt-1 text-xs text-slate-600">
-          Create an official resident profile for healthcare and civic services in Kantheru
+          {tx('Create an official resident profile for healthcare and civic services in Kantheru', 'కంతేరులో వైద్య & పౌర సేవల కోసం అధికారిక ప్రొఫైల్‌ను సృష్టించండి')}
         </p>
       </div>
 
@@ -81,16 +83,16 @@ export default function RegisterPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <Input
-                label="Full Name"
+                label={tx('Full Name', 'పూర్తి పేరు')}
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g. Venkata Ramana"
+                placeholder={tx('e.g. Venkata Ramana', 'ఉదా: వెంకట రమణ')}
               />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
-                  label="Email Address"
+                  label={tx('Email Address', 'ఇమెయిల్ చిరునామా')}
                   type="email"
                   required
                   value={formData.email}
@@ -99,7 +101,7 @@ export default function RegisterPage() {
                 />
 
                 <Input
-                  label="Mobile Number (10 Digits)"
+                  label={tx('Mobile Number (10 Digits)', 'మొబైల్ నంబర్ (10 అంకెలు)')}
                   type="tel"
                   required
                   value={formData.phone}
@@ -109,21 +111,21 @@ export default function RegisterPage() {
               </div>
 
               <Select
-                label="Kantheru Residential Section"
+                label={tx('Kantheru Residential Section', 'కంతేరు నివాస విభాగం')}
                 options={sectionOptions}
                 value={formData.sectionId}
                 onChange={(e) => setFormData({ ...formData, sectionId: Number(e.target.value) })}
               />
 
               <Input
-                label="Street / Door Number / Landmark"
+                label={tx('Street / Door Number / Landmark', 'వీధి / ఇంటి నంబర్ / ప్రదేశం')}
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                placeholder="Door No. 3-45, Ramalayam Street"
+                placeholder={tx('Door No. 3-45, Ramalayam Street', 'డోర్ నం. 3-45, రామాలయం వీధి')}
               />
 
               <Input
-                label="Password (min 6 characters)"
+                label={tx('Password (min 6 characters)', 'పాస్‌వర్డ్ (కనీసం 6 అక్షరాలు)')}
                 type="password"
                 required
                 value={formData.password}
@@ -139,14 +141,14 @@ export default function RegisterPage() {
                 isLoading={loading}
                 icon={<ArrowRight className="w-4 h-4" />}
               >
-                Register & Enter Portal
+                {tx('Register & Enter Portal', 'నమోదు చేసి పోర్టల్‌లో ప్రవేశించండి')}
               </Button>
             </form>
 
             <div className="text-center pt-2 text-xs text-slate-600">
-              Already have an account?{' '}
+              {tx('Already have an account?', 'ఇప్పటికే ఖాతా ఉందా?')}{' '}
               <Link href="/login" className="font-semibold text-teal-600 hover:text-teal-700">
-                Sign in here
+                {tx('Sign in here', 'ఇక్కడ సైన్ ఇన్ చేయండి')}
               </Link>
             </div>
           </CardContent>

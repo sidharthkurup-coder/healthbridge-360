@@ -20,6 +20,11 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+html[lang='te'] body {
+  font-family: var(--font-telugu), var(--font-jakarta), system-ui, sans-serif;
+  line-height: 1.65;
+}
+
 /* Staggered animation delay helpers */
 .delay-75 { animation-delay: 75ms; transition-delay: 75ms; }
 .delay-100 { animation-delay: 100ms; transition-delay: 100ms; }
@@ -86,6 +91,10 @@ body {
 .perf-section {
   content-visibility: auto;
   contain-intrinsic-size: auto 420px;
+}
+
+.perf-card {
+  contain: layout style;
 }
 
 /* Smooth GPU-composited glossy sheen on CTAs */

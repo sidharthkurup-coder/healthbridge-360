@@ -105,24 +105,30 @@ const STATUS_BADGE_MAP: Record<string, 'amber' | 'sky' | 'purple' | 'emerald'> =
   RESOLVED: 'emerald',
 };
 
-const CATEGORY_OPTIONS = [
-  { value: 'GARBAGE_PLASTIC_BURNING', label: 'Garbage / Plastic Burning' },
-  { value: 'STUBBLE_CROP_BURNING', label: 'Agricultural Stubble Burning' },
-  { value: 'INDUSTRIAL_BRICK_KILN_SMOKE', label: 'Brick Kiln / Industrial Smoke' },
-  { value: 'CONSTRUCTION_ROAD_DUST', label: 'Construction & Unpaved Road Dust' },
-  { value: 'VEHICULAR_CONGESTION', label: 'Heavy Lorry / NH-16 Exhaust' },
-];
-
-const SECTION_OPTIONS = [
-  { value: 1, label: 'Section 1 — Old Village & Market' },
-  { value: 2, label: 'Section 2 — Ramalayam Temple Ward' },
-  { value: 3, label: 'Section 3 — ZP High School & SC Colony' },
-  { value: 4, label: 'Section 4 — NH-16 Bypass & Kiln Corridor' },
-  { value: 5, label: 'Section 5 — Kantheru PHC & GP Campus' },
-];
-
 export default function AirQualityPage() {
-  const { t } = useLanguage();
+  const { t, tx, ts } = useLanguage();
+
+  const categoryOptions = useMemo(
+    () => [
+      { value: 'GARBAGE_PLASTIC_BURNING', label: tx('Garbage / Plastic Burning', 'చెత్త / ప్లాస్టిక్ దహనం') },
+      { value: 'STUBBLE_CROP_BURNING', label: tx('Agricultural Stubble Burning', 'పంట వ్యర్థాల దహనం') },
+      { value: 'INDUSTRIAL_BRICK_KILN_SMOKE', label: tx('Brick Kiln / Industrial Smoke', 'ఇటుక బట్టీ / పరిశ్రమల పొగ') },
+      { value: 'CONSTRUCTION_ROAD_DUST', label: tx('Construction & Unpaved Road Dust', 'నిర్మాణ & రహదారి దుమ్ము') },
+      { value: 'VEHICULAR_CONGESTION', label: tx('Heavy Lorry / NH-16 Exhaust', 'NH-16 భారీ వాహనాల పొగ') },
+    ],
+    [tx]
+  );
+
+  const sectionOptions = useMemo(
+    () => [
+      { value: 1, label: tx('Section 1 — Old Village & Market', 'విభాగం 1 — పాత గ్రామం & మార్కెట్') },
+      { value: 2, label: tx('Section 2 — Ramalayam Temple Ward', 'విభాగం 2 — రామాలయం వార్డు') },
+      { value: 3, label: tx('Section 3 — ZP High School & SC Colony', 'విభాగం 3 — ZP హైస్కూల్ & SC కాలనీ') },
+      { value: 4, label: tx('Section 4 — NH-16 Bypass & Kiln Corridor', 'విభాగం 4 — NH-16 బైపాస్ & బట్టీల ప్రాంతం') },
+      { value: 5, label: tx('Section 5 — Kantheru PHC & GP Campus', 'విభాగం 5 — కంతేరు PHC & పంచాయతీ') },
+    ],
+    [tx]
+  );
   const [activeTab, setActiveTab] = useState<'overview' | 'calculator' | 'incidents'>('overview');
   const [sectionSummaries, setSectionSummaries] = useState<SectionSummary[]>([]);
   const [readings, setReadings] = useState<ReadingItem[]>([]);
@@ -359,7 +365,7 @@ export default function AirQualityPage() {
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-teal-200 text-xs font-semibold mb-3">
                 <Wind className="w-3.5 h-3.5" />
-                <span>CPCB India NAQI • Clean Air Action Hub</span>
+                <span>{tx('CPCB India NAQI • Clean Air Action Hub', 'CPCB ఇండియా NAQI • స్వచ్ఛ వాయు కార్యాచరణ కేంద్రం')}</span>
               </div>
               <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
                 {t('page.airQuality.title')}
@@ -376,7 +382,7 @@ export default function AirQualityPage() {
                 className="bg-white/10 border-white/20 text-white hover:bg-white/20"
               >
                 <RefreshCw className="w-4 h-4 mr-1.5" />
-                Refresh Sensors
+                {tx('Refresh Sensors', 'సెన్సార్లు రీఫ్రెష్ చేయండి')}
               </Button>
               <Button
                 variant="primary"
@@ -384,7 +390,7 @@ export default function AirQualityPage() {
                 className="bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold btn-sheen"
               >
                 <Flame className="w-4 h-4 mr-1.5" />
-                Report Smoke / Dust
+                {tx('Report Smoke / Dust', 'పొగ / దుమ్ము ఫిర్యాదు')}
               </Button>
             </div>
           </div>
@@ -393,7 +399,7 @@ export default function AirQualityPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
             <div className="rounded-xl bg-white/10 backdrop-blur-md border border-white/15 p-4">
               <p className="text-xs font-semibold uppercase tracking-wider text-teal-200">
-                Kantheru Mean AQI
+                {tx('Kantheru Mean AQI', 'కంతేరు సగటు AQI')}
               </p>
               <div className="mt-1 flex items-baseline gap-2">
                 <span className="text-3xl font-black text-white">
@@ -405,39 +411,39 @@ export default function AirQualityPage() {
 
             <div className="rounded-xl bg-white/10 backdrop-blur-md border border-white/15 p-4">
               <p className="text-xs font-semibold uppercase tracking-wider text-teal-200">
-                Monitored Zones
+                {tx('Monitored Zones', 'పర్యవేక్షణ విభాగాలు')}
               </p>
               <div className="mt-1 flex items-baseline gap-2">
                 <span className="text-3xl font-black text-white">
                   <AnimatedCounter value={sectionSummaries.filter((s) => s.latestReading).length} />
                 </span>
-                <span className="text-xs text-slate-300">/ 5 Village Sections</span>
+                <span className="text-xs text-slate-300">{tx('/ 5 Village Sections', '/ 5 గ్రామ విభాగాలు')}</span>
               </div>
             </div>
 
             <div className="rounded-xl bg-white/10 backdrop-blur-md border border-white/15 p-4">
               <p className="text-xs font-semibold uppercase tracking-wider text-amber-200">
-                Active Dust & Smoke Alerts
+                {tx('Active Dust & Smoke Alerts', 'యాక్టివ్ పొగ & దుమ్ము హెచ్చరికలు')}
               </p>
               <div className="mt-1 flex items-baseline gap-2">
                 <span className="text-3xl font-black text-amber-300">
                   <AnimatedCounter value={activeIncidentsCount} />
                 </span>
-                <span className="text-xs text-slate-300">Open Mitigation Tickets</span>
+                <span className="text-xs text-slate-300">{tx('Open Mitigation Tickets', 'పెండింగ్ నివారణ టికెట్లు')}</span>
               </div>
             </div>
 
             <div className="rounded-xl bg-white/10 backdrop-blur-md border border-white/15 p-4">
               <p className="text-xs font-semibold uppercase tracking-wider text-rose-200">
-                Hotspot Corridor
+                {tx('Hotspot Corridor', 'అధిక కాలుష్య ప్రాంతం')}
               </p>
               <p className="mt-1 text-base font-bold text-white truncate">
                 {highestAqiSection
-                  ? `Section ${highestAqiSection.sectionId} (AQI ${highestAqiSection.assessment.aqi})`
-                  : 'No active hotspot'}
+                  ? `${tx('Section', 'విభాగం')} ${highestAqiSection.sectionId} (AQI ${highestAqiSection.assessment.aqi})`
+                  : tx('No active hotspot', 'తీవ్ర ప్రాంతాలు లేవు')}
               </p>
               <p className="text-xs text-slate-300 truncate">
-                {highestAqiSection?.latestReading?.monitoringPoint || 'Awaiting readings'}
+                {highestAqiSection?.latestReading?.monitoringPoint || tx('Awaiting readings', 'రీడింగ్స్ కోసం వేచి ఉంది')}
               </p>
             </div>
           </div>
@@ -466,7 +472,7 @@ export default function AirQualityPage() {
               onClick={() => setFeedback(null)}
               className="text-xs font-bold uppercase tracking-wider opacity-70 hover:opacity-100"
             >
-              Dismiss
+              {tx('Dismiss', 'మూసివేయండి')}
             </button>
           </div>
         )}
@@ -482,7 +488,7 @@ export default function AirQualityPage() {
             }`}
           >
             <Activity className="w-4 h-4" />
-            5-Section Live AQI & Mitigation Hub
+            {tx('5-Section Live AQI & Mitigation Hub', '5-విభాగాల లైవ్ AQI & నివారణ కేంద్రం')}
           </button>
 
           <button
@@ -494,7 +500,7 @@ export default function AirQualityPage() {
             }`}
           >
             <Calculator className="w-4 h-4" />
-            CPCB AQI Calculator & Sensor Logger
+            {tx('CPCB AQI Calculator & Sensor Logger', 'CPCB AQI కాలిక్యులేటర్ & సెన్సార్ లాగ్')}
           </button>
 
           <button
@@ -506,7 +512,7 @@ export default function AirQualityPage() {
             }`}
           >
             <Truck className="w-4 h-4" />
-            Pollution Source Reporting & Sprinkler Queue
+            {tx('Pollution Source Reporting & Sprinkler Queue', 'కాలుష్య ఫిర్యాదు & స్ప్రింక్లర్ క్యూ')}
             {activeIncidentsCount > 0 && (
               <span className="ml-1 px-1.5 py-0.5 text-[11px] rounded-full bg-rose-500 text-white">
                 {activeIncidentsCount}
@@ -539,7 +545,7 @@ export default function AirQualityPage() {
                             title={
                               <div>
                                 <p className="text-xs font-bold uppercase tracking-wider text-teal-700">
-                                  Section {sec.sectionId}
+                                  {tx('Section', 'విభాగం')} {sec.sectionId}
                                 </p>
                                 <span className="text-base font-bold text-slate-900 mt-0.5 block">
                                   {sec.sectionName}
@@ -549,28 +555,28 @@ export default function AirQualityPage() {
                             subtitle={
                               <span className="text-xs text-slate-500 flex items-center gap-1 mt-1">
                                 <MapPin className="w-3 h-3 shrink-0" />
-                                {latest?.monitoringPoint || 'No sensor station assigned'}
+                                {latest?.monitoringPoint || tx('No sensor station assigned', 'సెన్సార్ కేంద్రం లేదు')}
                               </span>
                             }
-                            action={<Badge variant={AQI_BADGE_MAP[cat]}>{cat.replace('_', ' ')}</Badge>}
+                            action={<Badge variant={AQI_BADGE_MAP[cat]}>{ts(cat)}</Badge>}
                           />
 
                           <CardContent className="pt-4 space-y-4">
                             <div className="flex items-end justify-between">
                               <div>
                                 <span className="text-xs font-medium text-slate-500 block">
-                                  CPCB NAQI Score
+                                  {tx('CPCB NAQI Score', 'CPCB NAQI స్కోరు')}
                                 </span>
                                 <span className="text-3xl font-black text-[#0F2744]">
-                                  {sec.assessment.aqi ?? 'Incomplete'}
+                                  {sec.assessment.aqi ?? tx('Incomplete', 'అసంపూర్ణం')}
                                 </span>
                               </div>
                               <div className="text-right">
                                 <span className="text-xs font-medium text-slate-500 block">
-                                  Dominant Pollutant
+                                  {tx('Dominant Pollutant', 'ప్రధాన కాలుష్య కారకం')}
                                 </span>
                                 <span className="text-sm font-bold text-slate-800">
-                                  {sec.assessment.dominantPollutant || 'N/A'}
+                                  {sec.assessment.dominantPollutant || tx('N/A', 'వర్తించదు')}
                                 </span>
                               </div>
                             </div>
@@ -610,14 +616,14 @@ export default function AirQualityPage() {
                             </div>
 
                             <div className="rounded-lg bg-teal-50/70 border border-teal-100 p-2.5 text-xs text-slate-700">
-                              <span className="font-bold text-teal-900">Panchayat Action: </span>
+                              <span className="font-bold text-teal-900">{tx('Panchayat Action:', 'పంచాయతీ చర్య:')} </span>
                               {sec.assessment.panchayatAction}
                             </div>
 
                             <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
-                              <span>Recorded: {latest?.recordedDate || 'N/A'}</span>
+                              <span>{tx('Recorded:', 'నమోదు తేదీ:')} {latest?.recordedDate || 'N/A'}</span>
                               <span>
-                                Open alerts:{' '}
+                                {tx('Open alerts:', 'యాక్టివ్ హెచ్చరికలు:')}{' '}
                                 <strong className={sec.activeIncidentsCount > 0 ? 'text-rose-600' : 'text-slate-700'}>
                                   {sec.activeIncidentsCount}
                                 </strong>
@@ -634,8 +640,11 @@ export default function AirQualityPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <Card className="lg:col-span-2">
                     <CardHeader
-                      title="5-Section Comparative CPCB AQI Profile"
-                      subtitle="Calculated strictly from measured pollutant concentrations (0–500 CPCB NAQI scale). Unmeasured parameters are never inferred."
+                      title={tx('5-Section Comparative CPCB AQI Profile', '5-విభాగాల తులనాత్మక CPCB AQI చిత్రణ')}
+                      subtitle={tx(
+                        'Calculated strictly from measured pollutant concentrations (0–500 CPCB NAQI scale). Unmeasured parameters are never inferred.',
+                        'కొలిచిన కాలుష్య కారకాల ఆధారంగా మాత్రమే లెక్కించబడుతుంది (0–500 CPCB ప్రమాణం). కొలవని విలువలను ఎప్పుడూ ఊహించదు.'
+                      )}
                     />
                     <CardContent className="space-y-4">
                       {sectionSummaries.map((sec) => {
@@ -646,10 +655,10 @@ export default function AirQualityPage() {
                           <div key={sec.sectionId} className="space-y-1.5">
                             <div className="flex items-center justify-between text-xs font-semibold">
                               <span className="text-slate-800">
-                                Sec {sec.sectionId}: {sec.latestReading?.monitoringPoint || sec.sectionName}
+                                {tx('Sec', 'విభాగం')} {sec.sectionId}: {sec.latestReading?.monitoringPoint || sec.sectionName}
                               </span>
                               <span className="text-slate-900 font-bold">
-                                {sec.assessment.aqi !== null ? `AQI ${sec.assessment.aqi} (${cat})` : 'INCOMPLETE'}
+                                {sec.assessment.aqi !== null ? `AQI ${sec.assessment.aqi} (${ts(cat)})` : ts('INCOMPLETE')}
                               </span>
                             </div>
                             <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
@@ -669,7 +678,7 @@ export default function AirQualityPage() {
                       title={
                         <span className="flex items-center gap-2">
                           <Sparkles className="w-5 h-5 text-teal-600" />
-                          Kantheru Clean Air Playbook
+                          {tx('Kantheru Clean Air Playbook', 'కంతేరు స్వచ్ఛ వాయు కార్యాచరణ')}
                         </span>
                       }
                     />
@@ -677,28 +686,37 @@ export default function AirQualityPage() {
                       <div className="p-3 rounded-lg bg-sky-50 border border-sky-100">
                         <p className="font-bold text-sky-900 flex items-center gap-1.5">
                           <Droplets className="w-4 h-4 text-sky-600" />
-                          1. Targeted Water-Mist Suppression
+                          {tx('1. Targeted Water-Mist Suppression', '1. నీటి తుంపర్ల ద్వారా దుమ్ము నియంత్రణ')}
                         </p>
                         <p className="text-xs mt-1 text-slate-600">
-                          When PM10 spikes above 100 µg/m³ on NH-16 service lanes or gravel roads, dispatch the 5,000L treated greywater tanker for dust wetting.
+                          {tx(
+                            'When PM10 spikes above 100 µg/m³ on NH-16 service lanes or gravel roads, dispatch the 5,000L treated greywater tanker for dust wetting.',
+                            'NH-16 సర్వీస్ రోడ్లలో PM10 100 µg/m³ దాటినప్పుడు దుమ్ము అణచివేతకు 5,000 లీటర్ల వాటర్ స్ప్రింక్లర్ ట్యాంకర్‌ను పంపుతారు.'
+                          )}
                         </p>
                       </div>
                       <div className="p-3 rounded-lg bg-amber-50 border border-amber-100">
                         <p className="font-bold text-amber-900 flex items-center gap-1.5">
                           <Flame className="w-4 h-4 text-amber-600" />
-                          2. Zero Open-Burning Patrol
+                          {tx('2. Zero Open-Burning Patrol', '2. బహిరంగ చెత్త దహన నిరోధక దళం')}
                         </p>
                         <p className="text-xs mt-1 text-slate-600">
-                          Any plastic or dry waste fire within 200m of ZP High School, Anganwadis, or Kantheru PHC triggers CRITICAL dispatch priority.
+                          {tx(
+                            'Any plastic or dry waste fire within 200m of ZP High School, Anganwadis, or Kantheru PHC triggers CRITICAL dispatch priority.',
+                            'ZP హైస్కూల్, అంగన్‌వాడీ లేదా PHC పరిధిలోని 200 మీటర్లలోపు ప్లాస్టిక్/చెత్త మంటలకు అత్యవసర ప్రాధాన్యత ఇవ్వబడుతుంది.'
+                          )}
                         </p>
                       </div>
                       <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-100">
                         <p className="font-bold text-emerald-900 flex items-center gap-1.5">
                           <ShieldAlert className="w-4 h-4 text-emerald-600" />
-                          3. School & PHC Exposure Safeguard
+                          {tx('3. School & PHC Exposure Safeguard', '3. పాఠశాల & PHC ఆరోగ్య రక్షణ')}
                         </p>
                         <p className="text-xs mt-1 text-slate-600">
-                          Citizens with respiratory sensitivity are advised to avoid outdoor exertion when CPCB AQI reaches POOR (&gt;200).
+                          {tx(
+                            'Citizens with respiratory sensitivity are advised to avoid outdoor exertion when CPCB AQI reaches POOR (>200).',
+                            'CPCB AQI 200 దాటినప్పుడు శ్వాసకోశ సమస్యలు ఉన్నవారు బహిరంగ శ్రమను తగ్గించాలని సూచించబడుతుంది.'
+                          )}
                         </p>
                       </div>
                     </CardContent>
@@ -714,18 +732,21 @@ export default function AirQualityPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <Card className="lg:col-span-7">
               <CardHeader
-                title="CPCB India NAQI Sub-Index Calculator"
-                subtitle="Enter any measured pollutant concentrations. Leave unmeasured fields blank — missing parameters are never estimated."
+                title={tx('CPCB India NAQI Sub-Index Calculator', 'CPCB ఇండియా NAQI సబ్-ఇండెక్స్ కాలిక్యులేటర్')}
+                subtitle={tx(
+                  'Enter any measured pollutant concentrations. Leave unmeasured fields blank — missing parameters are never estimated.',
+                  'కొలిచిన కాలుష్య కారకాల విలువలను నమోదు చేయండి. కొలవని వాటిని ఖాళీగా ఉంచండి — అవి ఎప్పుడూ అంచనా వేయబడవు.'
+                )}
                 action={
                   <div className="flex flex-wrap gap-1.5">
                     <Button size="sm" variant="outline" onClick={() => applyPreset('clean')}>
-                      Clean Morning
+                      {tx('Clean Morning', 'స్వచ్ఛమైన ఉదయం')}
                     </Button>
                     <Button size="sm" variant="outline" onClick={() => applyPreset('dust')}>
-                      Road Dust
+                      {tx('Road Dust', 'రహదారి దుమ్ము')}
                     </Button>
                     <Button size="sm" variant="outline" onClick={() => applyPreset('kiln')}>
-                      Heavy Smoke
+                      {tx('Heavy Smoke', 'తీవ్ర పొగ')}
                     </Button>
                   </div>
                 }
@@ -785,18 +806,18 @@ export default function AirQualityPage() {
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <div>
                       <span className="text-xs uppercase tracking-wider text-teal-300 font-semibold">
-                        Computed Overall AQI
+                        {tx('Computed Overall AQI', 'లెక్కించబడిన మొత్తం AQI')}
                       </span>
                       <div className="text-4xl font-black mt-0.5">
-                        {liveCalc.aqi !== null ? liveCalc.aqi : 'INCOMPLETE DATA'}
+                        {liveCalc.aqi !== null ? liveCalc.aqi : ts('INCOMPLETE DATA')}
                       </div>
                     </div>
                     <div className="text-right space-y-1">
                       <Badge variant={AQI_BADGE_MAP[liveCalc.category]}>
-                        {liveCalc.category.replace('_', ' ')}
+                        {ts(liveCalc.category)}
                       </Badge>
                       <p className="text-xs text-slate-300">
-                        Dominant: <strong>{liveCalc.dominantPollutant || 'None'}</strong> ({liveCalc.measuredParametersCount} metrics measured)
+                        {tx('Dominant:', 'ప్రధానం:')} <strong>{liveCalc.dominantPollutant || tx('None', 'ఏదీ లేదు')}</strong> ({liveCalc.measuredParametersCount} {tx('metrics measured', 'కొలిచినవి')})
                       </p>
                     </div>
                   </div>
@@ -806,7 +827,7 @@ export default function AirQualityPage() {
                       <div key={sub.parameter} className="rounded-lg bg-white/10 p-2 text-center">
                         <span className="block text-[11px] text-slate-300 font-semibold">{sub.parameter}</span>
                         <span className="block text-sm font-bold text-white">
-                          {sub.subIndex !== null ? `SI ${sub.subIndex}` : 'Unmeasured'}
+                          {sub.subIndex !== null ? `SI ${sub.subIndex}` : tx('Unmeasured', 'కొలవలేదు')}
                         </span>
                         <span className="block text-[10px] text-teal-200">
                           {sub.value !== null ? `${sub.value} ${sub.unit}` : '—'}
@@ -817,10 +838,10 @@ export default function AirQualityPage() {
 
                   <div className="text-xs space-y-1.5 text-slate-200 pt-1">
                     <p>
-                      <strong className="text-teal-300">Citizen Advisory:</strong> {liveCalc.citizenAdvisory}
+                      <strong className="text-teal-300">{tx('Citizen Advisory:', 'పౌరులకు సూచన:')}</strong> {liveCalc.citizenAdvisory}
                     </p>
                     <p>
-                      <strong className="text-amber-300">Recommended Panchayat Action:</strong>{' '}
+                      <strong className="text-amber-300">{tx('Recommended Panchayat Action:', 'పంచాయతీ చర్య:')}</strong>{' '}
                       {liveCalc.panchayatAction}
                     </p>
                   </div>
@@ -831,22 +852,28 @@ export default function AirQualityPage() {
             {/* Officer Sensor Logger */}
             <Card className="lg:col-span-5">
               <CardHeader
-                title="Log Field Reading to Kantheru DB"
-                subtitle="Uses the pollutant measurements on the left to publish an official section station record."
+                title={tx('Log Field Reading to Kantheru DB', 'కంతేరు డేటాబేస్‌కు ఫీల్డ్ రీడింగ్ నమోదు')}
+                subtitle={tx(
+                  'Uses the pollutant measurements on the left to publish an official section station record.',
+                  'ఎడమవైపు ఉన్న విలువలతో అధికారిక విభాగం సెన్సార్ రికార్డును ప్రచురించండి.'
+                )}
               />
               <CardContent>
                 {!isOfficer ? (
                   <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-900 space-y-3">
                     <p className="font-semibold">
-                      Sanitation Officer or Admin Sign-In Required
+                      {tx('Sanitation Officer or Admin Sign-In Required', 'పారిశుధ్య అధికారి లేదా అడ్మిన్ లాగిన్ అవసరం')}
                     </p>
                     <p className="text-xs text-amber-800">
-                      Anyone can use the CPCB AQI calculator on the left. Publishing official monitoring logs to the 5-section Panchayat database is restricted to Sanitation Officers & Admins.
+                      {tx(
+                        'Anyone can use the CPCB AQI calculator on the left. Publishing official monitoring logs to the 5-section Panchayat database is restricted to Sanitation Officers & Admins.',
+                        'CPCB AQI కాలిక్యులేటర్‌ను ఎవరైనా ఉపయోగించవచ్చు. 5-విభాగాల పంచాయతీ డేటాబేస్‌లో అధికారిక లాగ్‌లను నమోదు చేయడానికి అధికారి/అడ్మిన్ లాగిన్ అవసరం.'
+                      )}
                     </p>
                     {!currentUser && (
                       <Link href="/login">
                         <Button size="sm" variant="primary" className="mt-2">
-                          Sign In to Officer Account
+                          {tx('Sign In to Officer Account', 'అధికారి ఖాతాలో లాగిన్ అవ్వండి')}
                         </Button>
                       </Link>
                     )}
@@ -854,30 +881,30 @@ export default function AirQualityPage() {
                 ) : (
                   <form onSubmit={handleSaveReading} className="space-y-4">
                     <Select
-                      label="Kantheru Section"
+                      label={tx('Kantheru Section', 'కంతేరు విభాగం')}
                       value={logSectionId}
                       onChange={(e) => setLogSectionId(e.target.value)}
-                      options={SECTION_OPTIONS}
+                      options={sectionOptions}
                     />
                     <Input
-                      label="Monitoring Station / Landmark"
+                      label={tx('Monitoring Station / Landmark', 'పర్యవేక్షణ కేంద్రం / ప్రదేశం')}
                       required
                       value={logPoint}
                       onChange={(e) => setLogPoint(e.target.value)}
-                      placeholder="e.g. NH-16 Bypass Kiln Road"
+                      placeholder={tx('e.g. NH-16 Bypass Kiln Road', 'ఉదా: NH-16 బైపాస్ రోడ్డు')}
                     />
                     <Input
-                      label="Recorded Date"
+                      label={tx('Recorded Date', 'నమోదు తేదీ')}
                       type="date"
                       required
                       value={logDate}
                       onChange={(e) => setLogDate(e.target.value)}
                     />
                     <Input
-                      label="Field Observation Notes"
+                      label={tx('Field Observation Notes', 'ఫీల్డ్ పరిశీలన గమనికలు')}
                       value={logNotes}
                       onChange={(e) => setLogNotes(e.target.value)}
-                      placeholder="Wind direction, visible smoke, moisture status..."
+                      placeholder={tx('Wind direction, visible smoke, moisture status...', 'గాలి దిశ, పొగ, తేమ స్థితి...')}
                     />
                     <Button
                       type="submit"
@@ -885,7 +912,9 @@ export default function AirQualityPage() {
                       className="w-full btn-sheen"
                     >
                       <Plus className="w-4 h-4 mr-1.5" />
-                      {submittingReading ? 'Saving Reading...' : 'Publish Station Reading'}
+                      {submittingReading
+                        ? tx('Saving Reading...', 'సేవ్ అవుతోంది...')
+                        : tx('Publish Station Reading', 'స్టేషన్ రీడింగ్ ప్రచురించండి')}
                     </Button>
                   </form>
                 )}
@@ -893,7 +922,7 @@ export default function AirQualityPage() {
                 {readings.length > 0 && (
                   <div className="mt-6 pt-4 border-t border-slate-100">
                     <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-                      Recent Official Station Logs
+                      {tx('Recent Official Station Logs', 'ఇటీవలి అధికారిక స్టేషన్ లాగ్స్')}
                     </h3>
                     <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
                       {readings.slice(0, 5).map((r) => (
@@ -926,46 +955,54 @@ export default function AirQualityPage() {
             {/* Resident Reporting Form */}
             <Card className="lg:col-span-5 h-fit">
               <CardHeader
-                title="Report Localized Air Pollution Source"
-                subtitle="Automatically calculates response priority and notifies Kantheru Sanitation Officers."
+                title={tx('Report Localized Air Pollution Source', 'స్థానిక వాయు కాలుష్య ఫిర్యాదు చేయండి')}
+                subtitle={tx(
+                  'Automatically calculates response priority and notifies Kantheru Sanitation Officers.',
+                  'ఆటోమేటిక్‌గా తీవ్రతను లెక్కించి కంతేరు పారిశుధ్య అధికారులకు సమాచారం అందిస్తుంది.'
+                )}
               />
               <CardContent>
                 {!currentUser ? (
                   <div className="rounded-xl bg-sky-50 border border-sky-200 p-4 text-sm text-sky-900 space-y-3">
-                    <p className="font-semibold">Sign in to report smoke or dust incidents</p>
+                    <p className="font-semibold">
+                      {tx('Sign in to report smoke or dust incidents', 'పొగ లేదా దుమ్ము సమస్యలు నివేదించడానికి లాగిన్ అవ్వండి')}
+                    </p>
                     <p className="text-xs text-sky-800">
-                      Verified resident login prevents spam and lets you track sprinkler dispatch updates in real time.
+                      {tx(
+                        'Verified resident login prevents spam and lets you track sprinkler dispatch updates in real time.',
+                        'నిజమైన గ్రామస్తుల లాగిన్ ద్వారా మీ స్ప్రింక్లర్ డిస్పాచ్ స్థితిని లైవ్‌లో ట్రాక్ చేయవచ్చు.'
+                      )}
                     </p>
                     <Link href="/login">
                       <Button size="sm" variant="primary">
-                        Sign In / Register
+                        {tx('Sign In / Register', 'లాగిన్ / నమోదు')}
                       </Button>
                     </Link>
                   </div>
                 ) : (
                   <form onSubmit={handleReportIncident} className="space-y-4">
                     <Select
-                      label="Village Section"
+                      label={tx('Village Section', 'గ్రామ విభాగం')}
                       value={incSectionId}
                       onChange={(e) => setIncSectionId(e.target.value)}
-                      options={SECTION_OPTIONS}
+                      options={sectionOptions}
                     />
                     <Select
-                      label="Pollution Source Category"
+                      label={tx('Pollution Source Category', 'కాలుష్య కారక రకం')}
                       value={incCategory}
                       onChange={(e) => setIncCategory(e.target.value)}
-                      options={CATEGORY_OPTIONS}
+                      options={categoryOptions}
                     />
                     <Input
-                      label="Exact Spot / Landmark"
+                      label={tx('Exact Spot / Landmark', 'ఖచ్చితమైన ప్రదేశం')}
                       required
                       value={incLocation}
                       onChange={(e) => setIncLocation(e.target.value)}
-                      placeholder="e.g. Behind ZP School Compound Wall"
+                      placeholder={tx('e.g. Behind ZP School Compound Wall', 'ఉదా: ZP హైస్కూల్ వెనుక భాగం')}
                     />
                     <div>
                       <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
-                        Incident Description <span className="text-rose-500">*</span>
+                        {tx('Incident Description', 'సమస్య వివరణ')} <span className="text-rose-500">*</span>
                       </label>
                       <textarea
                         required
@@ -973,12 +1010,15 @@ export default function AirQualityPage() {
                         rows={3}
                         value={incDescription}
                         onChange={(e) => setIncDescription(e.target.value)}
-                        placeholder="Describe smoke color, dust volume, and wind direction..."
+                        placeholder={tx(
+                          'Describe smoke color, dust volume, and wind direction...',
+                          'పొగ రంగు, దుమ్ము తీవ్రత మరియు గాలి దిశ వివరించండి...'
+                        )}
                         className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
                       />
                     </div>
                     <Input
-                      label="Estimated Affected Households"
+                      label={tx('Estimated Affected Households', 'ప్రభావిత కుటుంబాల సంఖ్య')}
                       type="number"
                       min="1"
                       max="500"
@@ -995,22 +1035,22 @@ export default function AirQualityPage() {
                       />
                       <span className="text-xs text-slate-700">
                         <strong className="block text-slate-900">
-                          Near School, Anganwadi, or Primary Health Centre
+                          {tx('Near School, Anganwadi, or Primary Health Centre', 'పాఠశాల, అంగన్‌వాడీ లేదా PHC దగ్గర ఉందా?')}
                         </strong>
-                        Automatically applies +20 sensitive exposure urgency bonus.
+                        {tx('Automatically applies +20 sensitive exposure urgency bonus.', 'అదనంగా +20 అత్యవసర ప్రాధాన్యత స్కోరు జతచేయబడుతుంది.')}
                       </span>
                     </label>
 
                     {/* Live Priority Preview */}
                     <div className="rounded-lg bg-slate-900 text-white p-3.5 text-xs space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-300 font-semibold">Computed Priority Preview</span>
+                        <span className="text-slate-300 font-semibold">{tx('Computed Priority Preview', 'అంచనా ప్రాధాన్యత')}</span>
                         <Badge variant={PRIORITY_BADGE_MAP[livePriorityPreview.priority]} size="sm">
-                          {livePriorityPreview.priority} (Score {livePriorityPreview.severityScore})
+                          {ts(livePriorityPreview.priority)} ({tx('Score', 'స్కోర్')} {livePriorityPreview.severityScore})
                         </Badge>
                       </div>
                       <p className="text-teal-300 font-medium">
-                        Unit: {livePriorityPreview.recommendedUnit}
+                        {tx('Unit:', 'బృందం:')} {livePriorityPreview.recommendedUnit}
                       </p>
                     </div>
 
@@ -1020,7 +1060,9 @@ export default function AirQualityPage() {
                       className="w-full btn-sheen"
                     >
                       <Flame className="w-4 h-4 mr-1.5" />
-                      {submittingIncident ? 'Submitting Report...' : 'Submit Air Pollution Alert'}
+                      {submittingIncident
+                        ? tx('Submitting Report...', 'సమర్పించబడుతోంది...')
+                        : tx('Submit Air Pollution Alert', 'కాలుష్య హెచ్చరిక పంపండి')}
                     </Button>
                   </form>
                 )}
@@ -1031,17 +1073,17 @@ export default function AirQualityPage() {
             <div className="lg:col-span-7 space-y-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold text-slate-900">
-                  Live Panchayat Mitigation & Sprinkler Queue ({incidents.length})
+                  {tx('Live Panchayat Mitigation & Sprinkler Queue', 'లైవ్ పంచాయతీ నివారణ & స్ప్రింక్లర్ క్యూ')} ({incidents.length})
                 </h2>
-                <span className="text-xs text-slate-500">Ordered by Severity Score</span>
+                <span className="text-xs text-slate-500">{tx('Ordered by Severity Score', 'తీవ్రత స్కోర్ ప్రకారం')}</span>
               </div>
 
               {incidents.length === 0 ? (
                 <Card>
                   <CardContent className="py-12 text-center text-slate-500">
                     <Wind className="w-10 h-10 mx-auto text-teal-500 mb-2" />
-                    <p className="font-semibold text-slate-700">No active air pollution incidents</p>
-                    <p className="text-xs mt-1">All 5 sections of Kantheru report clean operating conditions.</p>
+                    <p className="font-semibold text-slate-700">{tx('No active air pollution incidents', 'యాక్టివ్ కాలుష్య ఫిర్యాదులు లేవు')}</p>
+                    <p className="text-xs mt-1">{tx('All 5 sections of Kantheru report clean operating conditions.', 'కంతేరులోని అన్ని 5 విభాగాల్లో స్వచ్ఛమైన పరిస్థితులు ఉన్నాయి.')}</p>
                   </CardContent>
                 </Card>
               ) : (
@@ -1052,23 +1094,23 @@ export default function AirQualityPage() {
                         <div className="space-y-1">
                           <div className="flex flex-wrap items-center gap-2">
                             <Badge variant={PRIORITY_BADGE_MAP[inc.priority]}>
-                              {inc.priority} • {inc.severityScore}/100
+                              {ts(inc.priority)} • {inc.severityScore}/100
                             </Badge>
                             <Badge variant={STATUS_BADGE_MAP[inc.status]}>
-                              {inc.status.replace(/_/g, ' ')}
+                              {ts(inc.status)}
                             </Badge>
                             {inc.isNearSensitiveFacility && (
                               <Badge variant="rose" size="sm">
-                                School / PHC Zone
+                                {tx('School / PHC Zone', 'స్కూల్ / PHC ప్రాంతం')}
                               </Badge>
                             )}
                           </div>
                           <h3 className="text-base font-bold text-slate-900 mt-1">
-                            Section {inc.sectionId} — {inc.location}
+                            {tx('Section', 'విభాగం')} {inc.sectionId} — {inc.location}
                           </h3>
                         </div>
                         <span className="text-xs font-semibold text-slate-500">
-                          {inc.affectedHouseholds} households affected
+                          {inc.affectedHouseholds} {tx('households affected', 'కుటుంబాలు ప్రభావితం')}
                         </span>
                       </div>
 
@@ -1076,12 +1118,12 @@ export default function AirQualityPage() {
 
                       <div className="rounded-lg bg-slate-50 border border-slate-200/80 p-3 text-xs space-y-1">
                         <p className="font-semibold text-slate-800">
-                          Recommended Mitigation Unit:{' '}
+                          {tx('Recommended Mitigation Unit:', 'సూచించిన నివారణ బృందం:')}{' '}
                           <span className="text-teal-700">{inc.recommendedUnit}</span>
                         </p>
                         {inc.actionNotes && (
                           <p className="text-slate-600">
-                            <strong>Officer Log:</strong> {inc.actionNotes}
+                            <strong>{tx('Officer Log:', 'అధికారి గమనిక:')}</strong> {inc.actionNotes}
                           </p>
                         )}
                       </div>
@@ -1089,7 +1131,10 @@ export default function AirQualityPage() {
                       {isOfficer && inc.status !== 'RESOLVED' && (
                         <div className="pt-2 border-t border-slate-100 space-y-2.5">
                           <Input
-                            placeholder="Add officer action note (e.g., Tanker AP07-112 dispatched at 10:15 AM)..."
+                            placeholder={tx(
+                              'Add officer action note (e.g., Tanker AP07-112 dispatched at 10:15 AM)...',
+                              'అధికారి చర్య వివరాలు నమోదు చేయండి...'
+                            )}
                             value={actionNotesMap[inc.id] || ''}
                             onChange={(e) =>
                               setActionNotesMap((prev) => ({ ...prev, [inc.id]: e.target.value }))
@@ -1105,7 +1150,7 @@ export default function AirQualityPage() {
                                   handleUpdateIncidentStatus(inc.id, 'WATER_SPRINKLER_DISPATCHED')
                                 }
                               >
-                                Dispatch Water Sprinkler
+                                {tx('Dispatch Water Sprinkler', 'వాటర్ స్ప్రింక్లర్ పంపండి')}
                               </Button>
                             )}
                             {inc.status !== 'ENFORCEMENT_ACTION' && (
@@ -1117,7 +1162,7 @@ export default function AirQualityPage() {
                                   handleUpdateIncidentStatus(inc.id, 'ENFORCEMENT_ACTION')
                                 }
                               >
-                                Log Enforcement Notice
+                                {tx('Log Enforcement Notice', 'నోటీసు జారీ చేయండి')}
                               </Button>
                             )}
                             <Button
@@ -1126,7 +1171,7 @@ export default function AirQualityPage() {
                               disabled={updatingIncidentId === inc.id}
                               onClick={() => handleUpdateIncidentStatus(inc.id, 'RESOLVED')}
                             >
-                              Mark Resolved
+                              {tx('Mark Resolved', 'పరిష్కరించబడింది')}
                             </Button>
                           </div>
                         </div>

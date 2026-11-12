@@ -18,8 +18,10 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 function LoginFormContent() {
+  const { tx } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
@@ -133,10 +135,10 @@ function LoginFormContent() {
           <Activity className="w-8 h-8 text-teal-400" />
         </div>
         <h2 className="text-2xl font-bold tracking-tight text-navy-950">
-          Sign In to HEALTHBRIDGE 360
+          {tx('Sign In to HEALTHBRIDGE 360', 'HEALTHBRIDGE 360 లోకి సైన్ ఇన్ చేయండి')}
         </h2>
         <p className="mt-1 text-xs text-slate-600">
-          Kantheru Community Healthcare & Essential Services Platform
+          {tx('Kantheru Community Healthcare & Essential Services Platform', 'కంతేరు కమ్యూనిటీ ఆరోగ్య & అత్యవసర సేవల వేదిక')}
         </p>
       </div>
 
@@ -155,9 +157,9 @@ function LoginFormContent() {
               <div className="flex items-center justify-between mb-2.5">
                 <span className="text-xs font-bold text-navy-900 uppercase tracking-wider flex items-center gap-1.5">
                   <Shield className="w-3.5 h-3.5 text-teal-600" />
-                  Instant Role Access Switcher
+                  {tx('Instant Role Access Switcher', 'తక్షణ పాత్ర మార్పిడి')}
                 </span>
-                <span className="text-[11px] text-slate-500">1-click audit & testing</span>
+                <span className="text-[11px] text-slate-500">{tx('1-click audit & testing', '1-క్లిక్ ఆడిట్ & పరీక్ష')}</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {demoAccounts.map((account) => {
@@ -197,7 +199,7 @@ function LoginFormContent() {
                 <div className="w-full border-t border-slate-200" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-3 text-slate-500 font-medium">Or enter credentials</span>
+                <span className="bg-white px-3 text-slate-500 font-medium">{tx('Or enter credentials', 'లేదా వివరాలు నమోదు చేయండి')}</span>
               </div>
             </div>
 
@@ -210,7 +212,7 @@ function LoginFormContent() {
               className="space-y-4"
             >
               <Input
-                label="Email Address"
+                label={tx('Email Address', 'ఇమెయిల్ చిరునామా')}
                 type="email"
                 required
                 value={email}
@@ -219,7 +221,7 @@ function LoginFormContent() {
               />
 
               <Input
-                label="Password"
+                label={tx('Password', 'పాస్‌వర్డ్')}
                 type="password"
                 required
                 value={password}
@@ -228,9 +230,9 @@ function LoginFormContent() {
               />
 
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500">Default demo password: Password@123</span>
+                <span className="text-slate-500">{tx('Default demo password: Password@123', 'డెమో పాస్‌వర్డ్: Password@123')}</span>
                 <Link href="/register" className="font-semibold text-teal-600 hover:text-teal-700">
-                  Register as Resident
+                  {tx('Register as Resident', 'నివాసిగా నమోదు')}
                 </Link>
               </div>
 
@@ -242,14 +244,14 @@ function LoginFormContent() {
                 isLoading={loading}
                 icon={<ArrowRight className="w-4 h-4" />}
               >
-                Sign In to Account
+                {tx('Sign In to Account', 'ఖాతాలోకి సైన్ ఇన్')}
               </Button>
             </form>
           </CardContent>
         </Card>
 
         <p className="mt-4 text-center text-xs text-slate-500">
-          Secured with encrypted role-based access control • Kantheru Gram Panchayat
+          {tx('Secured with encrypted role-based access control • Kantheru Gram Panchayat', 'ఎన్‌క్రిప్ట్ చేసిన భద్రత • కంతేరు గ్రామ పంచాయతీ')}
         </p>
       </div>
     </div>

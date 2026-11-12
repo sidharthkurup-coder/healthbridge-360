@@ -28,7 +28,7 @@ import { AnimatedCounter, ScrollReveal } from '@/components/ui/Motion';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function CommunityIntelligencePage() {
-  const { lang, t } = useLanguage();
+  const { lang, t, tx } = useLanguage();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSection, setSelectedSection] = useState('ALL');
@@ -117,18 +117,18 @@ export default function CommunityIntelligencePage() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-slate-200 text-xs">
             <Filter className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-slate-500">Filter Zone:</span>
+            <span className="text-slate-500">{tx('Filter Zone:', 'విభాగం:')}</span>
             <select
               value={selectedSection}
               onChange={(e) => setSelectedSection(e.target.value)}
               className="bg-transparent font-semibold text-slate-800 focus:outline-none"
             >
-              <option value="ALL">All Kantheru (Entire Village)</option>
-              <option value="1">Section 1 (Old Village / Market)</option>
-              <option value="2">Section 2 (Ramalayam / BC Colony)</option>
-              <option value="3">Section 3 (SC Colony / ZP School)</option>
-              <option value="4">Section 4 (Bypass Road)</option>
-              <option value="5">Section 5 (Panchayat / PHC)</option>
+              <option value="ALL">{tx('All Kantheru (Entire Village)', 'కంతేరు మొత్తం గ్రామం')}</option>
+              <option value="1">{tx('Section 1 (Old Village / Market)', 'విభాగం 1 (పాత గ్రామం / మార్కెట్)')}</option>
+              <option value="2">{tx('Section 2 (Ramalayam / BC Colony)', 'విభాగం 2 (రామాలయం / BC కాలనీ)')}</option>
+              <option value="3">{tx('Section 3 (SC Colony / ZP School)', 'విభాగం 3 (SC కాలనీ / ZP హైస్కూల్)')}</option>
+              <option value="4">{tx('Section 4 (Bypass Road)', 'విభాగం 4 (బైపాస్ రోడ్డు)')}</option>
+              <option value="5">{tx('Section 5 (Panchayat / PHC)', 'విభాగం 5 (పంచాయతీ / PHC)')}</option>
             </select>
           </div>
 
@@ -139,7 +139,7 @@ export default function CommunityIntelligencePage() {
             disabled={!data}
             icon={<Download className="w-3.5 h-3.5" />}
           >
-            Export CSV
+            {tx('Export CSV', 'CSV డౌన్‌లోడ్')}
           </Button>
 
           <Button
@@ -149,7 +149,7 @@ export default function CommunityIntelligencePage() {
             isLoading={loading}
             icon={<RefreshCw className="w-3.5 h-3.5" />}
           >
-            Refresh
+            {tx('Refresh', 'రీఫ్రెష్')}
           </Button>
         </div>
       </div>
@@ -159,12 +159,16 @@ export default function CommunityIntelligencePage() {
         <div className="flex items-center gap-2">
           <Shield className="w-4 h-4 text-purple-700 shrink-0" />
           <span>
-            <strong>Authentic Telemetry Engine:</strong> Every KPI, turnaround average, and comparison table is dynamically queried from relational SQLite records. No hardcoded statistics pretending to be live data.
+            <strong>{tx('Authentic Telemetry Engine:', 'ఖచ్చితమైన డేటా ఇంజిన్:')}</strong>{' '}
+            {tx(
+              'Every KPI, turnaround average, and comparison table is dynamically queried from relational SQLite records. No hardcoded statistics pretending to be live data.',
+              'ప్రతి KPI, సగటు సమయం మరియు పోలిక పట్టిక SQLite డేటాబేస్ నుండి లైవ్‌లో లెక్కించబడుతుంది.'
+            )}
           </span>
         </div>
         {data?.timestamp && (
           <span className="font-mono text-[10px] text-purple-700 hidden sm:inline">
-            Queried: {new Date(data.timestamp).toLocaleTimeString()}
+            {tx('Queried:', 'సమయం:')} {new Date(data.timestamp).toLocaleTimeString()}
           </span>
         )}
       </div>
@@ -176,7 +180,7 @@ export default function CommunityIntelligencePage() {
           <Card hoverEffect className="border-emerald-200 h-full">
             <CardContent className="p-5 space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500">Sanitation Resolution Rate</span>
+                <span className="text-xs font-semibold text-slate-500">{tx('Sanitation Resolution Rate', 'పారిశుధ్య పరిష్కార రేటు')}</span>
                 <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700">
                   <Recycle className="w-4 h-4" />
                 </div>
@@ -186,7 +190,7 @@ export default function CommunityIntelligencePage() {
                   <AnimatedCounter value={resAnalytics?.resolutionRatePercentage || 0} suffix="%" />
                 </p>
                 <Badge variant="emerald" size="sm">
-                  {resAnalytics?.resolvedComplaints || 0} / {resAnalytics?.totalComplaints || 0} Resolved
+                  {resAnalytics?.resolvedComplaints || 0} / {resAnalytics?.totalComplaints || 0} {tx('Resolved', 'పరిష్కారం')}
                 </Badge>
               </div>
               <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
@@ -196,7 +200,7 @@ export default function CommunityIntelligencePage() {
                 />
               </div>
               <p className="text-[11px] text-slate-500">
-                Pending: {resAnalytics?.pendingComplaints || 0} • In Progress:{' '}
+                {tx('Pending:', 'పెండింగ్:')} {resAnalytics?.pendingComplaints || 0} • {tx('In Progress:', 'పనిలో:')}{' '}
                 {resAnalytics?.inProgressComplaints || 0}
               </p>
             </CardContent>
@@ -208,7 +212,7 @@ export default function CommunityIntelligencePage() {
           <Card hoverEffect className="border-amber-200 h-full">
             <CardContent className="p-5 space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500">PHC Medicine Stock</span>
+                <span className="text-xs font-semibold text-slate-500">{tx('PHC Medicine Stock', 'PHC మందుల నిల్వ')}</span>
                 <div className="p-2 rounded-lg bg-amber-50 text-amber-700">
                   <Pill className="w-4 h-4" />
                 </div>
@@ -218,7 +222,7 @@ export default function CommunityIntelligencePage() {
                   <AnimatedCounter value={medStats?.totalAvailableUnits || 0} />
                 </p>
                 <Badge variant={medStats?.lowStockCount > 0 ? 'amber' : 'emerald'} size="sm">
-                  {medStats?.lowStockCount > 0 ? `${medStats?.lowStockCount} Low` : 'Normal'}
+                  {medStats?.lowStockCount > 0 ? `${medStats?.lowStockCount} ${tx('Low', 'తక్కువ')}` : tx('Normal', 'సాధారణం')}
                 </Badge>
               </div>
               <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
@@ -228,7 +232,7 @@ export default function CommunityIntelligencePage() {
                 />
               </div>
               <p className="text-[11px] text-slate-500">
-                {medStats?.totalFormulations || 0} EDL Types • {medStats?.totalExpiredUnits || 0} Expired Quarantined
+                {medStats?.totalFormulations || 0} {tx('EDL Types', 'మందుల రకాలు')} • {medStats?.totalExpiredUnits || 0} {tx('Expired Quarantined', 'కాలం చెల్లినవి')}
               </p>
             </CardContent>
           </Card>
@@ -239,7 +243,7 @@ export default function CommunityIntelligencePage() {
           <Card hoverEffect className="border-teal-200 h-full">
             <CardContent className="p-5 space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500">Water Volume Supplied</span>
+                <span className="text-xs font-semibold text-slate-500">{tx('Water Volume Supplied', 'సరఫరా చేసిన నీటి పరిమాణం')}</span>
                 <div className="p-2 rounded-lg bg-teal-50 text-teal-700">
                   <Droplets className="w-4 h-4" />
                 </div>
@@ -249,7 +253,7 @@ export default function CommunityIntelligencePage() {
                   <AnimatedCounter value={waterStats?.totalWaterSuppliedKL || 0} suffix=" KL" />
                 </p>
                 <Badge variant="teal" size="sm">
-                  {waterStats?.totalSectionsMonitored || 5} Sections
+                  {waterStats?.totalSectionsMonitored || 5} {tx('Sections', 'విభాగాలు')}
                 </Badge>
               </div>
               <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
@@ -259,7 +263,7 @@ export default function CommunityIntelligencePage() {
                 />
               </div>
               <p className="text-[11px] text-slate-500">
-                {waterStats?.totalSupplyLogs || 0} Logs Recorded • {waterStats?.totalInterruptions || 0} Interruptions
+                {waterStats?.totalSupplyLogs || 0} {tx('Logs Recorded', 'లాగ్స్')} • {waterStats?.totalInterruptions || 0} {tx('Interruptions', 'అంతరాయాలు')}
               </p>
             </CardContent>
           </Card>
@@ -270,7 +274,7 @@ export default function CommunityIntelligencePage() {
           <Card hoverEffect className="border-sky-200 h-full">
             <CardContent className="p-5 space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500">Clinical & Emergency Visits</span>
+                <span className="text-xs font-semibold text-slate-500">{tx('Clinical & Emergency Visits', 'వైద్య & అత్యవసర కేసులు')}</span>
                 <div className="p-2 rounded-lg bg-sky-50 text-sky-700">
                   <HeartPulse className="w-4 h-4" />
                 </div>
@@ -280,7 +284,7 @@ export default function CommunityIntelligencePage() {
                   <AnimatedCounter value={(appStats?.total || 0) + (emStats?.total || 0)} />
                 </p>
                 <Badge variant="sky" size="sm">
-                  {appStats?.approved || 0} Confirmed OPD
+                  {appStats?.approved || 0} {tx('Confirmed OPD', 'ఆమోదించిన OPD')}
                 </Badge>
               </div>
               <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
@@ -290,7 +294,7 @@ export default function CommunityIntelligencePage() {
                 />
               </div>
               <p className="text-[11px] text-slate-500">
-                {emStats?.total || 0} 108 Emergency Tickets • {appStats?.pending || 0} Pending OPD
+                {emStats?.total || 0} {tx('108 Emergency Tickets', '108 కేసులు')} • {appStats?.pending || 0} {tx('Pending OPD', 'పెండింగ్ OPD')}
               </p>
             </CardContent>
           </Card>
@@ -302,57 +306,57 @@ export default function CommunityIntelligencePage() {
         <div className="lg:col-span-6 space-y-4">
           <Card>
             <CardHeader
-              title="Complaint Resolution Turnaround Analytics"
-              subtitle="Calculated strictly using the Resolution Analytics Algorithm (excluding unresolved cases)"
+              title={tx('Complaint Resolution Turnaround Analytics', 'ఫిర్యాదుల పరిష్కార సమయ విశ్లేషణ')}
+              subtitle={tx('Calculated strictly using the Resolution Analytics Algorithm (excluding unresolved cases)', 'పరిష్కారమైన కేసుల ఆధారంగా మాత్రమే కచ్చితంగా లెక్కించబడుతుంది')}
             />
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-3 text-left">
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                  <p className="text-[11px] text-slate-500">Avg Time to Acknowledge</p>
+                  <p className="text-[11px] text-slate-500">{tx('Avg Time to Acknowledge', 'గుర్తించడానికి సగటు సమయం')}</p>
                   <p className="text-xl font-bold text-navy-950 mt-1">
                     {resAnalytics?.averageAcknowledgementTimeHours !== null
-                      ? `${resAnalytics?.averageAcknowledgementTimeHours} Hours`
-                      : 'No Data'}
+                      ? `${resAnalytics?.averageAcknowledgementTimeHours} ${tx('Hours', 'గంటలు')}`
+                      : tx('No Data', 'డేటా లేదు')}
                   </p>
-                  <p className="text-[10px] text-slate-400">Submission → Under Review</p>
+                  <p className="text-[10px] text-slate-400">{tx('Submission → Under Review', 'సమర్పణ → పరిశీలన')}</p>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                  <p className="text-[11px] text-slate-500">Avg Assignment to Resolution</p>
+                  <p className="text-[11px] text-slate-500">{tx('Avg Assignment to Resolution', 'పని పూర్తి చేయడానికి సగటు సమయం')}</p>
                   <p className="text-xl font-bold text-emerald-700 mt-1">
                     {resAnalytics?.averageAssignmentToResolutionHours !== null
-                      ? `${resAnalytics?.averageAssignmentToResolutionHours} Hours`
-                      : 'No Data'}
+                      ? `${resAnalytics?.averageAssignmentToResolutionHours} ${tx('Hours', 'గంటలు')}`
+                      : tx('No Data', 'డేటా లేదు')}
                   </p>
-                  <p className="text-[10px] text-slate-400">Crew Dispatched → Closed</p>
+                  <p className="text-[10px] text-slate-400">{tx('Crew Dispatched → Closed', 'బృందం పంపిణీ → పరిష్కారం')}</p>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                  <p className="text-[11px] text-slate-500">Total Lifecycle Turnaround</p>
+                  <p className="text-[11px] text-slate-500">{tx('Total Lifecycle Turnaround', 'మొత్తం పరిష్కార సమయం')}</p>
                   <p className="text-xl font-bold text-teal-800 mt-1">
                     {resAnalytics?.averageTotalResolutionTimeHours !== null
-                      ? `${resAnalytics?.averageTotalResolutionTimeHours} Hours`
-                      : 'No Data'}
+                      ? `${resAnalytics?.averageTotalResolutionTimeHours} ${tx('Hours', 'గంటలు')}`
+                      : tx('No Data', 'డేటా లేదు')}
                   </p>
-                  <p className="text-[10px] text-slate-400">From Resident Post to Solved</p>
+                  <p className="text-[10px] text-slate-400">{tx('From Resident Post to Solved', 'ఫిర్యాదు నుండి పరిష్కారం వరకు')}</p>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                  <p className="text-[11px] text-slate-500">Average Pending Age</p>
+                  <p className="text-[11px] text-slate-500">{tx('Average Pending Age', 'సగటు పెండింగ్ వయస్సు')}</p>
                   <p className="text-xl font-bold text-amber-700 mt-1">
                     {resAnalytics?.averagePendingAgeHours !== null
-                      ? `${resAnalytics?.averagePendingAgeHours} Hours`
-                      : '0 Hours'}
+                      ? `${resAnalytics?.averagePendingAgeHours} ${tx('Hours', 'గంటలు')}`
+                      : `0 ${tx('Hours', 'గంటలు')}`}
                   </p>
-                  <p className="text-[10px] text-slate-400">Current open backlog aging</p>
+                  <p className="text-[10px] text-slate-400">{tx('Current open backlog aging', 'ప్రస్తుత పెండింగ్ కేసుల కాలం')}</p>
                 </div>
               </div>
 
               <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-semibold text-slate-800">Reopened Issue Rate:</span>
+                  <span className="font-semibold text-slate-800">{tx('Reopened Issue Rate:', 'తిరిగి తెరిచిన కేసుల రేటు:')}</span>
                   <span className="text-slate-500 ml-1">
-                    ({resAnalytics?.totalReopenedCases || 0} cases recurred after initial closure)
+                    ({resAnalytics?.totalReopenedCases || 0} {tx('cases recurred after initial closure', 'కేసులు మళ్ళీ తెరవబడ్డాయి')})
                   </span>
                 </div>
                 <Badge variant={resAnalytics?.reopenedRatePercentage > 0 ? 'amber' : 'emerald'}>
@@ -367,8 +371,8 @@ export default function CommunityIntelligencePage() {
         <div className="lg:col-span-6 space-y-4">
           <Card>
             <CardHeader
-              title="Recurring Issue Categories & Resolution"
-              subtitle="Volume and resolution efficiency across all sanitation categories"
+              title={tx('Recurring Issue Categories & Resolution', 'తరచుగా వచ్చే సమస్యల విభాగాలు & పరిష్కారం')}
+              subtitle={tx('Volume and resolution efficiency across all sanitation categories', 'అన్ని పారిశుధ్య విభాగాల్లో పనితీరు')}
             />
             <CardContent className="p-0 overflow-x-auto">
               {resAnalytics?.categoryMetrics &&
@@ -376,11 +380,11 @@ export default function CommunityIntelligencePage() {
                 <table className="w-full text-left text-xs text-slate-600">
                   <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
                     <tr>
-                      <th className="py-3 px-4">Hazard Category</th>
-                      <th className="py-3 px-4">Total</th>
-                      <th className="py-3 px-4">Resolved</th>
-                      <th className="py-3 px-4">Pending</th>
-                      <th className="py-3 px-4">Avg Turnaround</th>
+                      <th className="py-3 px-4">{tx('Hazard Category', 'సమస్య వర్గం')}</th>
+                      <th className="py-3 px-4">{tx('Total', 'మొత్తం')}</th>
+                      <th className="py-3 px-4">{tx('Resolved', 'పరిష్కారం')}</th>
+                      <th className="py-3 px-4">{tx('Pending', 'పెండింగ్')}</th>
+                      <th className="py-3 px-4">{tx('Avg Turnaround', 'సగటు సమయం')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -419,8 +423,8 @@ export default function CommunityIntelligencePage() {
       {/* SECTION 3: FIVE-SECTION WATER DISTRIBUTION ANALYSIS */}
       <Card>
         <CardHeader
-          title="Five-Section Water Distribution Comparative Intelligence"
-          subtitle="Pumping duration, water volumes, and telemetry reliability by Kantheru Section"
+          title={tx('Five-Section Water Distribution Comparative Intelligence', 'ఐదు-విభాగాల త్రాగునీటి పంపిణీ తులనాత్మక విశ్లేషణ')}
+          subtitle={tx('Pumping duration, water volumes, and telemetry reliability by Kantheru Section', 'కంతేరు విభాగాల వారీగా పంపింగ్ వ్యవధి, నీటి పరిమాణం మరియు సెన్సార్ వివరాలు')}
         />
         {waterStats?.sectionAnalyses && waterStats.sectionAnalyses.length > 0 && (
           <div className="px-6 py-4 bg-slate-50/70 border-b border-slate-100 grid grid-cols-1 sm:grid-cols-5 gap-3">
@@ -431,7 +435,7 @@ export default function CommunityIntelligencePage() {
                 return (
                   <div key={sec.sectionId} className="p-2.5 rounded-lg bg-white border border-slate-200 space-y-1.5">
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="font-bold text-navy-950">Section {sec.sectionId}</span>
+                      <span className="font-bold text-navy-950">{tx('Section', 'విభాగం')} {sec.sectionId}</span>
                       <span className="font-mono font-bold text-teal-700">{sec.totalMeasuredVolumeKL} KL</span>
                     </div>
                     <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -451,27 +455,27 @@ export default function CommunityIntelligencePage() {
             <table className="w-full text-left text-xs text-slate-600">
               <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
                 <tr>
-                  <th className="py-3 px-4">Kantheru Section</th>
-                  <th className="py-3 px-4">Logged Supply Count</th>
-                  <th className="py-3 px-4">Total Volume (KL)</th>
-                  <th className="py-3 px-4">Avg Duration</th>
-                  <th className="py-3 px-4">Flow Sensor (Avg Lpm)</th>
-                  <th className="py-3 px-4">Pressure (Avg Bar)</th>
-                  <th className="py-3 px-4">Interruption Rate</th>
-                  <th className="py-3 px-4">Days Since Supply</th>
+                  <th className="py-3 px-4">{tx('Kantheru Section', 'కంతేరు విభాగం')}</th>
+                  <th className="py-3 px-4">{tx('Logged Supply Count', 'నమోదైన సరఫరాలు')}</th>
+                  <th className="py-3 px-4">{tx('Total Volume (KL)', 'మొత్తం నీరు (KL)')}</th>
+                  <th className="py-3 px-4">{tx('Avg Duration', 'సగటు సమయం')}</th>
+                  <th className="py-3 px-4">{tx('Flow Sensor (Avg Lpm)', 'ఫ్లో సెన్సార్ (L/min)')}</th>
+                  <th className="py-3 px-4">{tx('Pressure (Avg Bar)', 'పీడనం (Bar)')}</th>
+                  <th className="py-3 px-4">{tx('Interruption Rate', 'అంతరాయ రేటు')}</th>
+                  <th className="py-3 px-4">{tx('Days Since Supply', 'చివరి సరఫరా')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {waterStats.sectionAnalyses.map((a: any) => (
                   <tr key={a.sectionId} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="py-3 px-4 font-bold text-navy-950">Section {a.sectionId}</td>
-                    <td className="py-3 px-4">{a.totalRecords} records</td>
+                    <td className="py-3 px-4 font-bold text-navy-950">{tx('Section', 'విభాగం')} {a.sectionId}</td>
+                    <td className="py-3 px-4">{a.totalRecords} {tx('records', 'నమోదులు')}</td>
                     <td className="py-3 px-4 font-mono font-bold text-teal-800">
                       {a.totalMeasuredVolumeKL} KL
                     </td>
                     <td className="py-3 px-4">
                       {a.averageSupplyDurationMinutes !== null
-                        ? `${a.averageSupplyDurationMinutes} mins`
+                        ? `${a.averageSupplyDurationMinutes} ${tx('mins', 'నిమి.')}`
                         : '—'}
                     </td>
                     <td className="py-3 px-4 font-mono">
@@ -479,7 +483,7 @@ export default function CommunityIntelligencePage() {
                         <span className="text-teal-700 font-semibold">{a.averageFlowRateLpm} L/min</span>
                       ) : (
                         <span className="text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded text-[10px]">
-                          Unmetered
+                          {tx('Unmetered', 'మీటర్ లేదు')}
                         </span>
                       )}
                     </td>
@@ -493,15 +497,15 @@ export default function CommunityIntelligencePage() {
                     </td>
                     <td className="py-3 px-4 font-semibold text-slate-800">
                       {a.daysSinceLastRecordedSupply !== null
-                        ? `${a.daysSinceLastRecordedSupply} days ago`
-                        : 'No Data'}
+                        ? `${a.daysSinceLastRecordedSupply} ${tx('days ago', 'రోజుల క్రితం')}`
+                        : tx('No Data', 'డేటా లేదు')}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           ) : (
-            <p className="p-8 text-center text-xs text-slate-500">No water section analyses available.</p>
+            <p className="p-8 text-center text-xs text-slate-500">{tx('No water section analyses available.', 'నీటి విభాగ విశ్లేషణ అందుబాటులో లేదు.')}</p>
           )}
         </CardContent>
       </Card>

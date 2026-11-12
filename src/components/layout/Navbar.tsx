@@ -37,7 +37,7 @@ interface UserSession {
 export const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const { lang, setLang, t } = useLanguage();
+  const { lang, setLang, t, tx, ts } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<UserSession | null>(null);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -332,7 +332,7 @@ export const Navbar = () => {
                   <div className="leading-tight">
                     <p className="text-xs font-bold text-slate-900 max-w-[120px] truncate">{user.name}</p>
                     <Badge variant={getRoleBadgeVariant(user.role)} size="sm">
-                      {user.role.replace(/_/g, ' ')}
+                      {ts(user.role)}
                     </Badge>
                   </div>
                   <ChevronDown
@@ -346,10 +346,10 @@ export const Navbar = () => {
                 {userDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-60 bg-white rounded-2xl shadow-elevated border border-slate-200/80 py-1.5 z-50 text-sm animate-scale-in">
                     <div className="px-4 py-2.5 border-b border-slate-100 text-xs bg-slate-50/60">
-                      <p className="text-slate-400 font-medium">Authenticated Session</p>
+                      <p className="text-slate-400 font-medium">{tx('Authenticated Session', 'ధృవీకరించబడిన సెషన్')}</p>
                       <p className="font-bold text-slate-900 truncate mt-0.5">{user.email}</p>
                       {user.sectionId && (
-                        <p className="text-teal-700 font-semibold mt-0.5">Section {user.sectionId} Resident</p>
+                        <p className="text-teal-700 font-semibold mt-0.5">{tx(`Section ${user.sectionId} Resident`, `విభాగం ${user.sectionId} నివాసి`)}</p>
                       )}
                     </div>
                     <Link
@@ -454,7 +454,7 @@ export const Navbar = () => {
                   <p className="text-xs font-bold text-slate-900">{user.name}</p>
                   <p className="text-xs text-slate-500">{user.email}</p>
                   <Badge variant={getRoleBadgeVariant(user.role)} size="sm" className="mt-1.5">
-                    {user.role.replace(/_/g, ' ')}
+                    {ts(user.role)}
                   </Badge>
                 </div>
                 <Link
@@ -462,7 +462,7 @@ export const Navbar = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   className="block px-3.5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-xl"
                 >
-                  Personal Dashboard
+                  {t('nav.dashboard')}
                 </Link>
                 {user.role === 'ADMIN' && (
                   <Link
@@ -470,7 +470,7 @@ export const Navbar = () => {
                     onClick={() => setMobileMenuOpen(false)}
                     className="block px-3.5 py-2 text-sm font-semibold text-purple-700 hover:bg-purple-50 rounded-xl"
                   >
-                    Admin Console
+                    {t('nav.admin')}
                   </Link>
                 )}
                 <button
@@ -478,7 +478,7 @@ export const Navbar = () => {
                   className="w-full text-left px-3.5 py-2 text-sm font-semibold text-rose-600 hover:bg-rose-50 rounded-xl flex items-center gap-2"
                 >
                   <LogOut className="w-4 h-4" />
-                  Sign Out
+                  {t('nav.signOut')}
                 </button>
               </div>
             ) : (

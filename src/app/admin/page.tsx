@@ -19,8 +19,10 @@ import { Badge } from '@/components/ui/Badge';
 import { Card, CardHeader, CardContent } from '@/components/ui/Card';
 import { Modal } from '@/components/ui/Modal';
 import { Select } from '@/components/ui/Input';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function AdminPage() {
+  const { tx } = useLanguage();
   const [users, setUsers] = useState<any[]>([]);
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -111,19 +113,22 @@ export default function AdminPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold text-navy-950">Panchayat Administration</h1>
-                <Badge variant="purple">System Governance</Badge>
+                <h1 className="text-2xl font-bold text-navy-950">{tx('Panchayat Administration', 'పంచాయతీ పరిపాలన కన్సోల్')}</h1>
+                <Badge variant="purple">{tx('System Governance', 'వ్యవస్థ పర్యవేక్షణ')}</Badge>
               </div>
               <p className="text-xs text-slate-500">
-                Kantheru Gram Panchayat • Role-Based Access Control, Security Governance & Audit Trail
+                {tx(
+                  'Kantheru Gram Panchayat • Role-Based Access Control, Security Governance & Audit Trail',
+                  'కంతేరు గ్రామ పంచాయతీ • పాత్ర-ఆధారిత యాక్సెస్, భద్రతా నియంత్రణ & ఆడిట్ లాగ్'
+                )}
               </p>
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <Badge variant="emerald">Audit Logging Active</Badge>
-          <Badge variant="teal">Prisma SQLite Enforced</Badge>
+          <Badge variant="emerald">{tx('Audit Logging Active', 'ఆడిట్ లాగింగ్ యాక్టివ్')}</Badge>
+          <Badge variant="teal">{tx('Prisma SQLite Enforced', 'SQLite డేటాబేస్ భద్రత')}</Badge>
         </div>
       </div>
 
@@ -132,48 +137,48 @@ export default function AdminPage() {
         <div className="p-4 rounded-xl border border-slate-200 bg-white">
           <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
             <Users className="w-4 h-4 text-purple-600" />
-            Total Registered Users
+            {tx('Total Registered Users', 'మొత్తం నమోదిత వినియోగదారులు')}
           </div>
-          <p className="text-2xl font-bold text-navy-950 mt-1">{users.length} Accounts</p>
-          <p className="text-[11px] text-slate-500 mt-0.5">Across 6 distinct role tiers</p>
+          <p className="text-2xl font-bold text-navy-950 mt-1">{users.length} {tx('Accounts', 'ఖాతాలు')}</p>
+          <p className="text-[11px] text-slate-500 mt-0.5">{tx('Across 6 distinct role tiers', '6 విభిన్న పాత్ర విభాగాలు')}</p>
         </div>
 
         <div className="p-4 rounded-xl border border-slate-200 bg-white">
           <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
             <Lock className="w-4 h-4 text-teal-600" />
-            Authentication Protocol
+            {tx('Authentication Protocol', 'ప్రామాణీకరణ విధానం')}
           </div>
-          <p className="text-base font-bold text-slate-800 mt-1">Bcrypt & Signed Tokens</p>
-          <p className="text-[11px] text-slate-500 mt-0.5">Server-side verified sessions</p>
+          <p className="text-base font-bold text-slate-800 mt-1">{tx('Bcrypt & Signed Tokens', 'Bcrypt & సంతకం చేసిన టోకెన్లు')}</p>
+          <p className="text-[11px] text-slate-500 mt-0.5">{tx('Server-side verified sessions', 'సర్వర్-వైపు ధృవీకరించబడిన సెషన్లు')}</p>
         </div>
 
         <div className="p-4 rounded-xl border border-slate-200 bg-white">
           <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
             <Database className="w-4 h-4 text-sky-600" />
-            Data Integrity Guard
+            {tx('Data Integrity Guard', 'డేటా సమగ్రత రక్షణ')}
           </div>
-          <p className="text-base font-bold text-slate-800 mt-1">Non-Inferential Rules</p>
-          <p className="text-[11px] text-slate-500 mt-0.5">Atomic transactions & zero fake stats</p>
+          <p className="text-base font-bold text-slate-800 mt-1">{tx('Non-Inferential Rules', 'ఊహించని కచ్చిత నియమాలు')}</p>
+          <p className="text-[11px] text-slate-500 mt-0.5">{tx('Atomic transactions & zero fake stats', 'ఖచ్చితమైన లావాదేవీలు')}</p>
         </div>
       </div>
 
       {/* USER MANAGEMENT TABLE */}
       <Card>
         <CardHeader
-          title="User Accounts & Role Permissions"
-          subtitle="Assign and modify operational authorities across all village modules"
+          title={tx('User Accounts & Role Permissions', 'వినియోగదారు ఖాతాలు & అధికారాలు')}
+          subtitle={tx('Assign and modify operational authorities across all village modules', 'అన్ని గ్రామ విభాగాల్లో అధికారాలను కేటాయించండి & మార్చండి')}
         />
         <CardContent className="p-0 overflow-x-auto">
           {users.length > 0 ? (
             <table className="w-full text-left text-xs text-slate-600">
               <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
                 <tr>
-                  <th className="py-3 px-4">User Name</th>
-                  <th className="py-3 px-4">Email</th>
-                  <th className="py-3 px-4">Phone</th>
-                  <th className="py-3 px-4">Section Zone</th>
-                  <th className="py-3 px-4">Role Tier</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-3 px-4">{tx('User Name', 'వినియోగదారు పేరు')}</th>
+                  <th className="py-3 px-4">{tx('Email', 'ఇమెయిల్')}</th>
+                  <th className="py-3 px-4">{tx('Phone', 'ఫోన్')}</th>
+                  <th className="py-3 px-4">{tx('Section Zone', 'విభాగం')}</th>
+                  <th className="py-3 px-4">{tx('Role Tier', 'పాత్ర')}</th>
+                  <th className="py-3 px-4 text-right">{tx('Actions', 'చర్యలు')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -184,9 +189,9 @@ export default function AdminPage() {
                     <td className="py-3 px-4 font-mono">{u.phone}</td>
                     <td className="py-3 px-4">
                       {u.sectionId ? (
-                        <span className="font-semibold text-teal-800">Section {u.sectionId}</span>
+                        <span className="font-semibold text-teal-800">{tx('Section', 'విభాగం')} {u.sectionId}</span>
                       ) : (
-                        <span className="text-slate-400">Panchayat HQ</span>
+                        <span className="text-slate-400">{tx('Panchayat HQ', 'పంచాయతీ కేంద్రం')}</span>
                       )}
                     </td>
                     <td className="py-3 px-4">
@@ -204,7 +209,7 @@ export default function AdminPage() {
                           setRoleModalOpen(true);
                         }}
                       >
-                        Change Role
+                        {tx('Change Role', 'పాత్ర మార్చండి')}
                       </Button>
                     </td>
                   </tr>
@@ -212,7 +217,7 @@ export default function AdminPage() {
               </tbody>
             </table>
           ) : (
-            <p className="p-8 text-center text-xs text-slate-500">Loading user accounts...</p>
+            <p className="p-8 text-center text-xs text-slate-500">{tx('Loading user accounts...', 'వినియోగదారు ఖాతాలు లోడ్ అవుతున్నాయి...')}</p>
           )}
         </CardContent>
       </Card>
@@ -220,19 +225,19 @@ export default function AdminPage() {
       {/* SYSTEM AUDIT TRAIL LOG */}
       <Card>
         <CardHeader
-          title="Sensitive Action Audit Trail"
-          subtitle="Immutable forensic log of critical operations across the entire application"
+          title={tx('Sensitive Action Audit Trail', 'ముఖ్య కార్యకలాపాల ఆడిట్ రికార్డు')}
+          subtitle={tx('Immutable forensic log of critical operations across the entire application', 'ప్లాట్‌ఫారమ్‌లోని ముఖ్యమైన మార్పుల శాశ్వత రికార్డు')}
         />
         <CardContent className="p-0 overflow-x-auto">
           {auditLogs.length > 0 ? (
             <table className="w-full text-left text-xs text-slate-600">
               <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
                 <tr>
-                  <th className="py-3 px-4">Timestamp</th>
-                  <th className="py-3 px-4">Officer / User</th>
-                  <th className="py-3 px-4">Action Code</th>
-                  <th className="py-3 px-4">Entity</th>
-                  <th className="py-3 px-4">Details</th>
+                  <th className="py-3 px-4">{tx('Timestamp', 'సమయం')}</th>
+                  <th className="py-3 px-4">{tx('Officer / User', 'అధికారి / వినియోగదారు')}</th>
+                  <th className="py-3 px-4">{tx('Action Code', 'చర్య కోడ్')}</th>
+                  <th className="py-3 px-4">{tx('Entity', 'అంశం')}</th>
+                  <th className="py-3 px-4">{tx('Details', 'వివరాలు')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -269,34 +274,38 @@ export default function AdminPage() {
       <Modal
         isOpen={roleModalOpen}
         onClose={() => setRoleModalOpen(false)}
-        title="Modify User Role & Operational Permissions"
+        title={tx('Modify User Role & Operational Permissions', 'వినియోగదారు పాత్ర & అధికారాలను మార్చండి')}
         subtitle={selectedUser ? `${selectedUser.name} (${selectedUser.email})` : ''}
       >
         <form onSubmit={handleUpdateRole} className="space-y-4">
           <Select
-            label="Select Role Tier"
+            label={tx('Select Role Tier', 'పాత్ర స్థాయిని ఎంచుకోండి')}
             options={[
-              { value: 'RESIDENT', label: '1. Resident (Public Access & Reporting)' },
-              { value: 'HEALTHCARE_STAFF', label: '2. Healthcare Staff (Doctor / OPD Management)' },
-              { value: 'MEDICINE_STAFF', label: '3. Medicine Staff (Pharmacist / FEFO Inventory)' },
-              { value: 'EMERGENCY_COORDINATOR', label: '4. Emergency Coordinator (108 Triage & Fleet)' },
-              { value: 'WATER_SANITATION_OFFICER', label: '5. Water & Sanitation Officer (5 Sections & Lab)' },
-              { value: 'ADMIN', label: '6. Administrator (Full System Oversight)' },
+              { value: 'RESIDENT', label: tx('1. Resident (Public Access & Reporting)', '1. నివాసి (సాధారణ సేవలు & ఫిర్యాదులు)') },
+              { value: 'HEALTHCARE_STAFF', label: tx('2. Healthcare Staff (Doctor / OPD Management)', '2. ఆరోగ్య సిబ్బంది (డాక్టర్ / OPD నిర్వహణ)') },
+              { value: 'MEDICINE_STAFF', label: tx('3. Medicine Staff (Pharmacist / FEFO Inventory)', '3. ఫార్మసిస్ట్ (మందుల నిల్వ)') },
+              { value: 'EMERGENCY_COORDINATOR', label: tx('4. Emergency Coordinator (108 Triage & Fleet)', '4. అత్యవసర సమన్వయకర్త (108 వాహనాలు)') },
+              { value: 'WATER_SANITATION_OFFICER', label: tx('5. Water & Sanitation Officer (5 Sections & Lab)', '5. నీరు & పారిశుధ్య అధికారి') },
+              { value: 'ADMIN', label: tx('6. Administrator (Full System Oversight)', '6. అడ్మినిస్ట్రేటర్ (పూర్తి నియంత్రణ)') },
             ]}
             value={newRole}
             onChange={(e) => setNewRole(e.target.value)}
           />
 
           <div className="p-3 bg-amber-50 rounded-lg border border-amber-200 text-xs text-amber-900">
-            <strong>Security Warning:</strong> Elevating a user's role grants server-enforced access to sensitive civic infrastructure and medical records. All changes are logged to the Panchayat Audit Trail.
+            <strong>{tx('Security Warning:', 'భద్రతా హెచ్చరిక:')}</strong>{' '}
+            {tx(
+              "Elevating a user's role grants server-enforced access to sensitive civic infrastructure and medical records. All changes are logged to the Panchayat Audit Trail.",
+              'వినియోగదారు పాత్రను పెంచడం వలన సున్నితమైన వైద్య మరియు పౌర రికార్డులకు యాక్సెస్ లభిస్తుంది. అన్ని మార్పులు ఆడిట్ లాగ్‌లో నమోదు చేయబడతాయి.'
+            )}
           </div>
 
           <div className="pt-2 flex justify-end gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => setRoleModalOpen(false)}>
-              Cancel
+              {tx('Cancel', 'రద్దు')}
             </Button>
             <Button type="submit" variant="primary" size="sm" isLoading={savingRole}>
-              Update User Role
+              {tx('Update User Role', 'పాత్రను అప్‌డేట్ చేయండి')}
             </Button>
           </div>
         </form>

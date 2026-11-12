@@ -64,7 +64,7 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
   upcomingCamps,
   waterSections,
 }) => {
-  const { lang, t } = useLanguage();
+  const { lang, t, tx, ts } = useLanguage();
 
   return (
     <div key={lang} className="space-y-14 pb-20 animate-lang-swap">
@@ -340,11 +340,11 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('mod1.m2')}</span>
-                    <span className="font-bold text-slate-800">{doctorsCount} Specialists</span>
+                    <span className="font-bold text-slate-800">{doctorsCount} {tx('Specialists', 'వైద్య నిపుణులు')}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('mod1.m3')}</span>
-                    <span className="font-bold text-sky-700">{upcomingCamps.length} Active</span>
+                    <span className="font-bold text-sky-700">{upcomingCamps.length} {tx('Active', 'సక్రియం')}</span>
                   </div>
                 </div>
                 <Link
@@ -376,7 +376,7 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
                 <div className="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200/70 text-xs space-y-2">
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('mod2.m1')}</span>
-                    <span className="font-bold text-slate-800">{medicinesCount} Formulations</span>
+                    <span className="font-bold text-slate-800">{medicinesCount} {tx('Formulations', 'మందుల రకాలు')}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('mod2.m2')}</span>
@@ -387,7 +387,7 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('mod2.m3')}</span>
                     <span className={`font-bold ${lowStockCount > 0 ? 'text-amber-700' : 'text-emerald-700'}`}>
-                      {lowStockCount} Flagged
+                      {lowStockCount} {tx('Flagged', 'తక్కువ నిల్వ')}
                     </span>
                   </div>
                 </div>
@@ -420,15 +420,15 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
                 <div className="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200/70 text-xs space-y-2">
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('mod3.m1')}</span>
-                    <span className="font-bold text-emerald-700">{ambulancesCount} Units Standby</span>
+                    <span className="font-bold text-emerald-700">{ambulancesCount} {tx('Units Standby', 'వాహనాలు సిద్ధం')}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('mod3.m2')}</span>
-                    <span className="font-bold text-slate-800">GGH & AIIMS Live</span>
+                    <span className="font-bold text-slate-800">{tx('GGH & AIIMS Live', 'GGH & AIIMS లైవ్')}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('mod3.m3')}</span>
-                    <span className="font-bold text-rose-700">5-Stage Verified</span>
+                    <span className="font-bold text-rose-700">{tx('5-Stage Verified', '5-దశల ట్రాకింగ్')}</span>
                   </div>
                 </div>
                 <Link
@@ -460,7 +460,7 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
                 <div className="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200/70 text-xs space-y-2">
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('mod4.m1')}</span>
-                    <span className="font-bold text-slate-800">Sections 1 to 5</span>
+                    <span className="font-bold text-slate-800">{tx('Sections 1 to 5', 'విభాగాలు 1 నుండి 5')}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('mod4.m2')}</span>
@@ -468,7 +468,7 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('mod4.m3')}</span>
-                    <span className="font-bold text-slate-800">Na, F, pH, TDS, Coliform</span>
+                    <span className="font-bold text-slate-800">{tx('Na, F, pH, TDS, Coliform', 'Na, F, pH, TDS, కోలిఫామ్')}</span>
                   </div>
                 </div>
                 <Link
@@ -500,15 +500,15 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
                 <div className="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200/70 text-xs space-y-2">
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('mod5.m1')}</span>
-                    <span className="font-bold text-emerald-700">Deterministic (0–100)</span>
+                    <span className="font-bold text-emerald-700">{tx('Deterministic (0–100)', 'ఖచ్చితమైన స్కోర్ (0–100)')}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('mod5.m2')}</span>
-                    <span className="font-bold text-rose-700">Auto-Critical Override</span>
+                    <span className="font-bold text-rose-700">{tx('Auto-Critical Override', 'ఆటో-క్రిటికల్ ప్రాధాన్యత')}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('mod5.m3')}</span>
-                    <span className="font-bold text-slate-800">+15 Priority Boost</span>
+                    <span className="font-bold text-slate-800">{tx('+15 Priority Boost', '+15 ప్రాధాన్యత పెంపు')}</span>
                   </div>
                 </div>
                 <Link
@@ -540,15 +540,15 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
                 <div className="p-3.5 rounded-xl bg-slate-50/90 border border-slate-200/70 text-xs space-y-2">
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('mod6.m1')}</span>
-                    <span className="font-bold text-purple-700">100% Live DB Queries</span>
+                    <span className="font-bold text-purple-700">{tx('100% Live DB Queries', '100% లైవ్ డేటాబేస్')}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('mod6.m2')}</span>
-                    <span className="font-bold text-slate-800">5-Section Matrix</span>
+                    <span className="font-bold text-slate-800">{tx('5-Section Matrix', '5-విభాగాల పట్టిక')}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('mod6.m3')}</span>
-                    <span className="font-bold text-slate-800">Mean & Median Hours</span>
+                    <span className="font-bold text-slate-800">{tx('Mean & Median Hours', 'సగటు & మధ్యస్థ గంటలు')}</span>
                   </div>
                 </div>
                 <Link
@@ -571,9 +571,9 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-1">
-                  <Badge variant="teal" size="sm">CPCB NAQI LIVE</Badge>
+                  <Badge variant="teal" size="sm">{tx('CPCB NAQI LIVE', 'CPCB NAQI లైవ్')}</Badge>
                   <span className="text-xs font-bold uppercase tracking-wider text-teal-200">
-                    Kantheru Air Pollution Mitigation Extension
+                    {tx('Kantheru Air Pollution Mitigation Extension', 'కాంతేరు వాయు కాలుష్య నియంత్రణ విభాగం')}
                   </span>
                 </div>
                 <h3 className="text-lg font-extrabold text-white font-display">
@@ -588,7 +588,7 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
               href="/air-quality"
               className="btn-sheen shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-teal-400 hover:bg-teal-300 text-slate-950 text-xs font-extrabold transition-colors"
             >
-              {t('nav.airQuality')} Hub <ArrowRight className="w-4 h-4" />
+              {tx(`${t('nav.airQuality')} Hub`, `${t('nav.airQuality')} కేంద్రం`)} <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </ScrollReveal>
@@ -629,7 +629,7 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
                         {t('homeWater.section')} {sec.id}
                       </span>
                       <Badge variant={isCompleted ? 'emerald' : 'amber'} size="sm">
-                        {sec.latestStatus}
+                        {ts(sec.latestStatus)}
                       </Badge>
                     </div>
                     <p className="text-[11px] font-medium text-slate-600 line-clamp-1">
