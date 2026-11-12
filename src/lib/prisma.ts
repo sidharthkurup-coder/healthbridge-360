@@ -19,12 +19,14 @@ function resolveDatabaseUrl(): string | undefined {
           fs.copyFileSync(sourceDb, tmpDbPath);
         }
       }
-      return `file:${tmpDbPath}`;
+      if (fs.existsSync(tmpDbPath)) {
+        return `file:${tmpDbPath}`;
+      }
     } catch {
-      // Fallback to default env DATABASE_URL if /tmp copy fails
+      // Fallback to schema.prisma default file:./dev.db
     }
   }
-  return process.env.DATABASE_URL;
+  return undefined;
 }
 
 const runtimeUrl = resolveDatabaseUrl();
