@@ -9,18 +9,22 @@ function resolveDatabaseUrl(): string | undefined {
   if (process.env.VERCEL) {
     const tmpDbPath = '/tmp/dev.db';
     try {
+      // Static literal path.join so @vercel/nft automatically traces and bundles prisma/dev.db
+      const bundledPrismaDb = path.join(process.cwd(), 'prisma/dev.db');
+      const bundledRootDb = path.join(process.cwd(), 'dev.db');
+
       if (!fs.existsSync(tmpDbPath)) {
-        const candidates = [
-          path.join(process.cwd(), 'prisma', 'dev.db'),
-          path.join(process.cwd(), 'dev.db'),
-        ];
-        const sourceDb = candidates.find((p) => fs.existsSync(p));
-        if (sourceDb) {
-          fs.copyFileSync(sourceDb, tmpDbPath);
+        if (fs.existsSync(bundledPrismaDb)) {
+          fs.copyFileSync(bundledPrismaDb, tmpDbPath);
+        } else if (fs.existsSync(bundledRootDb)) {
+          fs.copyFileSync(bundledRootDb, tmpDbPath);
         }
       }
       if (fs.existsSync(tmpDbPath)) {
         return `file:${tmpDbPath}`;
+      }
+      if (fs.existsSync(bundledPrismaDb)) {
+        return `file:${bundledPrismaDb}`;
       }
     } catch {
       // Fallback to schema.prisma default file:./dev.db
