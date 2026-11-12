@@ -28,6 +28,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Input, Select } from '@/components/ui/Input';
 import { ScrollReveal } from '@/components/ui/Motion';
 import { prioritizeComplaint } from '@/lib/algorithms/complaint-prioritization';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 const SANITATION_STAGES = [
   { key: 'SUBMITTED', label: 'Submitted' },
@@ -38,6 +39,7 @@ const SANITATION_STAGES = [
 ];
 
 export default function SanitationPage() {
+  const { lang, t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'complaints' | 'file'>('complaints');
   const [complaints, setComplaints] = useState<any[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -245,12 +247,12 @@ export default function SanitationPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-extrabold text-navy-950 font-display">Sanitation Management</h1>
-                <Badge variant="emerald">Module 5</Badge>
+                <h1 key={lang} className="text-2xl font-extrabold text-navy-950 font-display animate-lang-swap">
+                  {t('page.sanitation.title')}
+                </h1>
+                <Badge variant="emerald">{t('mod5.badge')}</Badge>
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Civic Hygiene & Drainage • Deterministic Priority Algorithm, Department Dispatch, Status Stepper & Reopen Verification
-              </p>
+              <p className="text-xs text-slate-500 mt-0.5">{t('page.sanitation.sub')}</p>
             </div>
           </div>
         </div>

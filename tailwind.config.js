@@ -8,8 +8,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-jakarta)', 'var(--font-inter)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-jakarta)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-jakarta)', 'var(--font-telugu)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-jakarta)', 'var(--font-telugu)', 'system-ui', 'sans-serif'],
         mono: ['var(--font-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       colors: {
@@ -72,6 +72,14 @@ module.exports = {
         growWidth: {
           '0%': { width: '0%' },
         },
+        orbDrift: {
+          '0%, 100%': { transform: 'translate3d(0px, 0px, 0) scale(1)' },
+          '50%': { transform: 'translate3d(18px, -14px, 0) scale(1.06)' },
+        },
+        langSwap: {
+          '0%': { opacity: '0.55', transform: 'translateY(2px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
       },
       animation: {
         'fade-up': 'fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
@@ -80,6 +88,8 @@ module.exports = {
         'scale-in': 'scaleIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'slide-right': 'slideRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'float-slow': 'floatSlow 4s ease-in-out infinite',
+        'orb-drift': 'orbDrift 9s ease-in-out infinite',
+        'lang-swap': 'langSwap 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards',
         'pulse-ring': 'pulseRing 2s cubic-bezier(0.24, 0, 0.38, 1) infinite',
         'shimmer': 'shimmer 2.5s linear infinite',
         'grow-width': 'growWidth 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',

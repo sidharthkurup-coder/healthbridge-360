@@ -27,8 +27,10 @@ import { Card, CardHeader, CardContent } from '@/components/ui/Card';
 import { Modal } from '@/components/ui/Modal';
 import { Input, Select } from '@/components/ui/Input';
 import { AnimatedCounter, ScrollReveal } from '@/components/ui/Motion';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function MedicinesPage() {
+  const { lang, t } = useLanguage();
   const [medicines, setMedicines] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -336,12 +338,12 @@ export default function MedicinesPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-extrabold text-navy-950 font-display">Medicine Inventory</h1>
-                <Badge variant="amber">Module 2</Badge>
+                <h1 key={lang} className="text-2xl font-extrabold text-navy-950 font-display animate-lang-swap">
+                  {t('page.medicines.title')}
+                </h1>
+                <Badge variant="amber">{t('mod2.badge')}</Badge>
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Kantheru PHC Dispensary • Batch Tracking, FEFO Algorithm, Safety Thresholds & Transaction Ledger
-              </p>
+              <p className="text-xs text-slate-500 mt-0.5">{t('page.medicines.sub')}</p>
             </div>
           </div>
         </div>

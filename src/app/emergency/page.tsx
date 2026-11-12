@@ -24,6 +24,7 @@ import { Card, CardHeader, CardContent } from '@/components/ui/Card';
 import { Modal } from '@/components/ui/Modal';
 import { Input, Select } from '@/components/ui/Input';
 import { ScrollReveal } from '@/components/ui/Motion';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 const EMERGENCY_STAGES = [
   { key: 'SUBMITTED', label: 'Submitted' },
@@ -34,6 +35,7 @@ const EMERGENCY_STAGES = [
 ];
 
 export default function EmergencyPage() {
+  const { lang, t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'request' | 'directory' | 'facilities' | 'ambulances' | 'coordinator'>('request');
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [requests, setRequests] = useState<any[]>([]);
@@ -216,12 +218,12 @@ export default function EmergencyPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-extrabold text-navy-950 font-display">Emergency Assistance</h1>
-                <Badge variant="rose">Module 3</Badge>
+                <h1 key={lang} className="text-2xl font-extrabold text-navy-950 font-display animate-lang-swap">
+                  {t('page.emergency.title')}
+                </h1>
+                <Badge variant="rose">{t('mod3.badge')}</Badge>
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Kantheru Rapid Response • Direct 108 Calling, Hospital ICU Beds, Ambulance Fleet & Dispatch Triage
-              </p>
+              <p className="text-xs text-slate-500 mt-0.5">{t('page.emergency.sub')}</p>
             </div>
           </div>
         </div>

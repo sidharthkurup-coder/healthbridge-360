@@ -82,6 +82,39 @@ body {
   opacity: 1;
 }
 
+/* Off-screen paint skipping optimization for long pages */
+.perf-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
+}
+
+/* Smooth GPU-composited glossy sheen on CTAs */
+.btn-sheen {
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);
+}
+.btn-sheen::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -120%;
+  width: 60%;
+  height: 140%;
+  background: linear-gradient(
+    110deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.32) 50%,
+    transparent 80%
+  );
+  transform: skewX(-18deg);
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.btn-sheen:hover::after {
+  transform: translateX(320%) skewX(-18deg);
+}
+
 /* Live ECG Heartbeat SVG Trace Animation */
 @keyframes ecgDash {
   0% {

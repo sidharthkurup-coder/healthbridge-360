@@ -27,8 +27,10 @@ import { Card, CardHeader, CardContent } from '@/components/ui/Card';
 import { Modal } from '@/components/ui/Modal';
 import { Input, Select } from '@/components/ui/Input';
 import { AnimatedCounter, ScrollReveal } from '@/components/ui/Motion';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function WaterPage() {
+  const { lang, t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'comparison' | 'sections' | 'quality' | 'complaints'>('comparison');
   const [sections, setSections] = useState<any[]>([]);
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -307,12 +309,12 @@ export default function WaterPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-extrabold text-navy-950 font-display">Water Management</h1>
-                <Badge variant="teal">Module 4</Badge>
+                <h1 key={lang} className="text-2xl font-extrabold text-navy-950 font-display animate-lang-swap">
+                  {t('page.water.title')}
+                </h1>
+                <Badge variant="teal">{t('mod4.badge')}</Badge>
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Kantheru Gram Panchayat • 5-Section Distribution, Flow Rate & Pressure, BIS 10500 Laboratory Quality Standards
-              </p>
+              <p className="text-xs text-slate-500 mt-0.5">{t('page.water.sub')}</p>
             </div>
           </div>
         </div>

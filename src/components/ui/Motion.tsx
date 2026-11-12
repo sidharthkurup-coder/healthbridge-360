@@ -89,6 +89,8 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
     const node = ref.current;
     if (!node) return;
 
+    let rafId = 0;
+
     const startAnimation = () => {
       const startTime = performance.now();
       const target = Number(value) || 0;
@@ -102,13 +104,13 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
         setDisplayValue(current);
 
         if (progress < 1) {
-          requestAnimationFrame(tick);
+          rafId = requestAnimationFrame(tick);
         } else {
           setDisplayValue(target);
         }
       };
 
-      requestAnimationFrame(tick);
+      rafId = requestAnimationFrame(tick);
     };
 
     const observer = new IntersectionObserver(
@@ -125,7 +127,10 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
     );
 
     observer.observe(node);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, [value, duration]);
 
   // Also update if value changes dynamically after initial animation

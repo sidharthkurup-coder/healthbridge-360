@@ -25,8 +25,10 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardHeader, CardContent } from '@/components/ui/Card';
 import { AnimatedCounter, ScrollReveal } from '@/components/ui/Motion';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export default function CommunityIntelligencePage() {
+  const { lang, t } = useLanguage();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSection, setSelectedSection] = useState('ALL');
@@ -101,12 +103,12 @@ export default function CommunityIntelligencePage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-extrabold text-navy-950 font-display">Community Intelligence</h1>
-                <Badge variant="purple">Module 6</Badge>
+                <h1 key={lang} className="text-2xl font-extrabold text-navy-950 font-display animate-lang-swap">
+                  {t('page.intelligence.title')}
+                </h1>
+                <Badge variant="purple">{t('mod6.badge')}</Badge>
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Unified Operational Dashboard • Aggregates Live Relational Telemetry from all 5 Kantheru Public Service Domains
-              </p>
+              <p className="text-xs text-slate-500 mt-0.5">{t('page.intelligence.sub')}</p>
             </div>
           </div>
         </div>
