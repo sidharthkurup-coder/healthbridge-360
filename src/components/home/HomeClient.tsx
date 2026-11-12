@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
-import { ScrollReveal, AnimatedCounter, LiveEcgWave } from '@/components/ui/Motion';
+import { ScrollReveal, AnimatedCounter, LiveEcgWave, Magnetic } from '@/components/ui/Motion';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 export interface HomeTelemetryProps {
@@ -93,7 +93,7 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
             <div className="lg:col-span-7 space-y-6 animate-fade-up delay-75">
               <h1 className="text-3xl sm:text-5xl lg:text-[50px] font-extrabold tracking-tight text-white font-display leading-[1.15]">
                 {t('hero.title1')}{' '}
-                <span className="bg-gradient-to-r from-teal-300 via-teal-200 to-sky-300 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-teal-300 via-sky-200 to-emerald-300 bg-[length:200%_auto] animate-gradient-x bg-clip-text text-transparent">
                   {t('hero.titleHighlight')}
                 </span>{' '}
                 {t('hero.title2')}
@@ -103,27 +103,33 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
               </p>
 
               <div className="flex flex-wrap items-center gap-3.5 pt-2">
-                <Link
-                  href="/dashboard"
-                  className="btn-sheen group px-6 py-3.5 rounded-xl bg-gradient-to-r from-teal-500 to-teal-400 hover:from-teal-400 hover:to-teal-300 text-navy-950 font-extrabold text-sm shadow-glow-teal hover:-translate-y-0.5 active:scale-[0.98] transition-all flex items-center gap-2"
-                >
-                  {t('hero.ctaPortal')}
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <Link
-                  href="/emergency"
-                  className="btn-sheen group px-5 py-3.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-bold text-sm shadow-glow-rose hover:-translate-y-0.5 active:scale-[0.98] transition-all flex items-center gap-2"
-                >
-                  <PhoneCall className="w-4 h-4 animate-pulse" />
-                  {t('hero.ctaEmergency')}
-                </Link>
-                <Link
-                  href="/login?demo=true"
-                  className="px-4 py-3.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white text-sm font-semibold backdrop-blur-xs hover:-translate-y-0.5 transition-all flex items-center gap-2"
-                >
-                  <Shield className="w-4 h-4 text-teal-300" />
-                  {t('hero.ctaRoles')}
-                </Link>
+                <Magnetic strength={0.18}>
+                  <Link
+                    href="/dashboard"
+                    className="btn-sheen group px-6 py-3.5 rounded-xl bg-gradient-to-r from-teal-500 to-teal-400 hover:from-teal-400 hover:to-teal-300 text-navy-950 font-extrabold text-sm shadow-glow-teal hover:-translate-y-0.5 active:scale-[0.98] transition-all flex items-center gap-2"
+                  >
+                    {t('hero.ctaPortal')}
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </Magnetic>
+                <Magnetic strength={0.18}>
+                  <Link
+                    href="/emergency"
+                    className="btn-sheen group px-5 py-3.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-bold text-sm shadow-glow-rose hover:-translate-y-0.5 active:scale-[0.98] transition-all flex items-center gap-2"
+                  >
+                    <PhoneCall className="w-4 h-4 animate-pulse" />
+                    {t('hero.ctaEmergency')}
+                  </Link>
+                </Magnetic>
+                <Magnetic strength={0.14}>
+                  <Link
+                    href="/login?demo=true"
+                    className="px-4 py-3.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white text-sm font-semibold backdrop-blur-xs hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                  >
+                    <Shield className="w-4 h-4 text-teal-300" />
+                    {t('hero.ctaRoles')}
+                  </Link>
+                </Magnetic>
               </div>
 
               {/* Micro trust bar */}
@@ -178,7 +184,7 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
                       <AnimatedCounter value={doctorsCount} suffix={` ${t('telemetry.active')}`} />
                     </p>
                     <div className="mt-2 h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-sky-400 rounded-full animate-grow-width" style={{ width: '100%' }} />
+                      <div className="h-full bg-sky-400 rounded-full animate-grow-width progress-shimmer" style={{ width: '100%' }} />
                     </div>
                     <p className="text-[10px] text-sky-300 mt-1.5">{t('telemetry.doctorsSub')}</p>
                   </Link>
@@ -195,7 +201,7 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
                       <AnimatedCounter value={ambulancesCount} suffix={` ${t('telemetry.units')}`} />
                     </p>
                     <div className="mt-2 h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-emerald-400 rounded-full animate-grow-width" style={{ width: '85%' }} />
+                      <div className="h-full bg-emerald-400 rounded-full animate-grow-width progress-shimmer" style={{ width: '85%' }} />
                     </div>
                     <p className="text-[10px] text-slate-400 mt-1.5">{t('telemetry.fleetSub')}</p>
                   </Link>
@@ -212,7 +218,7 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
                       <AnimatedCounter value={5} suffix={` ${t('telemetry.zones')}`} />
                     </p>
                     <div className="mt-2 h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-teal-400 rounded-full animate-grow-width" style={{ width: '92%' }} />
+                      <div className="h-full bg-teal-400 rounded-full animate-grow-width progress-shimmer" style={{ width: '92%' }} />
                     </div>
                     <p className="text-[10px] text-slate-400 mt-1.5">{t('telemetry.waterSub')}</p>
                   </Link>
@@ -229,7 +235,7 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
                       <AnimatedCounter value={totalStockUnits} />
                     </p>
                     <div className="mt-2 h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-amber-400 rounded-full animate-grow-width" style={{ width: '78%' }} />
+                      <div className="h-full bg-amber-400 rounded-full animate-grow-width progress-shimmer" style={{ width: '78%' }} />
                     </div>
                     <p className="text-[10px] text-amber-300 font-semibold mt-1.5">
                       {lowStockCount} {t('telemetry.lowStockNote')}
@@ -645,7 +651,7 @@ export const HomeClient: React.FC<HomeTelemetryProps> = ({
                       </div>
                       <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
                         <div
-                          className={`h-full rounded-full animate-grow-width ${
+                          className={`h-full rounded-full animate-grow-width progress-shimmer ${
                             isCompleted ? 'bg-gradient-to-r from-teal-500 to-emerald-500' : 'bg-amber-500'
                           }`}
                           style={{ width: `${sec.fillPercent}%` }}

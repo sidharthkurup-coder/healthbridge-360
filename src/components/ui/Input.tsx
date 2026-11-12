@@ -12,9 +12,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const inputId = id || props.name;
 
     return (
-      <div className="w-full">
+      <div className="w-full group">
         {label && (
-          <label htmlFor={inputId} className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+          <label
+            htmlFor={inputId}
+            className="block text-xs font-semibold uppercase tracking-wider text-slate-700 group-focus-within:text-teal-700 transition-colors mb-1.5"
+          >
             {label}
             {props.required && <span className="text-rose-500 ml-1">*</span>}
           </label>
@@ -23,8 +26,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           id={inputId}
           className={clsx(
-            'w-full px-3.5 py-2 text-sm rounded-lg border bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors',
-            error ? 'border-rose-400 focus:ring-rose-400' : 'border-slate-300 hover:border-slate-400',
+            'w-full px-3.5 py-2 text-sm rounded-xl border bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/80 focus:border-teal-500 focus:shadow-[0_0_0_4px_rgba(20,184,166,0.12)] transition-all duration-200',
+            error
+              ? 'border-rose-400 focus:ring-rose-400 animate-shake'
+              : 'border-slate-300 hover:border-slate-400',
             className
           )}
           {...props}
@@ -52,9 +57,12 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     const selectId = id || props.name;
 
     return (
-      <div className="w-full">
+      <div className="w-full group">
         {label && (
-          <label htmlFor={selectId} className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+          <label
+            htmlFor={selectId}
+            className="block text-xs font-semibold uppercase tracking-wider text-slate-700 group-focus-within:text-teal-700 transition-colors mb-1.5"
+          >
             {label}
             {props.required && <span className="text-rose-500 ml-1">*</span>}
           </label>
@@ -63,7 +71,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           id={selectId}
           className={clsx(
-            'w-full px-3.5 py-2 text-sm rounded-lg border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors',
+            'w-full px-3.5 py-2 text-sm rounded-xl border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/80 focus:border-teal-500 focus:shadow-[0_0_0_4px_rgba(20,184,166,0.12)] transition-all duration-200',
             error ? 'border-rose-400 focus:ring-rose-400' : 'border-slate-300 hover:border-slate-400',
             className
           )}

@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 
 /**
- * Shared singleton IntersectionObserver pool so multiple ScrollReveal elements
- * share one observer instead of allocating N separate DOM observers.
+ * Shared singleton IntersectionObserver pool so all ScrollReveal and AnimatedCounter
+ * elements share one browser observer instead of allocating N separate DOM observers.
  */
 const revealCallbacks = new WeakMap<Element, () => void>();
 let sharedRevealObserver: IntersectionObserver | null = null;
@@ -27,7 +27,7 @@ function getSharedRevealObserver(): IntersectionObserver | null {
           }
         }
       },
-      { threshold: 0.08, rootMargin: '0px 0px -24px 0px' }
+      { threshold: 0.08, rootMargin: '0px 0px -20px 0px' }
     );
   }
   return sharedRevealObserver;
@@ -35,6 +35,7 @@ function getSharedRevealObserver(): IntersectionObserver | null {
 
 /**
  * 1. ScrollReveal — GPU-accelerated singleton IntersectionObserver spring reveal
+ *    with automatic `will-change: auto` release upon completion.
  */
 interface ScrollRevealProps {
   children: React.ReactNode;
@@ -43,53 +44,69 @@ interface ScrollRevealProps {
   className?: string;
 }
 
-export const ScrollReveal: React.FC<ScrollRevealProps> = ({
-  children,
-  direction = 'up',
-  delayMs = 0,
-  className,
-}) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+export const ScrollReveal: React.FC<ScrollRevealProps> = React.memo(
+  ({ children, direction = 'up', delayMs = 0, className }) => {
+    const ref = useRef<HTMLDivElement>(null);
+    const [state, setState] = useState<'hidden' | 'visible' | 'settled'>('hidden');
 
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
+    useEffect(() => {
+      const node = ref.current;
+      if (!node) return;
 
-    const obs = getSharedRevealObserver();
-    if (!obs) {
-      setVisible(true);
-      return;
-    }
+      const obs = getSharedRevealObserver();
+      if (!obs) {
+        setState('settled');
+        return;
+      }
 
-    revealCallbacks.set(node, () => setVisible(true));
-    obs.observe(node);
-    return () => {
-      revealCallbacks.delete(node);
-      obs.unobserve(node);
-    };
-  }, []);
+      revealCallbacks.set(node, () => setState('visible'));
+      obs.observe(node);
+      return () => {
+        revealCallbacks.delete(node);
+        obs.unobserve(node);
+      };
+    }, []);
 
-  const hiddenClass = {
-    up: 'reveal-hidden-up',
-    left: 'reveal-hidden-left',
-    right: 'reveal-hidden-right',
-    scale: 'reveal-hidden-scale',
-  }[direction];
+    const handleTransitionEnd = useCallback(
+      (e: React.TransitionEvent<HTMLDivElement>) => {
+        if (e.target === ref.current && state === 'visible') {
+          setState('settled');
+        }
+      },
+      [state]
+    );
 
-  return (
-    <div
-      ref={ref}
-      style={delayMs ? { transitionDelay: `${delayMs}ms` } : undefined}
-      className={clsx(visible ? 'reveal-visible' : hiddenClass, className)}
-    >
-      {children}
-    </div>
-  );
-};
+    const hiddenClass = {
+      up: 'reveal-hidden-up',
+      left: 'reveal-hidden-left',
+      right: 'reveal-hidden-right',
+      scale: 'reveal-hidden-scale',
+    }[direction];
+
+    return (
+      <div
+        ref={ref}
+        onTransitionEnd={handleTransitionEnd}
+        style={state === 'visible' && delayMs ? { transitionDelay: `${delayMs}ms` } : undefined}
+        className={clsx(
+          state === 'hidden'
+            ? hiddenClass
+            : state === 'visible'
+            ? 'reveal-visible'
+            : 'reveal-settled',
+          className
+        )}
+      >
+        {children}
+      </div>
+    );
+  }
+);
+ScrollReveal.displayName = 'ScrollReveal';
 
 /**
- * 2. AnimatedCounter — Smooth requestAnimationFrame count-up on viewport entry
+ * 2. AnimatedCounter — Quintic spring count-up pooled on the shared IntersectionObserver
+ *    with frame-deduplicated React state updates and completion micro-pop.
  */
 interface AnimatedCounterProps {
   value: number;
@@ -100,152 +117,262 @@ interface AnimatedCounterProps {
   className?: string;
 }
 
-export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
-  value,
-  duration = 1100,
-  prefix = '',
-  suffix = '',
-  decimals = 0,
-  className,
-}) => {
-  const [displayValue, setDisplayValue] = useState(0);
-  const ref = useRef<HTMLSpanElement>(null);
-  const hasAnimated = useRef(false);
+export const AnimatedCounter: React.FC<AnimatedCounterProps> = React.memo(
+  ({ value, duration = 1150, prefix = '', suffix = '', decimals = 0, className }) => {
+    const [displayValue, setDisplayValue] = useState(0);
+    const [popped, setPopped] = useState(false);
+    const ref = useRef<HTMLSpanElement>(null);
+    const hasAnimated = useRef(false);
+    const lastFormattedRef = useRef<string>('');
 
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-
-    let rafId = 0;
-
-    const startAnimation = () => {
-      const target = Number(value) || 0;
-      const prefersReduced =
-        typeof window !== 'undefined' &&
-        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-      if (target === 0 || prefersReduced) {
-        setDisplayValue(target);
-        return;
-      }
-      const startTime = performance.now();
-
-      const tick = (now: number) => {
-        const elapsed = now - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        // Cubic ease-out: 1 - (1 - t)^3
-        const eased = 1 - Math.pow(1 - progress, 3);
-        const current = target * eased;
-        setDisplayValue(current);
-
-        if (progress < 1) {
-          rafId = requestAnimationFrame(tick);
-        } else {
-          setDisplayValue(target);
-        }
-      };
-
-      rafId = requestAnimationFrame(tick);
-    };
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !hasAnimated.current) {
-            hasAnimated.current = true;
-            startAnimation();
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.15 }
+    const formatNumber = useCallback(
+      (num: number) => (decimals > 0 ? num.toFixed(decimals) : Math.round(num).toLocaleString()),
+      [decimals]
     );
 
-    observer.observe(node);
-    return () => {
-      observer.disconnect();
-      if (rafId) cancelAnimationFrame(rafId);
-    };
-  }, [value, duration]);
+    useEffect(() => {
+      const node = ref.current;
+      if (!node) return;
 
-  // Also update if value changes dynamically after initial animation
-  useEffect(() => {
-    if (hasAnimated.current) {
-      setDisplayValue(Number(value) || 0);
+      let rafId = 0;
+
+      const startAnimation = () => {
+        const target = Number(value) || 0;
+        const prefersReduced =
+          typeof window !== 'undefined' &&
+          window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+        if (target === 0 || prefersReduced) {
+          setDisplayValue(target);
+          return;
+        }
+        const startTime = performance.now();
+
+        const tick = (now: number) => {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          // Quintic spring-out: 1 - (1 - t)^5
+          const eased = 1 - Math.pow(1 - progress, 5);
+          const current = target * eased;
+          const nextFormatted = formatNumber(current);
+
+          if (nextFormatted !== lastFormattedRef.current) {
+            lastFormattedRef.current = nextFormatted;
+            setDisplayValue(current);
+          }
+
+          if (progress < 1) {
+            rafId = requestAnimationFrame(tick);
+          } else {
+            lastFormattedRef.current = formatNumber(target);
+            setDisplayValue(target);
+            setPopped(true);
+          }
+        };
+
+        rafId = requestAnimationFrame(tick);
+      };
+
+      const obs = getSharedRevealObserver();
+      if (!obs) {
+        hasAnimated.current = true;
+        setDisplayValue(Number(value) || 0);
+        return;
+      }
+
+      revealCallbacks.set(node, () => {
+        if (!hasAnimated.current) {
+          hasAnimated.current = true;
+          startAnimation();
+        }
+      });
+      obs.observe(node);
+
+      return () => {
+        revealCallbacks.delete(node);
+        obs.unobserve(node);
+        if (rafId) cancelAnimationFrame(rafId);
+      };
+    }, [value, duration, formatNumber]);
+
+    useEffect(() => {
+      if (hasAnimated.current) {
+        const target = Number(value) || 0;
+        lastFormattedRef.current = formatNumber(target);
+        setDisplayValue(target);
+      }
+    }, [value, formatNumber]);
+
+    return (
+      <span
+        ref={ref}
+        className={clsx('tabular-nums', popped && 'animate-counter-pop', className)}
+      >
+        {prefix}
+        {formatNumber(displayValue)}
+        {suffix}
+      </span>
+    );
+  }
+);
+AnimatedCounter.displayName = 'AnimatedCounter';
+
+/**
+ * 3. LiveEcgWave — Animated clinical ECG waveform SVG with dual-harmonic glow trace
+ */
+export const LiveEcgWave: React.FC<{ className?: string; color?: string }> = React.memo(
+  ({ className = 'w-28 h-7', color = '#2dd4bf' }) => {
+    return (
+      <svg
+        viewBox="0 0 140 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={clsx('overflow-visible', className)}
+        aria-hidden="true"
+      >
+        <path
+          d="M 2 16 L 32 16 L 38 10 L 44 22 L 50 16 L 66 16 L 72 24 L 78 3 L 84 29 L 90 12 L 96 16 L 138 16"
+          stroke={color}
+          strokeOpacity="0.18"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M 2 16 L 32 16 L 38 10 L 44 22 L 50 16 L 66 16 L 72 24 L 78 3 L 84 29 L 90 12 L 96 16 L 138 16"
+          stroke={color}
+          strokeOpacity="0.35"
+          strokeWidth="4.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="animate-ecg-trace blur-[2px]"
+        />
+        <path
+          d="M 2 16 L 32 16 L 38 10 L 44 22 L 50 16 L 66 16 L 72 24 L 78 3 L 84 29 L 90 12 L 96 16 L 138 16"
+          stroke={color}
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="animate-ecg-trace"
+        />
+      </svg>
+    );
+  }
+);
+LiveEcgWave.displayName = 'LiveEcgWave';
+
+/**
+ * 4. Magnetic — Tactile spring cursor pull wrapper for hero CTAs
+ */
+export const Magnetic: React.FC<{
+  children: React.ReactNode;
+  strength?: number;
+  className?: string;
+}> = React.memo(({ children, strength = 0.22, className }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number>(0);
+  const rectRef = useRef<DOMRect | null>(null);
+
+  const handleMouseEnter = useCallback(() => {
+    if (ref.current) {
+      rectRef.current = ref.current.getBoundingClientRect();
     }
-  }, [value]);
+  }, []);
 
-  const formatted =
-    decimals > 0
-      ? displayValue.toFixed(decimals)
-      : Math.round(displayValue).toLocaleString();
-
-  return (
-    <span ref={ref} className={clsx('tabular-nums', className)}>
-      {prefix}
-      {formatted}
-      {suffix}
-    </span>
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const node = ref.current;
+      if (!node) return;
+      const clientX = e.clientX;
+      const clientY = e.clientY;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        const rect = rectRef.current || node.getBoundingClientRect();
+        const dx = (clientX - (rect.left + rect.width / 2)) * strength;
+        const dy = (clientY - (rect.top + rect.height / 2)) * strength;
+        node.style.transform = `translate3d(${dx.toFixed(2)}px, ${dy.toFixed(2)}px, 0)`;
+      });
+    },
+    [strength]
   );
-};
 
-/**
- * 3. LiveEcgWave — Animated clinical ECG waveform SVG
- */
-export const LiveEcgWave: React.FC<{ className?: string; color?: string }> = ({
-  className = 'w-28 h-7',
-  color = '#2dd4bf',
-}) => {
+  const handleMouseLeave = useCallback(() => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (ref.current) {
+      ref.current.style.transform = 'translate3d(0px, 0px, 0)';
+    }
+    rectRef.current = null;
+  }, []);
+
   return (
-    <svg
-      viewBox="0 0 140 32"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={clsx('overflow-visible', className)}
-      aria-hidden="true"
+    <div
+      ref={ref}
+      onMouseEnter={handleMouseEnter}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className={clsx(
+        'inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform',
+        className
+      )}
     >
-      {/* Faint background baseline trace */}
-      <path
-        d="M 2 16 L 32 16 L 38 10 L 44 22 L 50 16 L 66 16 L 72 24 L 78 3 L 84 29 L 90 12 L 96 16 L 138 16"
-        stroke={color}
-        strokeOpacity="0.2"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Animated active pulse trace */}
-      <path
-        d="M 2 16 L 32 16 L 38 10 L 44 22 L 50 16 L 66 16 L 72 24 L 78 3 L 84 29 L 90 12 L 96 16 L 138 16"
-        stroke={color}
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="animate-ecg-trace"
-      />
-    </svg>
+      {children}
+    </div>
   );
-};
+});
+Magnetic.displayName = 'Magnetic';
 
 /**
- * 4. RouteProgressBar — Instant top bar feedback on page transitions
+ * 5. RouteProgressBar — Instant route transition comet bar + passive GPU scroll progress indicator
  */
-export const RouteProgressBar: React.FC = () => {
+export const RouteProgressBar: React.FC = React.memo(() => {
   const pathname = usePathname();
   const [animating, setAnimating] = useState(false);
+  const scrollBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setAnimating(true);
-    const timer = setTimeout(() => setAnimating(false), 450);
+    const timer = setTimeout(() => setAnimating(false), 480);
     return () => clearTimeout(timer);
   }, [pathname]);
 
-  if (!animating) return null;
+  useEffect(() => {
+    let rafId = 0;
+    const onScroll = () => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        const bar = scrollBarRef.current;
+        if (!bar) return;
+        const doc = document.documentElement;
+        const maxScroll = doc.scrollHeight - doc.clientHeight;
+        const ratio = maxScroll > 20 ? Math.min(1, Math.max(0, window.scrollY / maxScroll)) : 0;
+        bar.style.transform = `scaleX(${ratio.toFixed(4)})`;
+      });
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [pathname]);
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 h-0.5 bg-transparent pointer-events-none overflow-hidden">
+    <div className="fixed top-0 left-0 right-0 z-50 h-[2.5px] bg-transparent pointer-events-none overflow-hidden">
+      {/* Passive GPU Scroll Progress Line */}
       <div
-        className="h-full bg-gradient-to-r from-teal-400 via-sky-400 to-emerald-400 shadow-glow-teal animate-grow-width"
-        style={{ width: '100%' }}
+        ref={scrollBarRef}
+        style={{ transform: 'scaleX(0)', transformOrigin: '0% 50%' }}
+        className="absolute inset-0 bg-gradient-to-r from-teal-400 via-sky-400 to-emerald-400 opacity-85 transition-transform duration-75 ease-out will-change-transform"
       />
+      {/* Route Transition Comet Bar */}
+      {animating && (
+        <div
+          className="relative h-full bg-gradient-to-r from-teal-300 via-sky-400 to-emerald-300 shadow-[0_0_16px_rgba(45,212,191,0.9)] animate-grow-width"
+          style={{ width: '100%' }}
+        />
+      )}
     </div>
   );
-};
+});
+RouteProgressBar.displayName = 'RouteProgressBar';

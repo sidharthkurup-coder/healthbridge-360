@@ -35,47 +35,68 @@ html[lang='te'] body {
 .delay-400 { animation-delay: 400ms; transition-delay: 400ms; }
 .delay-500 { animation-delay: 500ms; transition-delay: 500ms; }
 
-/* GPU-accelerated Scroll Reveal Physics */
+/* GPU-accelerated Scroll Reveal Physics with 3D Spring Easing */
 .reveal-hidden-up {
   opacity: 0;
-  transform: translate3d(0, 24px, 0) scale(0.985);
-  will-change: opacity, transform;
+  transform: translate3d(0, 30px, 0) scale(0.975);
+  filter: blur(3px);
+  will-change: opacity, transform, filter;
 }
 .reveal-hidden-left {
   opacity: 0;
-  transform: translate3d(-24px, 0, 0);
-  will-change: opacity, transform;
+  transform: translate3d(-30px, 0, 0) scale(0.98);
+  filter: blur(3px);
+  will-change: opacity, transform, filter;
 }
 .reveal-hidden-right {
   opacity: 0;
-  transform: translate3d(24px, 0, 0);
-  will-change: opacity, transform;
+  transform: translate3d(30px, 0, 0) scale(0.98);
+  filter: blur(3px);
+  will-change: opacity, transform, filter;
 }
 .reveal-hidden-scale {
   opacity: 0;
-  transform: translate3d(0, 12px, 0) scale(0.94);
-  will-change: opacity, transform;
+  transform: translate3d(0, 18px, 0) scale(0.92);
+  filter: blur(3px);
+  will-change: opacity, transform, filter;
 }
 .reveal-visible {
   opacity: 1;
   transform: translate3d(0, 0, 0) scale(1);
+  filter: blur(0px);
   transition:
-    opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.72s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.72s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-settled {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  will-change: auto;
 }
 
-/* Interactive cursor-tracking spotlight card */
+/* Interactive 3D perspective & cursor-tracking spotlight card */
 .spotlight-surface {
   position: relative;
   overflow: hidden;
+  transform: perspective(1100px) translate3d(0, var(--lift-y, 0px), 0)
+    rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition:
+    transform 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.28s ease;
+}
+.spotlight-surface:hover {
+  --lift-y: -5px;
 }
 .spotlight-surface::before {
   content: '';
   position: absolute;
   inset: 0;
   background: radial-gradient(
-    420px circle at var(--spot-x, 50%) var(--spot-y, 50%),
-    var(--spot-color, rgba(20, 184, 166, 0.11)),
+    480px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    var(--spot-color, rgba(20, 184, 166, 0.13)),
     transparent 65%
   );
   opacity: 0;
@@ -83,8 +104,120 @@ html[lang='te'] body {
   pointer-events: none;
   z-index: 1;
 }
-.spotlight-surface:hover::before {
+.spotlight-surface::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.25px;
+  background: radial-gradient(
+    300px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    rgba(20, 184, 166, 0.55),
+    rgba(56, 189, 248, 0.25) 45%,
+    transparent 72%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+.spotlight-surface:hover::before,
+.spotlight-surface:hover::after {
   opacity: 1;
+}
+
+/* Subtle interactive spotlight for standard cards */
+.card-interactive {
+  position: relative;
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.25s ease;
+}
+.card-interactive::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    400px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    rgba(20, 184, 166, 0.065),
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+.card-interactive:hover::before {
+  opacity: 1;
+}
+
+/* Liquid shimmer overlay for progress bars & telemetry meters */
+@keyframes progressShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(240%);
+  }
+}
+
+.progress-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.progress-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 45%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.45),
+    transparent
+  );
+  animation: progressShimmer 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+/* Animated Aurora Hero Mesh */
+@keyframes auroraPulse {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Counter completion pop */
+@keyframes counterPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-counter-pop {
+  display: inline-block;
+  animation: counterPop 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Global table row & interactive control micro-physics */
+tbody tr {
+  transition:
+    background-color 0.18s ease,
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Off-screen paint skipping optimization for long pages */
